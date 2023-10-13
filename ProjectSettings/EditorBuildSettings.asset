@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
+    path: Assets/Scenes/EyeTracking.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  m_configObjects: {}
+  - enabled: 0
+    path: Assets/MovementAura.unity
+    guid: d5adc08c813985b488ce65cc6b4546dc
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a5680c33fdfd02a4e8eba3e07e94731f,
+      type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1416095042b7a5d46946c3ffda3cbb84,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: f2ad444a14080d64dadbddbedc618e19,
+      type: 2}
