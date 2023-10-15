@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetDeviceTypes: 0200000003000000
   allowOptional3DofHeadTracking: 0
-  handTrackingSupport: 2
-  handTrackingFrequency: 1
+  handTrackingSupport: 0
+  handTrackingFrequency: 0
   handTrackingVersion: 0
   multimodalHandsControllersSupport: 0
   anchorSupport: 0
@@ -23,8 +23,8 @@ MonoBehaviour:
   renderModelSupport: 0
   trackedKeyboardSupport: 0
   bodyTrackingSupport: 0
-  faceTrackingSupport: 2
-  eyeTrackingSupport: 2
+  faceTrackingSupport: 0
+  eyeTrackingSupport: 0
   virtualKeyboardSupport: 0
   sceneSupport: 0
   disableBackups: 1
@@ -33,8 +33,9 @@ MonoBehaviour:
   skipUnneededShaders: 0
   focusAware: 1
   requiresSystemKeyboard: 0
-  experimentalFeaturesEnabled: 1
+  experimentalFeaturesEnabled: 0
   insightPassthroughEnabled: 0
   _insightPassthroughSupport: 0
+  _processorFavor: 0
   systemSplashScreen: {fileID: 0}
   systemSplashScreenType: 0

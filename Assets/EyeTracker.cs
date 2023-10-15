@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 
 //[RequireComponent(typeof(LineRenderer))]
@@ -14,6 +15,7 @@ public class EyeTracker : MonoBehaviour
     public Color rayColor = Color.red;
     public GameObject rectilePrefab;
     GameObject rectile;
+    public TextMeshProUGUI eyeData;
 
     //private LineRenderer lineRenderer;
 
