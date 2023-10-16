@@ -15,7 +15,15 @@ public class EyeTracker : MonoBehaviour
     public Color rayColor = Color.red;
     public GameObject rectilePrefab;
     GameObject rectile;
+
+    public enum Eye
+    {
+        Left,
+        Right
+    }
+    public Eye eye;
     public TextMeshProUGUI eyeData;
+    TextScroller textScroller;
 
     //private LineRenderer lineRenderer;
 
@@ -24,20 +32,29 @@ public class EyeTracker : MonoBehaviour
         //lineRenderer = GetComponent<LineRenderer>();
         //SetupRay();
         rectile = null;
+        textScroller = eyeData.GetComponent<TextScroller>();
+        //InvokeRepeating("UpdateLog", 1f, 1f);
     }
 
-   /* void SetupRay()
-    {
-        lineRenderer.useWorldSpace = false; // why?
-        lineRenderer.positionCount = 2;
-        lineRenderer.startWidth = rayWidth;
-        lineRenderer.endWidth = rayWidth;
-        lineRenderer.startColor = rayColor;
-        lineRenderer.endColor = rayColor;
-        lineRenderer.SetPosition(0, transform.position);
-        lineRenderer.SetPosition(1, transform.position + new Vector3(0, 0, rayDistance));
+    /* void SetupRay()
+     {
+         lineRenderer.useWorldSpace = false; // why?
+         lineRenderer.positionCount = 2;
+         lineRenderer.startWidth = rayWidth;
+         lineRenderer.endWidth = rayWidth;
+         lineRenderer.startColor = rayColor;
+         lineRenderer.endColor = rayColor;
+         lineRenderer.SetPosition(0, transform.position);
+         lineRenderer.SetPosition(1, transform.position + new Vector3(0, 0, rayDistance));
 
-    }*/
+     }*/
+
+    private void UpdateLog()
+    {
+        string s = eye == Eye.Left ? "L" : "R";
+        eyeData.SetText(eyeData.text + s + ": " + transform.rotation.eulerAngles.ToString()+"\n") ;
+        textScroller.scrollDown();
+    }
 
     private void FixedUpdate()
     {
