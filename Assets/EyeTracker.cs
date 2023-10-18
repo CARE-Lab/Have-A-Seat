@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime;
 
 
 //[RequireComponent(typeof(LineRenderer))]
@@ -15,6 +16,9 @@ public class EyeTracker : MonoBehaviour
     public Color rayColor = Color.red;
     public GameObject rectilePrefab;
     GameObject rectile;
+
+    bool paused = false;
+    bool prev_state_pause = false;
     public enum Eye
     {
         Left,
@@ -24,6 +28,7 @@ public class EyeTracker : MonoBehaviour
     public TextMeshProUGUI eyeData;
 
     TextScroller textScroller;
+    
 
     //private LineRenderer lineRenderer;
 
@@ -33,7 +38,7 @@ public class EyeTracker : MonoBehaviour
         //SetupRay();
         rectile = null;
         textScroller = eyeData.GetComponent<TextScroller>();
-        InvokeRepeating("UpdateLog", 1f, 1f);
+      //  InvokeRepeating("UpdateLog", 0.03f, 0.03f);
     }
 
     /* void SetupRay()
@@ -49,19 +54,59 @@ public class EyeTracker : MonoBehaviour
 
      }*/
 
+    private void Update()
+    {
+        bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
+        if (button_pressed != prev_state_pause)
+        {
+            if (button_pressed)
+            {
+                paused = !paused;
+
+            }
+            prev_state_pause = button_pressed;
+        }
+
+        if (!paused)
+        {
+            if (eye == Eye.Left)
+            {
+                eyeData.SetText(eyeData.text + "L: " + transform.rotation.eulerAngles.ToString() + "\n");
+
+            }
+            textScroller.scrollDown();
+        }
+        
+        /*   var joyStickDirection = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).y;
+           eyeData.SetText(eyeData.text + joyStickDirection + "\n");*/
+
+    }
     private void UpdateLog()
     {
+        if (paused)
+        {
+            return;
+        }
+
         //string s = eye == Eye.Left ? "L" : "R";
         //eyeData.SetText(eyeData.text + s + ": " + transform.rotation.eulerAngles.ToString() + "\n");
-        if(eye == Eye.Left)
+        if (eye == Eye.Left)
         {
             eyeData.SetText(eyeData.text +"L: " + transform.rotation.eulerAngles.ToString() + "\n");
+           
         }
         textScroller.scrollDown();
     }
 
     private void FixedUpdate()
     {
+
+        if (paused)
+        {
+            Destroy(rectile);
+            return;
+        }
+
         RaycastHit hit;
         if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layersToinclude))
         {
