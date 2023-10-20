@@ -1,14 +1,13 @@
 {
   "dependencies": {
     "com.meta.movement": {
-      "version": "https://github.com/oculus-samples/Unity-Movement.git",
+      "version": "file:C:/Users/habib/Desktop/Unity-Movement",
       "depth": 0,
-      "source": "git",
+      "source": "local",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.animation.rigging": "1.2.1"
-      },
-      "hash": "9aaa97bb29d6771cdbc330adb6b3f26167eb14ad"
+      }
     },
     "com.unity.animation.rigging": {
       "version": "1.2.1",

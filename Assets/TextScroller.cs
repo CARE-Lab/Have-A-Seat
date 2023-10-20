@@ -8,6 +8,7 @@ public class TextScroller : MonoBehaviour
 {
     RectTransform m_RectTransform;
     float speed = 5f;
+    //public TextMeshProUGUI debugUI;
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class TextScroller : MonoBehaviour
     private void Update()
     {
         // this is either 1 for up or -1 for down
-        var joyStickDirection = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).y;
+        float joyStickDirection = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch).y;
         if (joyStickDirection != 0)
         {
             var multiplier = joyStickDirection * speed;

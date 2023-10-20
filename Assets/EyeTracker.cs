@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
+using Unity.VisualScripting;
 
 
 //[RequireComponent(typeof(LineRenderer))]
@@ -16,9 +17,12 @@ public class EyeTracker : MonoBehaviour
     public Color rayColor = Color.red;
     public GameObject rectilePrefab;
     GameObject rectile;
+    OVRFaceExpressions userFace;
 
     bool paused = false;
     bool prev_state_pause = false;
+
+    bool prev_state_clear = false;
     public enum Eye
     {
         Left,
@@ -30,30 +34,15 @@ public class EyeTracker : MonoBehaviour
     TextScroller textScroller;
     
 
-    //private LineRenderer lineRenderer;
-
     void Start()
     {
-        //lineRenderer = GetComponent<LineRenderer>();
-        //SetupRay();
         rectile = null;
         textScroller = eyeData.GetComponent<TextScroller>();
+        userFace = GameObject.Find("User").GetComponent<OVRFaceExpressions>();
       //  InvokeRepeating("UpdateLog", 0.03f, 0.03f);
     }
 
-    /* void SetupRay()
-     {
-         lineRenderer.useWorldSpace = false; // why?
-         lineRenderer.positionCount = 2;
-         lineRenderer.startWidth = rayWidth;
-         lineRenderer.endWidth = rayWidth;
-         lineRenderer.startColor = rayColor;
-         lineRenderer.endColor = rayColor;
-         lineRenderer.SetPosition(0, transform.position);
-         lineRenderer.SetPosition(1, transform.position + new Vector3(0, 0, rayDistance));
-
-     }*/
-
+ 
     private void Update()
     {
         bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
@@ -67,36 +56,35 @@ public class EyeTracker : MonoBehaviour
             prev_state_pause = button_pressed;
         }
 
+        bool clear_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
+        if (clear_pressed != prev_state_clear)
+        {
+            if (clear_pressed)
+            {
+                eyeData.SetText("");
+
+            }
+            prev_state_clear = clear_pressed;
+        }
+
+        float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
+        float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
+
         if (!paused)
         {
             if (eye == Eye.Left)
             {
                 eyeData.SetText(eyeData.text + "L: " + transform.rotation.eulerAngles.ToString() + "\n");
+                //eyeData.SetText(eyeData.text + "L: " + eyeClosedL + ", R: "+ eyeClosedR + "\n");
 
             }
             textScroller.scrollDown();
         }
+
         
-        /*   var joyStickDirection = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).y;
-           eyeData.SetText(eyeData.text + joyStickDirection + "\n");*/
 
     }
-    private void UpdateLog()
-    {
-        if (paused)
-        {
-            return;
-        }
-
-        //string s = eye == Eye.Left ? "L" : "R";
-        //eyeData.SetText(eyeData.text + s + ": " + transform.rotation.eulerAngles.ToString() + "\n");
-        if (eye == Eye.Left)
-        {
-            eyeData.SetText(eyeData.text +"L: " + transform.rotation.eulerAngles.ToString() + "\n");
-           
-        }
-        textScroller.scrollDown();
-    }
+    
 
     private void FixedUpdate()
     {
