@@ -10,19 +10,7 @@ using Unity.VisualScripting;
 
 public class EyeTracker : MonoBehaviour
 {
-    public float rayDistance = 1.0f;
-    public float rayWidth = 0.01f;
-    public LayerMask layersToinclude;
-
-    public Color rayColor = Color.red;
     public GameObject rectilePrefab;
-    GameObject rectile;
-    OVRFaceExpressions userFace;
-
-    bool paused = false;
-    bool prev_state_pause = false;
-
-    bool prev_state_clear = false;
     public enum Eye
     {
         Left,
@@ -31,7 +19,35 @@ public class EyeTracker : MonoBehaviour
     public Eye eye;
     public TextMeshProUGUI eyeData;
 
+    [Tooltip("The game object that is being physically tracked (probably user's head)")]
+    public Transform headTransform;
+
+    public Transform XRTransform;
+
+    [Tooltip("Rotation per Saccade in degrees")]
+    [Range(0, 5)]
+    public float rotPerSaccade;
+
+    [Tooltip("Y angular velocity (degress/sec) above which a saccade is detected")]
+    [Range(180, 1000)]
+    public int horizontalSaccadeThres;
+
+    [Tooltip("Time duration to wait before detecting another saccade")]
+    [Range(0, 1)]
+    public float downTime;
+
+    float secCounter = 0;
+    bool saccdetected = true;
+
     TextScroller textScroller;
+    GameObject rectile;
+    OVRFaceExpressions userFace;
+
+    bool paused = false;
+    bool prev_state_pause = false;
+    bool prev_state_clear = false;
+    Quaternion currDir, prevDir;
+
     
 
     void Start()
@@ -39,7 +55,7 @@ public class EyeTracker : MonoBehaviour
         rectile = null;
         textScroller = eyeData.GetComponent<TextScroller>();
         userFace = GameObject.Find("User").GetComponent<OVRFaceExpressions>();
-      //  InvokeRepeating("UpdateLog", 0.03f, 0.03f);
+        eyeData.SetText("");
     }
 
  
@@ -61,7 +77,8 @@ public class EyeTracker : MonoBehaviour
         {
             if (clear_pressed)
             {
-                eyeData.SetText("");
+                //eyeData.SetText("");
+                XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
 
             }
             prev_state_clear = clear_pressed;
@@ -70,33 +87,50 @@ public class EyeTracker : MonoBehaviour
         float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
         float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
 
-        if (!paused)
+        UpdateCurrentGazeDirection();
+        Vector3 vel = CalculateAngularVelocity();
+
+        if(Mathf.Abs(vel.y) > horizontalSaccadeThres && !saccdetected)
+        {
+            XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
+            saccdetected = true;
+            eyeData.SetText("detected");
+        }
+
+        secCounter += Time.deltaTime;
+        if(secCounter >= downTime)
+        {
+            saccdetected = false;
+            eyeData.SetText("");
+            secCounter = 0;
+        }
+           
+
+       /* if (!paused)
         {
             if (eye == Eye.Left)
             {
-                eyeData.SetText(eyeData.text + "L: " + transform.rotation.eulerAngles.ToString() + "\n");
+                eyeData.SetText(eyeData.text + "L: " + vel.ToString() + "\n");
                 //eyeData.SetText(eyeData.text + "L: " + eyeClosedL + ", R: "+ eyeClosedR + "\n");
 
             }
             textScroller.scrollDown();
-        }
+        }*/
 
-        
 
     }
-    
 
     private void FixedUpdate()
     {
 
-        if (paused)
+       /* if (paused)
         {
             Destroy(rectile);
             return;
         }
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity, layersToinclude))
+        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
         {
             if(rectile == null)
             {
@@ -107,8 +141,24 @@ public class EyeTracker : MonoBehaviour
                 rectile.transform.position = hit.point;
             }
             
-        }
+        }*/
+
+       
     }
 
+    void UpdateCurrentGazeDirection()
+    {
+        currDir = transform.rotation;
+    }
+
+    Vector3 CalculateAngularVelocity()
+    {
+        Quaternion deltaRotation = currDir * Quaternion.Inverse(prevDir);
+        prevDir = currDir;
+        deltaRotation.ToAngleAxis(out var angle, out var axis);
+        Vector3 angularVelocity = (1.0f / Time.deltaTime) * angle * axis;
+        return angularVelocity;
+
+    }
 
 }

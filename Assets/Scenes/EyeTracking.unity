@@ -150,12 +150,12 @@ PrefabInstance:
     - target: {fileID: 4072540807913131481, guid: 1308d786f48996144b571e99c5a98ca5,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: -6.2504992
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4072540807913131481, guid: 1308d786f48996144b571e99c5a98ca5,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: -3.0832996
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4430277370183896564, guid: 1308d786f48996144b571e99c5a98ca5,
         type: 3}
@@ -683,6 +683,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ac7885a83f6c4741addf95e0ceea891, type: 3}
+--- !u!4 &578222137 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400004, guid: 126d619cf4daa52469682f85c1378b4a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1364240231}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &638496099
 GameObject:
   m_ObjectHideFlags: 0
@@ -1170,6 +1176,12 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
+--- !u!4 &1364240237 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400002, guid: 126d619cf4daa52469682f85c1378b4a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1364240231}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1390514121
 GameObject:
   m_ObjectHideFlags: 0
@@ -1571,16 +1583,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2866129700f222145bd059a4096d7f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 6
-  rayWidth: 0.01
-  layersToinclude:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  rayColor: {r: 0.97404873, g: 1, b: 0, a: 1}
   rectilePrefab: {fileID: 8656087483511947524, guid: 50f8d835961353c4a8e0c4b77d7f8876,
     type: 3}
   eye: 1
   eyeData: {fileID: 845719448}
+  headTransform: {fileID: 0}
+  XRTransform: {fileID: 0}
+  rotPerSaccade: 0
+  horizontalSaccadeThres: 0
+  downTime: 0
 --- !u!114 &1984783130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1693,13 +1704,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2866129700f222145bd059a4096d7f04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rayDistance: 6
-  rayWidth: 0.01
-  layersToinclude:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  rayColor: {r: 0.97404873, g: 1, b: 0, a: 1}
   rectilePrefab: {fileID: 8656087483511947524, guid: 50f8d835961353c4a8e0c4b77d7f8876,
     type: 3}
   eye: 0
   eyeData: {fileID: 845719448}
+  headTransform: {fileID: 1364240237}
+  XRTransform: {fileID: 578222137}
+  rotPerSaccade: 0.15
+  horizontalSaccadeThres: 597
+  downTime: 0.5
