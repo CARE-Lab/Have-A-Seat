@@ -1073,10 +1073,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1984783127}
-    - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 437312518}
     - targetCorrespondingSourceObject: {fileID: 459718, guid: 126d619cf4daa52469682f85c1378b4a,
         type: 3}
@@ -1538,78 +1534,6 @@ MonoBehaviour:
     mipBias: 0
     varianceClampScale: 0.9
     contrastAdaptiveSharpening: 0
---- !u!1 &1984783126
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1984783127}
-  - component: {fileID: 1984783130}
-  - component: {fileID: 1984783128}
-  m_Layer: 0
-  m_Name: RightEye
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &1984783127
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984783126}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1364240232}
-  m_RootOrder: -1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1984783128
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984783126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2866129700f222145bd059a4096d7f04, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rectilePrefab: {fileID: 8656087483511947524, guid: 50f8d835961353c4a8e0c4b77d7f8876,
-    type: 3}
-  eye: 1
-  eyeData: {fileID: 845719448}
-  headTransform: {fileID: 0}
-  XRTransform: {fileID: 0}
-  rotPerSaccade: 0
-  horizontalSaccadeThres: 0
-  downTime: 0
---- !u!114 &1984783130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984783126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28dd40a6d175d01498e0477360d6c070, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Eye: 1
-  ConfidenceThreshold: 0
-  ApplyPosition: 1
-  ApplyRotation: 1
-  ReferenceFrame: {fileID: 1740976504}
-  TrackingMode: 2
 --- !u!1 &2112186755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1653,7 +1577,7 @@ GameObject:
   - component: {fileID: 2130530828}
   - component: {fileID: 2130530829}
   m_Layer: 0
-  m_Name: LeftEye
+  m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1686,8 +1610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28dd40a6d175d01498e0477360d6c070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Eye: 0
-  ConfidenceThreshold: 0
+  Eye: 1
+  ConfidenceThreshold: 0.439
   ApplyPosition: 1
   ApplyRotation: 1
   ReferenceFrame: {fileID: 1740976504}
@@ -1706,10 +1630,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectilePrefab: {fileID: 8656087483511947524, guid: 50f8d835961353c4a8e0c4b77d7f8876,
     type: 3}
-  eye: 0
   eyeData: {fileID: 845719448}
   headTransform: {fileID: 1364240237}
   XRTransform: {fileID: 578222137}
   rotPerSaccade: 0.15
-  horizontalSaccadeThres: 597
-  downTime: 0.5
+  horizontalSaccadeThres: 605
+  VerticalSaccadeThres: 531
+  downTime: 0.3
+  blinkDetectionThreshold: 0.794
