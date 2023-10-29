@@ -19,6 +19,11 @@ public class EyeTracker : MonoBehaviour
 
     public Transform XRTransform;
 
+    [Tooltip("Time duration to wait before detecting another saccade")]
+    [Range(0, 1)]
+    public float downTime;
+
+    [Header("Saccade detection Settings")]
     [Tooltip("Rotation per Saccade in degrees")]
     [Range(0, 5)]
     public float rotPerSaccade;
@@ -31,13 +36,15 @@ public class EyeTracker : MonoBehaviour
     [Range(180, 1000)]
     public int VerticalSaccadeThres;
 
-    [Tooltip("Time duration to wait before detecting another saccade")]
-    [Range(0, 1)]
-    public float downTime;
 
+    [Header("Blink detection Settings")]
     [Tooltip("Value above which eyelids are considered closed")]
     [Range(0, 1)]
     public float blinkDetectionThreshold;
+
+    [Tooltip("Rotations while blinking (degress/sec)")]
+    [Range(0, 25)]
+    public float rotPerBlink;
 
     float secCounter = 0;
     float blinkCounter = 0;
@@ -96,6 +103,7 @@ public class EyeTracker : MonoBehaviour
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
                 eyeData.SetText(eyeData.text + "Blink detected\n");
+                XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerBlink*Time.deltaTime);
                 blinkdetected = true;
             }
         }

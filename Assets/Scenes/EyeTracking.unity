@@ -1633,8 +1633,9 @@ MonoBehaviour:
   eyeData: {fileID: 845719448}
   headTransform: {fileID: 1364240237}
   XRTransform: {fileID: 578222137}
+  downTime: 0.3
   rotPerSaccade: 0.15
   horizontalSaccadeThres: 605
   VerticalSaccadeThres: 531
-  downTime: 0.3
-  blinkDetectionThreshold: 0.794
+  blinkDetectionThreshold: 0.815
+  rotPerBlink: 14
