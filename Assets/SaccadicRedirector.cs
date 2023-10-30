@@ -8,7 +8,7 @@ using Unity.VisualScripting;
 
 //[RequireComponent(typeof(LineRenderer))]
 
-public class EyeTracker : MonoBehaviour
+public class SaccadicRedirector : MonoBehaviour
 {
     public GameObject rectilePrefab;
    
@@ -45,6 +45,14 @@ public class EyeTracker : MonoBehaviour
     [Tooltip("Rotations while blinking (degress/sec)")]
     [Range(0, 25)]
     public float rotPerBlink;
+
+    [Tooltip("Translation while blinking Front axis (cm/sec)")]
+    [Range(0, 10)]
+    public float transFront;
+
+    [Tooltip("Translation while blinking Right axis (cm/sec)")]
+    [Range(0, 5)]
+    public float transRight;
 
     float secCounter = 0;
     float blinkCounter = 0;
@@ -104,6 +112,8 @@ public class EyeTracker : MonoBehaviour
             {
                 eyeData.SetText(eyeData.text + "Blink detected\n");
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerBlink*Time.deltaTime);
+                XRTransform.Translate(Vector3.forward * (transFront/100) * Time.deltaTime);
+                XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);
                 blinkdetected = true;
             }
         }
