@@ -75,7 +75,7 @@ public class SaccadicRedirector : MonoBehaviour
         rectile = null;
         textScroller = eyeData.GetComponent<TextScroller>();
         userFace = GameObject.Find("User").GetComponent<OVRFaceExpressions>();
-        eyeData.SetText("");
+        //eyeData.SetText("");
     }
 
  
@@ -110,7 +110,7 @@ public class SaccadicRedirector : MonoBehaviour
         {
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
-                eyeData.SetText(eyeData.text + "Blink detected\n");
+                //eyeData.SetText(eyeData.text + "Blink detected\n");
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerBlink*Time.deltaTime);
                 XRTransform.Translate(Vector3.forward * (transFront/100) * Time.deltaTime);
                 XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);
@@ -127,14 +127,14 @@ public class SaccadicRedirector : MonoBehaviour
             {
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
                 saccdetected = true;
-                eyeData.SetText("Horizontal");
+                //eyeData.SetText("Horizontal");
 
             }
             else if (Mathf.Abs(vel.x) > VerticalSaccadeThres && Mathf.Abs(vel.x) > Mathf.Abs(vel.y) && !saccdetected)
             {
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
                 saccdetected = true;
-                eyeData.SetText("Veritcal");
+                //eyeData.SetText("Veritcal");
             }
         }
 
@@ -145,7 +145,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (secCounter > downTime)
             {
                 saccdetected = false;
-                eyeData.SetText("");
+                //eyeData.SetText("");
                 secCounter = 0;
             }
         }
@@ -156,7 +156,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (blinkCounter > downTime)
             {
                 blinkdetected = false;
-                eyeData.SetText("");
+                //eyeData.SetText("");
                 blinkCounter = 0;
             }
         }
@@ -177,7 +177,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void FixedUpdate()
     {
 
-        if (paused)
+        /*if (paused)
         {
             Destroy(rectile);
             return;
@@ -195,7 +195,7 @@ public class SaccadicRedirector : MonoBehaviour
                 rectile.transform.position = hit.point;
             }
 
-        }
+        }*/
 
 
     }
