@@ -81,7 +81,7 @@ public class SaccadicRedirector : MonoBehaviour
  
     private void Update()
     {
-        bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
+/*        bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
         if (button_pressed != prev_state_pause)
         {
             if (button_pressed)
@@ -93,16 +93,16 @@ public class SaccadicRedirector : MonoBehaviour
         }
 
         bool clear_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
-        if (clear_pressed != prev_state_clear)
+        if (clear_pressed != prev_state_button_one)
         {
             if (clear_pressed)
             {
                 eyeData.SetText("");
                
             }
-            prev_state_clear = clear_pressed;
+            prev_state_button_one = clear_pressed;
         }
-
+*/
         float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
         float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
 
