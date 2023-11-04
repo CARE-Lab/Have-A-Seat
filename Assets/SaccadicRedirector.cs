@@ -4,6 +4,7 @@ using UnityEngine;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.VisualScripting;
+using System;
 
 
 //[RequireComponent(typeof(LineRenderer))]
@@ -13,6 +14,8 @@ public class SaccadicRedirector : MonoBehaviour
     public GameObject rectilePrefab;
    
     public TextMeshProUGUI eyeData;
+    public TextMeshProUGUI timeData;
+    public TextMeshProUGUI rotData;
 
     [Tooltip("The game object that is being physically tracked (probably user's head)")]
     public Transform headTransform;
@@ -69,6 +72,9 @@ public class SaccadicRedirector : MonoBehaviour
     Quaternion currDir, prevDir;
 
     
+    float inducedRot = 0;
+
+    
 
     void Start()
     {
@@ -82,14 +88,14 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 /*        bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
-        if (button_pressed != prev_state_pause)
+        if (button_pressed != prev_state_button_two)
         {
             if (button_pressed)
             {
                 paused = !paused;
 
             }
-            prev_state_pause = button_pressed;
+            prev_state_button_two = button_pressed;
         }
 
         bool clear_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
@@ -106,11 +112,13 @@ public class SaccadicRedirector : MonoBehaviour
         float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
         float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
 
+        float curRot = 0;
         if (!saccdetected)
         {
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
                 //eyeData.SetText(eyeData.text + "Blink detected\n");
+                curRot = rotPerBlink * Time.deltaTime;
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerBlink*Time.deltaTime);
                 XRTransform.Translate(Vector3.forward * (transFront/100) * Time.deltaTime);
                 XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);
@@ -128,6 +136,7 @@ public class SaccadicRedirector : MonoBehaviour
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
                 saccdetected = true;
                 //eyeData.SetText("Horizontal");
+                curRot = rotPerSaccade;
 
             }
             else if (Mathf.Abs(vel.x) > VerticalSaccadeThres && Mathf.Abs(vel.x) > Mathf.Abs(vel.y) && !saccdetected)
@@ -135,9 +144,11 @@ public class SaccadicRedirector : MonoBehaviour
                 XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
                 saccdetected = true;
                 //eyeData.SetText("Veritcal");
+                curRot = rotPerSaccade;
             }
         }
 
+        inducedRot += curRot;
 
         if (saccdetected)
         {
@@ -161,6 +172,8 @@ public class SaccadicRedirector : MonoBehaviour
             }
         }
 
+        timeData.SetText("Time elapsed: " + Time.realtimeSinceStartup.ToString());
+        rotData.SetText("Rot induced: " + inducedRot);
 
        /* if (!paused)
         {

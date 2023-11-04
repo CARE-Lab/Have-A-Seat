@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
 
 public class Debugging : MonoBehaviour
 {
     public GameObject open_env;
     public GameObject close_env;
+    public GameObject debug_UI;
 
     bool prev_state_button_one = false;
+    bool prev_state_button_two = false;
 
     // Update is called once per frame
     void Update()
@@ -22,6 +25,17 @@ public class Debugging : MonoBehaviour
 
             }
             prev_state_button_one = button_one_pressed;
+        }
+
+        bool button_two_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
+        if (button_two_pressed != prev_state_button_two)
+        {
+            if (button_two_pressed)
+            {
+                debug_UI.SetActive(!debug_UI.activeInHierarchy);
+
+            }
+            prev_state_button_two = button_two_pressed;
         }
     }
 }
