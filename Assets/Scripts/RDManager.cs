@@ -42,8 +42,6 @@ public class RDManager : MonoBehaviour
 
     public Transform XRTransform;
 
-    public Transform startPos;
-
     [HideInInspector]
     public Vector3 redirection_target;
 
@@ -117,129 +115,9 @@ public class RDManager : MonoBehaviour
 
     public void ApplyRedirection()
     {
-        S2C_PickRedirectionTarget();
-
-        rotationFromCurvatureGain = 0;
-
-        //float distMag = Mathf.Round(deltaPos.magnitude * 1000f) / 1000f;
-
-        if ((deltaPos.magnitude / Time.deltaTime) > MOVEMENT_THRESHOLD)
-        {
-            rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
-            rotationFromCurvatureGain = Mathf.Min(rotationFromCurvatureGain, CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime);
-        }
-
-        //Compute desired facing vector for redirection
-        Vector3 desiredFacingDirection = Utilities.FlattenedPos3D(redirection_target) - currPos;
-        int signOfAngle = (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
-        int desiredSteeringDirection = (-1) * signOfAngle;
-
-        //Compute proposed rotation gain
-        rotationFromRotationGain = 0;
-
-        if (Mathf.Abs(deltaDir) / Time.deltaTime >= ROTATION_THRESHOLD)
-        {
-            //Determine if we need to rotate with or against the user
-            if (deltaDir * desiredSteeringDirection < 0)
-            {
-                //Rotating against the user
-                //text1.SetText("against");
-                rotationFromRotationGain = Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime);
-            }
-            else
-            {
-                //Rotating with the user
-                //text1.SetText("with");
-                rotationFromRotationGain = Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime);
-            }
-        }
-
-        float rotationProposed = desiredSteeringDirection * Mathf.Max(rotationFromRotationGain, rotationFromCurvatureGain);
-        bool curvatureGainUsed = rotationFromCurvatureGain > rotationFromRotationGain;
-        bool rotationGainUsed = rotationFromCurvatureGain < rotationFromRotationGain;
-
-        //if user is stationary, apply baseline rotation
-        if (Mathf.Approximately(rotationProposed, 0))
-        {
-            rotationProposed = desiredSteeringDirection * BASELINE_ROT * Time.deltaTime;
-            curvatureGainUsed = false;
-            rotationGainUsed = false;
-        }
-
-
-
-        //DAMPENING METHODS
-        float bearingToTarget = Vector3.Angle(currDir, desiredFacingDirection);
-        if (original_dampening)
-        {
-            // Razzaque et al.
-            rotationProposed *= Mathf.Sin(Mathf.Deg2Rad * bearingToTarget);
-
-        }
-        else
-        {
-            // Hodgson et al.
-            if (bearingToTarget <= AngleThreshDamp)
-                rotationProposed *= Mathf.Sin(Mathf.Deg2Rad * 90 * bearingToTarget / AngleThreshDamp);
-        }
-
-
-        // MAHDI: Linearly scaling the rotation when the distance is near zero
-        if (desiredFacingDirection.magnitude <= DistThreshDamp)
-        {
-            rotationProposed *= desiredFacingDirection.magnitude / DistThreshDamp;
-        }
-
-        // Implement additional rotation with smoothing
-        float finalRotation = (1.0f - SMOOTHING_FACTOR) * lastRotationApplied + SMOOTHING_FACTOR * rotationProposed;
-        lastRotationApplied = finalRotation;
-
-        if (curvatureGainUsed)
-        {
-            sumOfInjectedRotationFromCurvatureGain += Mathf.Abs(finalRotation);
-        }
-        else if (rotationGainUsed)
-        {
-            sumOfInjectedRotationFromRotationGain += Mathf.Abs(finalRotation);
-        }
-
-        //text3.SetText("Injected rot so far: " + sumOfInjectedRotationFromRotationGain);
-
-
-        XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        center.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+    
     }
 
-    public void S2C_PickRedirectionTarget()
-    {
-        if (center != null)
-        {
-            Vector3 centerPos = Utilities.FlattenedPos3D(center.transform.position);
-            Vector3 userToCenter = centerPos - currPos;
-            float bearingToCenter = Vector3.Angle(currDir, userToCenter);
-            float signedAngle = Utilities.GetSignedAngle(currDir, userToCenter);
-
-            //text2.SetText("Angle to center: " + bearingToCenter + "\n Signed angle: " + signedAngle);
-
-            if (bearingToCenter >= S2C_BEARING_ANGLE_THRESHOLD_IN_DEGREE)
-            {
-                if (no_tmptarget)
-                {
-                    tmp_target = currPos + S2C_TEMP_TARGET_DISTANCE * (Quaternion.Euler(0, (int)Mathf.Sign(signedAngle) * 90, 0) * currDir);
-                    no_tmptarget = false;
-                }
-                redirection_target = tmp_target;
-            }
-            else
-            {
-                redirection_target = center.transform.position;
-                no_tmptarget = true;
-            }
-
-        }
-    }
 
     void UpdateCurrentUserState()
     {

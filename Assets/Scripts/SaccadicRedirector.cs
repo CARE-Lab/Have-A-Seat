@@ -31,11 +31,11 @@ public class SaccadicRedirector : MonoBehaviour
     [Range(0, 5)]
     public float rotPerSaccade;
 
-    [Tooltip("Y angular velocity (degress/sec) above which a saccade is detected")]
+    [Tooltip("Y angular velocity (degrees/sec) above which a saccade is detected")]
     [Range(180, 1000)]
     public int horizontalSaccadeThres;
 
-    [Tooltip("X angular velocity (degress/sec) above which a saccade is detected")]
+    [Tooltip("X angular velocity (degrees/sec) above which a saccade is detected")]
     [Range(180, 1000)]
     public int VerticalSaccadeThres;
 
@@ -45,7 +45,7 @@ public class SaccadicRedirector : MonoBehaviour
     [Range(0, 1)]
     public float blinkDetectionThreshold;
 
-    [Tooltip("Rotations while blinking (degress/sec)")]
+    [Tooltip("Rotations while blinking (degrees/sec)")]
     [Range(0, 25)]
     public float rotPerBlink;
 
@@ -70,58 +70,37 @@ public class SaccadicRedirector : MonoBehaviour
     bool prev_state_pause = false;
     bool prev_state_clear = false;
     Quaternion currDir, prevDir;
-
-    
+  
     float inducedRot = 0;
 
-    
+    PathTrail pathTrail;
+    GameManager gameManager;
+
+
 
     void Start()
     {
         rectile = null;
         textScroller = eyeData.GetComponent<TextScroller>();
         userFace = GameObject.Find("User").GetComponent<OVRFaceExpressions>();
+
+        pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         //eyeData.SetText("");
     }
 
  
     private void Update()
     {
-/*        bool button_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
-        if (button_pressed != prev_state_button_two)
-        {
-            if (button_pressed)
-            {
-                paused = !paused;
-
-            }
-            prev_state_button_two = button_pressed;
-        }
-
-        bool clear_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
-        if (clear_pressed != prev_state_button_one)
-        {
-            if (clear_pressed)
-            {
-                eyeData.SetText("");
-               
-            }
-            prev_state_button_one = clear_pressed;
-        }
-*/
         float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
         float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
 
-        float curRot = 0;
         if (!saccdetected)
         {
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
                 //eyeData.SetText(eyeData.text + "Blink detected\n");
-                curRot = rotPerBlink * Time.deltaTime;
-                XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerBlink*Time.deltaTime);
-                XRTransform.Translate(Vector3.forward * (transFront/100) * Time.deltaTime);
-                XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);
+                InduceRot(rotPerBlink * Time.deltaTime);
                 blinkdetected = true;
             }
         }
@@ -131,24 +110,17 @@ public class SaccadicRedirector : MonoBehaviour
 
         if (!blinkdetected)
         {
-            if (Mathf.Abs(vel.y) > horizontalSaccadeThres && Mathf.Abs(vel.y) > Mathf.Abs(vel.x) && !saccdetected)
+            if ((Mathf.Abs(vel.y) > horizontalSaccadeThres && Mathf.Abs(vel.y) > Mathf.Abs(vel.x)) 
+                || (Mathf.Abs(vel.x) > VerticalSaccadeThres && Mathf.Abs(vel.x) > Mathf.Abs(vel.y)) && !saccdetected)
             {
-                XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
+                InduceRot(rotPerSaccade);
                 saccdetected = true;
-                //eyeData.SetText("Horizontal");
-                curRot = rotPerSaccade;
 
             }
-            else if (Mathf.Abs(vel.x) > VerticalSaccadeThres && Mathf.Abs(vel.x) > Mathf.Abs(vel.y) && !saccdetected)
-            {
-                XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, rotPerSaccade);
-                saccdetected = true;
-                //eyeData.SetText("Veritcal");
-                curRot = rotPerSaccade;
-            }
+
         }
 
-        inducedRot += curRot;
+        
 
         if (saccdetected)
         {
@@ -172,45 +144,20 @@ public class SaccadicRedirector : MonoBehaviour
             }
         }
 
-        timeData.SetText("Time elapsed: " + Time.realtimeSinceStartup.ToString());
-        rotData.SetText("Rot induced: " + inducedRot);
-
-       /* if (!paused)
-        {
-
-            eyeData.SetText(eyeData.text + vel.ToString() + "\n");
-            //eyeData.SetText(eyeData.text + "L: " + eyeClosedL + ", R: " + eyeClosedR + "\n");
-
-            textScroller.scrollDown();
-        }*/
-
 
     }
 
-    private void FixedUpdate()
+    void InduceRot(float finalRotation)
     {
+        XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
+        XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
 
-        /*if (paused)
-        {
-            Destroy(rectile);
-            return;
-        }
+        gameManager.trackedCenter.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, Mathf.Infinity))
-        {
-            if (rectile == null)
-            {
-                rectile = Instantiate(rectilePrefab, hit.point, rectilePrefab.transform.rotation);
-            }
-            else
-            {
-                rectile.transform.position = hit.point;
-            }
-
-        }*/
-
-
+        inducedRot += finalRotation;
     }
 
     void UpdateCurrentGazeDirection()

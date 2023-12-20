@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.XR.Oculus;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using static UnityEngine.GraphicsBuffer;
@@ -12,19 +13,27 @@ public class GameManager : MonoBehaviour
 {
     RDManager red_manager;
     bool configured;
-    GameObject red_target;
     PathTrail pathTrail;
+    bool prev_state_button_one = false;
+    bool prev_state_button_two = false;
 
+    bool paused = false;
+
+    public Transform startPos;
+    public GameObject debug_UI;
 
     [HideInInspector] public bool debug = false;
     [HideInInspector] public GameObject trackedArea;
+    [HideInInspector] public GameObject trackedCenter;
+    [HideInInspector] public bool debugMode = false;
 
     [SerializeField] GameObject wallMarker;
     [SerializeField] GameObject dirMarker;
     [SerializeField] GameObject realPlanePrefab;
-   /* [SerializeField] TextMeshProUGUI text1;
+
+    [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
-    [SerializeField] TextMeshProUGUI text3;*/
+    [SerializeField] TextMeshProUGUI text3;
 
     void Start()
     {
@@ -35,33 +44,56 @@ public class GameManager : MonoBehaviour
         configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
-            ResetPos();
+            IntializeArea();
         }
 
     }
 
+    private void Update()
+    {
+        bool button_one_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
+        if (button_one_pressed != prev_state_button_one)
+        {
+            if (button_one_pressed)
+            {
+                debugMode = !debugMode;
+                trackedCenter.SetActive(debugMode);
+                trackedArea.SetActive(debugMode);
+                if(debugMode)
+                    pathTrail.BeginTrailDrawing();
+                else
+                {
+                    pathTrail.ClearTrail(PathTrail.REAL_TRAIL_NAME);
+                    pathTrail.ClearTrail(PathTrail.VIRTUAL_TRAIL_NAME);
+                }
+
+            }
+            prev_state_button_one = button_one_pressed;
+        }
+
+        bool button_two_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
+        if (button_two_pressed != prev_state_button_two)
+        {
+            if (button_two_pressed)
+            {
+                debug_UI.SetActive(!debug_UI.activeInHierarchy);
+                Time.timeScale = paused ? 1 : 0;
+                paused = !paused;
+            }
+            prev_state_button_two = button_two_pressed;
+        }
+    }
 
     private void LateUpdate()
     {
         if (Time.timeScale == 0)
         {
             return;
-        }
-
-        if (red_manager.redirection_target != null)
-        {
-            red_target.transform.position = red_manager.redirection_target;
-        }
-       
+        } 
     }
 
-    public void ResetPos()
+    public void IntializeArea()
     {
-        float angleY = red_manager.startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-        red_manager.XRTransform.Rotate(0, angleY, 0);
-        Vector3 distDiff = red_manager.startPos.position - red_manager.headTransform.position;
-        red_manager.XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);
-
         //Grab all the boundary points. Setting BoundaryType to OuterBoundary is necessary
         Vector3[] boundaryPoints = OVRManager.boundary.GetGeometry(OVRBoundary.BoundaryType.PlayArea);
         Vector3 boundrydim = OVRManager.boundary.GetDimensions(OVRBoundary.BoundaryType.PlayArea);
@@ -77,32 +109,26 @@ public class GameManager : MonoBehaviour
         if (LineIntersection(out center, p1, p1Diff, p2, p2Diff))
         {
             // if OVRRig/XR Origin is not aligned with world origin, then must shift and rotate by the diffrence.
-            center = Quaternion.Euler(0, red_manager.XRTransform.rotation.eulerAngles.y, 0) * center;
             center += red_manager.XRTransform.position;
             center = Utilities.FlattenedPos3D(center);
+            text2.SetText("center shifted: " + center);
 
             if (red_manager.center == null)
                 red_manager.center = new GameObject();
             red_manager.center.transform.position = center;
-            red_manager.center.transform.localRotation = red_manager.startPos.transform.localRotation;
+            red_manager.center.transform.localRotation = startPos.transform.localRotation;
 
-            if (red_target == null)
-                red_target = Instantiate(wallMarker, center, Quaternion.identity);
-            else
-                red_target.transform.position = center;
-
-            // red_target.transform.position += new Vector3(0, 0.3f, 0);
-
-            Vector3 forwardDir = (p1 - p4);
+            if (trackedCenter == null)
+                trackedCenter = Instantiate(wallMarker, center, Quaternion.identity);
+            
+           
+            Vector3 forwardDir = (p1 - p2).normalized;
             float angle = Vector3.Angle(Vector3.forward, Utilities.FlattenedDir3D(forwardDir));
             if (forwardDir.x < 0.0f)
             {
                 angle = -angle;
                 angle += 360;
             }
-
-            //text2.SetText(red_target.transform.position.ToString());
-
 
             if (trackedArea == null)
             {
@@ -111,19 +137,9 @@ public class GameManager : MonoBehaviour
 
                 trackedArea.transform.Rotate(0, angle, 0);
 
-
             }
 
-
         }
-
-        //Instantiate(dirMarker, center, trackedArea.transform.localRotation);
-
-        pathTrail.ClearTrail(PathTrail.REAL_TRAIL_NAME);
-        pathTrail.ClearTrail(PathTrail.VIRTUAL_TRAIL_NAME);
-
-        pathTrail.BeginTrailDrawing();
-
     }
 
     public static bool LineIntersection(out Vector3 intersection, Vector3 linePoint1,
