@@ -62,16 +62,12 @@ public class SaccadicRedirector : MonoBehaviour
     bool saccdetected = true;
     bool blinkdetected = true;
 
-    TextScroller textScroller;
-    GameObject rectile;
+ 
     OVRFaceExpressions userFace;
 
-    bool paused = false;
-    bool prev_state_pause = false;
-    bool prev_state_clear = false;
     Quaternion currDir, prevDir;
   
-    float inducedRot = 0;
+    float inducedRotSaccadic = 0;
 
     PathTrail pathTrail;
     GameManager gameManager;
@@ -80,8 +76,7 @@ public class SaccadicRedirector : MonoBehaviour
 
     void Start()
     {
-        rectile = null;
-        textScroller = eyeData.GetComponent<TextScroller>();
+       
         userFace = GameObject.Find("User").GetComponent<OVRFaceExpressions>();
 
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
@@ -153,11 +148,14 @@ public class SaccadicRedirector : MonoBehaviour
         /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
 
-        gameManager.trackedCenter.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
+        {
+            gameManager.trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        }
 
-        inducedRot += finalRotation;
+        inducedRotSaccadic += finalRotation;
     }
 
     void UpdateCurrentGazeDirection()

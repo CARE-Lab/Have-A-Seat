@@ -155,10 +155,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47b20728cf27d3a4faed12bfc17cc9eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug_UI: {fileID: 847345408}
-  prev_state_button_one: 0
-  prev_state_button_two: 0
-  paused: 0
 --- !u!4 &18433538
 Transform:
   m_ObjectHideFlags: 0
@@ -190,8 +186,8 @@ MonoBehaviour:
   debug_UI: {fileID: 847345408}
   debug: 0
   trackedArea: {fileID: 0}
-  trackedCenter: {fileID: 0}
   debugMode: 1
+  trackingSpacePoints: []
   wallMarker: {fileID: 6566333907726082592, guid: 792515f1c03d9b048966ead47658659f,
     type: 3}
   dirMarker: {fileID: 4725135521580789018, guid: 5c60bca12d07e0740a4987660655a874,
@@ -3512,18 +3508,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb0004833d7db5e4aa4f41069d2c7c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MAX_ROT_GAIN: 0.49
+  MAX_TRANS_GAIN: 0.26
+  MIN_TRANS_GAIN: -0.14
+  MAX_ROT_GAIN: 0.3
   MIN_ROT_GAIN: -0.2
   CURVATURE_RADIUS: 7.5
-  BASELINE_ROT: 0.1
-  AngleThreshDamp: 45
-  DistThreshDamp: 1.25
-  SMOOTHING_FACTOR: 0.125
-  original_dampening: 1
+  BASELINE_ROT: 0.6
   headTransform: {fileID: 1364240237}
   XRTransform: {fileID: 578222137}
-  redirection_target: {x: 0, y: 0, z: 0}
-  center: {fileID: 0}
+  ngArrow: {fileID: 717936904266117204, guid: f68566b61c5ebc74784982a22ecef585, type: 3}
   currPos: {x: 0, y: 0, z: 0}
   prevPos: {x: 0, y: 0, z: 0}
   currDir: {x: 0, y: 0, z: 0}

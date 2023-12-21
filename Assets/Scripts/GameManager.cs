@@ -16,16 +16,15 @@ public class GameManager : MonoBehaviour
     PathTrail pathTrail;
     bool prev_state_button_one = false;
     bool prev_state_button_two = false;
-
     bool paused = false;
 
     public Transform startPos;
     public GameObject debug_UI;
-
+   
     [HideInInspector] public bool debug = false;
     [HideInInspector] public GameObject trackedArea;
-    [HideInInspector] public GameObject trackedCenter;
     [HideInInspector] public bool debugMode = false;
+    [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
 
     [SerializeField] GameObject wallMarker;
     [SerializeField] GameObject dirMarker;
@@ -57,9 +56,12 @@ public class GameManager : MonoBehaviour
             if (button_one_pressed)
             {
                 debugMode = !debugMode;
-                trackedCenter.SetActive(debugMode);
                 trackedArea.SetActive(debugMode);
-                if(debugMode)
+                for (int i = 0; i < trackingSpacePoints.Count; i++)
+                {
+                    trackingSpacePoints[i].SetActive(debugMode);
+                }
+                if (debugMode)
                     pathTrail.BeginTrailDrawing();
                 else
                 {
@@ -103,6 +105,12 @@ public class GameManager : MonoBehaviour
         Vector3 p3 = boundaryPoints[2];
         Vector3 p4 = boundaryPoints[3];
 
+        for(int i = 0; i < boundaryPoints.Length; i++)
+        {
+            GameObject pi = Instantiate(wallMarker, boundaryPoints[i]+ red_manager.XRTransform.position, Quaternion.identity);
+            trackingSpacePoints.Add(pi);
+        }
+
         Vector3 p1Diff = p3 - p1;
         Vector3 p2Diff = p4 - p2;
         Vector3 center; // Center of the tracked physical area
@@ -111,17 +119,7 @@ public class GameManager : MonoBehaviour
             // if OVRRig/XR Origin is not aligned with world origin, then must shift and rotate by the diffrence.
             center += red_manager.XRTransform.position;
             center = Utilities.FlattenedPos3D(center);
-            text2.SetText("center shifted: " + center);
-
-            if (red_manager.center == null)
-                red_manager.center = new GameObject();
-            red_manager.center.transform.position = center;
-            red_manager.center.transform.localRotation = startPos.transform.localRotation;
-
-            if (trackedCenter == null)
-                trackedCenter = Instantiate(wallMarker, center, Quaternion.identity);
             
-           
             Vector3 forwardDir = (p1 - p2).normalized;
             float angle = Vector3.Angle(Vector3.forward, Utilities.FlattenedDir3D(forwardDir));
             if (forwardDir.x < 0.0f)
