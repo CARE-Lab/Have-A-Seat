@@ -56,10 +56,10 @@ public class GameManager : MonoBehaviour
             if (button_one_pressed)
             {
                 debugMode = !debugMode;
-                trackedArea.SetActive(debugMode);
+                trackedArea.GetComponent<Renderer>().enabled = debugMode;
                 for (int i = 0; i < trackingSpacePoints.Count; i++)
                 {
-                    trackingSpacePoints[i].SetActive(debugMode);
+                    trackingSpacePoints[i].GetComponent<Renderer>().enabled = debugMode;
                 }
                 if (debugMode)
                     pathTrail.BeginTrailDrawing();

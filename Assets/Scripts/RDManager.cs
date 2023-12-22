@@ -97,14 +97,15 @@ public class RDManager : MonoBehaviour
             totalForcePointer.transform.position = Vector3.zero;
         }
 
-        if (totalForcePointer != null)
-        {
-            totalForcePointer.SetActive(gameManager.debugMode);
+        if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
+        {     
             totalForcePointer.transform.position = currPos;
 
             if (forceT.magnitude > 0)
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
         }
+
+        totalForcePointer.SetActive(gameManager.debugMode);
     }
     public void GetRepulsiveForceAndNegativeGradient(List<GameObject> trackingSpacePoints, out float rf, out Vector2 ng)
     {
@@ -193,12 +194,14 @@ public class RDManager : MonoBehaviour
         }
 
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
         {
             gameManager.trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         }
+        if (gameManager.debugMode)
+            pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+
     }
 
 
