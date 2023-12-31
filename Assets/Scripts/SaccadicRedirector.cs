@@ -71,6 +71,7 @@ public class SaccadicRedirector : MonoBehaviour
 
     PathTrail pathTrail;
     GameManager gameManager;
+    RDManager rdManager;
 
 
 
@@ -81,6 +82,7 @@ public class SaccadicRedirector : MonoBehaviour
 
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        rdManager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         //eyeData.SetText("");
     }
 
@@ -144,6 +146,9 @@ public class SaccadicRedirector : MonoBehaviour
 
     void InduceRot(float finalRotation)
     {
+        if(rdManager.desiredSteeringDirection != 0)
+            finalRotation*=rdManager.desiredSteeringDirection;
+        
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
@@ -157,7 +162,7 @@ public class SaccadicRedirector : MonoBehaviour
         if(gameManager.debugMode)
             pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
-        inducedRotSaccadic += finalRotation;
+        inducedRotSaccadic += Mathf.Abs(finalRotation);
     }
 
     void UpdateCurrentGazeDirection()

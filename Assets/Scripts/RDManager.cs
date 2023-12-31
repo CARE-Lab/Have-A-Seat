@@ -47,6 +47,9 @@ public class RDManager : MonoBehaviour
     [HideInInspector]
     public float deltaDir;
 
+    [HideInInspector]
+    public int desiredSteeringDirection;
+
     [SerializeField] GameObject userDirVector;
 
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
@@ -131,7 +134,6 @@ public class RDManager : MonoBehaviour
 
             //get gradient contributions
             var gDelta = -Mathf.Pow(Mathf.Pow(currPosReal.x - obPos.x, 2) + Mathf.Pow(currPosReal.y - obPos.y, 2), -3f / 2) * (currPosReal - obPos);
-
             ng += -gDelta;//negtive gradient
         }
         ng = ng.normalized;
@@ -155,7 +157,7 @@ public class RDManager : MonoBehaviour
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
-        int desiredSteeringDirection = (-1) * (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
+        desiredSteeringDirection = (-1) * (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
 
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
