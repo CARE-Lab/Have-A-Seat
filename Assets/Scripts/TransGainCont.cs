@@ -13,7 +13,10 @@ public class TransGainCont : MonoBehaviour
     public GameObject furn;
     public GameObject Questionnair;
     public GameObject resultUI;
+    public Transform startPos;
     public TextMeshProUGUI resText;
+    public TextMeshProUGUI text1;
+    public TextMeshProUGUI text2;
 
 
     bool prev_state_button_one = false;
@@ -30,11 +33,25 @@ public class TransGainCont : MonoBehaviour
     Vector3 deltaPos;
     bool prev_state_button_two = false;
     ArrayList[]res = new ArrayList[3];
+    bool ready=false;
     
     void Start()
     {
         curr_max_gain = max_gains[latin_square_order[order_index,gain_index]];
         curr_min_gain = min_gains[latin_square_order[order_index,gain_index]];
+
+        StartCoroutine(SetupCorotuine()); ;
+       
+    }
+
+    IEnumerator SetupCorotuine()
+    {
+        yield return new WaitForSeconds(0.1f);
+        float angleY = startPos.rotation.eulerAngles.y - headTransform.rotation.eulerAngles.y;
+        XRTransform.Rotate(0, angleY, 0);
+        Vector3 distDiff = startPos.position - headTransform.position;
+        XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);
+        ready = true;
     }
 
     // Update is called once per frame
@@ -116,12 +133,17 @@ public class TransGainCont : MonoBehaviour
                 break;
         }
 
-        var translation = g_t * deltaPos;
-        if (translation.magnitude > 0)
-        {
-            XRTransform.Translate(translation, Space.World);
-        }
+       // text1.SetText(g_t.ToString());
 
+        if (ready)
+        {
+            var translation = (g_t - 1) * deltaPos;
+            if (translation.magnitude > 0)
+            {
+                XRTransform.Translate(translation, Space.World);
+            }
+
+        }
         UpdatePreviousUserState();
     }
 

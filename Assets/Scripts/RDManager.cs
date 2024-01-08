@@ -150,14 +150,14 @@ public class RDManager : MonoBehaviour
         //calculate translation
         if (Vector2.Dot(ng, currDir) < 0)
         {
-            g_t = -MIN_TRANS_GAIN;
+            g_t = MIN_TRANS_GAIN;
         }
 
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
-        desiredSteeringDirection = (-1) * (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
+        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
 
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
