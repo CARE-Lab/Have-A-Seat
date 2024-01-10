@@ -149,13 +149,13 @@ public class TransGainCont : MonoBehaviour
 
     public void onSmallerClicked()
     {
-        res[latin_square_order[order_index, gain_index]].Add(0);
+       // res[latin_square_order[order_index, gain_index]].Add(0);
         Questionnair.SetActive(false);
     }
 
     public void onLargerClicked()
     {
-        res[latin_square_order[order_index, gain_index]].Add(1);
+        //res[latin_square_order[order_index, gain_index]].Add(1);
         Questionnair.SetActive(false);
     }
 

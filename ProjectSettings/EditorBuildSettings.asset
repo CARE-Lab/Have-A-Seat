@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/MovementAura.unity
     guid: d5adc08c813985b488ce65cc6b4546dc
+  - enabled: 0
+    path: Assets/Oculus/Interaction/Samples/Scenes/Examples/RayExamples.unity
+    guid: 1b2d3f90c0f50b94cb910c66c773d00d
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: a5680c33fdfd02a4e8eba3e07e94731f,
       type: 2}
