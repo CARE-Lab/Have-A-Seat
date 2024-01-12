@@ -24,7 +24,7 @@ public class TransGainCont : MonoBehaviour
     float[] min_gains = { 0.825f, 0.86f, 0.925f };
     string[] let = { "L_gain", "M_gain", "H_gain" };
     int[,] latin_square_order = { { 1, 2, 0 }, {1,0,2},{0,1,2},{ 0,2,1},{ 2,0,1},{ 2,1,0} };
-    int order_index = 0;
+    int order_index = 5;
     int gain_index = 0;
     float curr_max_gain;
     float curr_min_gain;
@@ -34,13 +34,16 @@ public class TransGainCont : MonoBehaviour
     bool prev_state_button_two = false;
     ArrayList[]res = new ArrayList[3];
     bool ready=false;
+    bool done=false;
     
     void Start()
     {
         curr_max_gain = max_gains[latin_square_order[order_index,gain_index]];
         curr_min_gain = min_gains[latin_square_order[order_index,gain_index]];
+        for (int i = 0; i < res.Length; i++)
+            res[i] = new ArrayList();
 
-        StartCoroutine(SetupCorotuine()); ;
+        StartCoroutine(SetupCorotuine()); 
        
     }
 
@@ -83,27 +86,23 @@ public class TransGainCont : MonoBehaviour
         UpdateCurrentUserState();
         CalculateDelta();
 
-        if (current_status == 4)
+        if (current_status == 4 && !done)
         {
             // pop-up question
             Questionnair.SetActive(true);
-            gain_index++;
-            if(gain_index == 3)
-            {
-                order_index++;
-                gain_index = 0;
-            }
-            current_status = 1;
-        }
+          
 
-        if(order_index == 6)
+        }
+       
+
+        if (done)
         {
-            string r = "";
+            string r = "\n";
             //end of experiment
             for(int i=0; i<res.Length; i++)
             {
                 r += let[i]+": ";
-                for(int j=0; i < res[i].Count; j++)
+                for(int j=0; j < res[i].Count; j++)
                 {
                     r+= res[i][j]+" ,";
                 }
@@ -112,12 +111,7 @@ public class TransGainCont : MonoBehaviour
             resultUI.SetActive(true);
             resText.SetText(r);
         }
-        else
-        {
-            curr_max_gain = max_gains[latin_square_order[order_index, gain_index]];
-            curr_min_gain = min_gains[latin_square_order[order_index, gain_index]];
-        }
-
+     
         float g_t;
         switch (current_status)
         {
@@ -133,8 +127,7 @@ public class TransGainCont : MonoBehaviour
                 break;
         }
 
-       // text1.SetText(g_t.ToString());
-
+      
         if (ready)
         {
             var translation = (g_t - 1) * deltaPos;
@@ -147,16 +140,36 @@ public class TransGainCont : MonoBehaviour
         UpdatePreviousUserState();
     }
 
-    public void onSmallerClicked()
+    void updateIndeces()
     {
-       // res[latin_square_order[order_index, gain_index]].Add(0);
+        gain_index++;
+        if (gain_index == 3)
+        {
+            order_index++;
+            gain_index = 0;
+        }
+        current_status = 1;
+
+        if (order_index == 6)
+            done = true;
+        else
+        {
+            curr_max_gain = max_gains[latin_square_order[order_index, gain_index]];
+            curr_min_gain = min_gains[latin_square_order[order_index, gain_index]];
+        }  
+    }
+    public void onSmallerClicked()
+    {    
+        res[latin_square_order[order_index, gain_index]].Add(0);
         Questionnair.SetActive(false);
+        updateIndeces();   
     }
 
     public void onLargerClicked()
     {
-        //res[latin_square_order[order_index, gain_index]].Add(1);
+        res[latin_square_order[order_index, gain_index]].Add(1);
         Questionnair.SetActive(false);
+        updateIndeces();
     }
 
     void UpdateCurrentUserState()
