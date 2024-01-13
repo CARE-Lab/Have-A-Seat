@@ -55,9 +55,6 @@ public class RDManager : MonoBehaviour
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
 
-    private bool no_tmptarget = true;
-    private Vector3 tmp_target;       // the curr redirection target
-
     PathTrail pathTrail;
     GameManager gameManager;
     GameObject totalForcePointer;//visualization of totalForce
@@ -150,14 +147,14 @@ public class RDManager : MonoBehaviour
         //calculate translation
         if (Vector2.Dot(ng, currDir) < 0)
         {
-            g_t = -MIN_TRANS_GAIN;
+            g_t = MIN_TRANS_GAIN;
         }
 
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
-        desiredSteeringDirection = (-1) * (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
+        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
 
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
