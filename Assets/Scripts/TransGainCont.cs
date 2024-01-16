@@ -1,3 +1,4 @@
+using OculusSampleFramework;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -23,8 +24,9 @@ public class TransGainCont : MonoBehaviour
     float[] max_gains = { 1.2f, 1.25f, 1.3f };
     float[] min_gains = { 0.825f, 0.86f, 0.925f };
     string[] let = { "L_gain", "M_gain", "H_gain" };
-    int[,] latin_square_order = { { 1, 2, 0 }, {1,0,2},{0,1,2},{ 0,2,1},{ 2,0,1},{ 2,1,0} };
-    int order_index = 5;
+    //int[,] latin_square_order = { { 1, 2, 0 }, {1,0,2},{0,1,2},{ 0,2,1},{ 2,0,1},{ 2,1,0} };
+    int[,] latin_square_order = { { 0, 2, 1 }, { 2, 0, 1 }};
+    int order_index = 0;
     int gain_index = 0;
     float curr_max_gain;
     float curr_min_gain;
@@ -143,14 +145,15 @@ public class TransGainCont : MonoBehaviour
     void updateIndeces()
     {
         gain_index++;
-        if (gain_index == 3)
+        if (gain_index == latin_square_order.GetLength(1))
         {
             order_index++;
             gain_index = 0;
         }
         current_status = 1;
 
-        if (order_index == 6)
+
+        if (order_index == latin_square_order.GetLength(0))
             done = true;
         else
         {
