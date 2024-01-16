@@ -37,6 +37,10 @@ public class RDManager : MonoBehaviour
     public Transform XRTransform;
 
     public GameObject ngArrow; // Arrow prefab
+
+    public GameObject VirtualTarget;
+
+    GameObject physicalTarget;
  
     [HideInInspector]
     public Vector3 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -136,6 +140,12 @@ public class RDManager : MonoBehaviour
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
 
+    }
+
+    private Vector2 AttractiveNegtiveGradient()
+    {
+        var gDelta = 2 * (new Vector2(currPos.x - physicalTarget.transform.position.x, currPos.y - physicalTarget.transform.position.y));
+        return -gDelta;//NegtiveGradient
     }
 
     public void ApplyRedirectionByNegativeGradient(Vector2 ng)
