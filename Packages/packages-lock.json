@@ -1,21 +1,29 @@
 {
   "dependencies": {
-    "com.meta.movement": {
-      "version": "file:C:/Users/habib/Desktop/Unity-Movement",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.textmeshpro": "3.0.6",
-        "com.unity.animation.rigging": "1.2.1"
-      }
+    "com.meta.xr.sdk.core": {
+      "version": "60.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
     },
-    "com.unity.animation.rigging": {
-      "version": "1.2.1",
+    "com.meta.xr.sdk.interaction": {
+      "version": "60.0.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.burst": "1.4.1",
-        "com.unity.test-framework": "1.1.24"
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.meta.xr.sdk.interaction.ovr": {
+      "version": "60.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.meta.xr.sdk.core": "60.0.0",
+        "com.meta.xr.sdk.interaction": "60.0.0"
       },
       "url": "https://packages.unity.com"
     },
