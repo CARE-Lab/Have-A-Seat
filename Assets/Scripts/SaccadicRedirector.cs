@@ -83,7 +83,7 @@ public class SaccadicRedirector : MonoBehaviour
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         rdManager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
-        //eyeData.SetText("");
+        eyeData.SetText("");
     }
 
  
@@ -96,7 +96,7 @@ public class SaccadicRedirector : MonoBehaviour
         {
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
-                //eyeData.SetText(eyeData.text + "Blink detected\n");
+                eyeData.SetText(eyeData.text + "Blink detected\n");
                 InduceRot(rotPerBlink * Time.deltaTime);
                 blinkdetected = true;
             }
@@ -112,6 +112,7 @@ public class SaccadicRedirector : MonoBehaviour
             {
                 InduceRot(rotPerSaccade);
                 saccdetected = true;
+                eyeData.SetText(eyeData.text + "Sacc detected\n");
 
             }
 
@@ -125,7 +126,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (secCounter > downTime)
             {
                 saccdetected = false;
-                //eyeData.SetText("");
+                eyeData.SetText("");
                 secCounter = 0;
             }
         }
@@ -136,7 +137,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (blinkCounter > downTime)
             {
                 blinkdetected = false;
-                //eyeData.SetText("");
+                eyeData.SetText("");
                 blinkCounter = 0;
             }
         }

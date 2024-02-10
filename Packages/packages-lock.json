@@ -1,5 +1,15 @@
 {
   "dependencies": {
+    "com.meta.movement": {
+      "version": "https://github.com/oculus-samples/Unity-Movement.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.animation.rigging": "1.2.1"
+      },
+      "hash": "2a23f2d948e9d1891d60f6d93f3074176e5a430e"
+    },
     "com.meta.xr.sdk.core": {
       "version": "60.0.0",
       "depth": 1,
@@ -24,6 +34,16 @@
       "dependencies": {
         "com.meta.xr.sdk.core": "60.0.0",
         "com.meta.xr.sdk.interaction": "60.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.animation.rigging": {
+      "version": "1.2.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.burst": "1.4.1",
+        "com.unity.test-framework": "1.1.24"
       },
       "url": "https://packages.unity.com"
     },
