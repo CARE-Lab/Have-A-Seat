@@ -17,14 +17,16 @@ public class GameManager : MonoBehaviour
     bool prev_state_button_one = false;
     bool prev_state_button_two = false;
     bool paused = false;
-
+    
     public Transform startPos;
     public GameObject debug_UI;
-   
+    
+
     [HideInInspector] public bool debug = false;
     [HideInInspector] public GameObject trackedArea;
     [HideInInspector] public bool debugMode = false;
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
+    [HideInInspector] public bool ready = false;
 
     [SerializeField] GameObject wallMarker;
     [SerializeField] GameObject dirMarker;
@@ -39,12 +41,25 @@ public class GameManager : MonoBehaviour
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
 
+        StartCoroutine(SetupCorotuine());
+ 
+    }
+    IEnumerator SetupCorotuine()
+    {
+        yield return new WaitForSeconds(0.1f);
+        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        red_manager.XRTransform.Rotate(0, angleY, 0);
+        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
+        red_manager.XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);
+        
         //Check if the boundary is configured
         configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
             IntializeArea();
+            ready = true;
         }
+
 
     }
 
@@ -111,7 +126,7 @@ public class GameManager : MonoBehaviour
             trackingSpacePoints.Add(pi);
         }
 
-        Vector3 p1Diff = p3 - p1;
+      /*  Vector3 p1Diff = p3 - p1;
         Vector3 p2Diff = p4 - p2;
         Vector3 center; // Center of the tracked physical area
         if (LineIntersection(out center, p1, p1Diff, p2, p2Diff))
@@ -120,24 +135,24 @@ public class GameManager : MonoBehaviour
             center += red_manager.XRTransform.position;
             center = Utilities.FlattenedPos3D(center);
             
-            Vector3 forwardDir = (p1 - p2).normalized;
+          *//*  Vector3 forwardDir = (p1 - p2).normalized;
             float angle = Vector3.Angle(Vector3.forward, Utilities.FlattenedDir3D(forwardDir));
             if (forwardDir.x < 0.0f)
             {
                 angle = -angle;
                 angle += 360;
-            }
+            }*//*
 
             if (trackedArea == null)
             {
                 trackedArea = Instantiate(realPlanePrefab, center + new Vector3(0, 0.05f, 0), Quaternion.identity);
                 trackedArea.transform.localScale = new Vector3(boundrydim.x / 10, 1, boundrydim.z / 10);
-
-                trackedArea.transform.Rotate(0, angle, 0);
+                trackedArea.transform.localRotation = startPos.localRotation;
+                //trackedArea.transform.Rotate(0, angle, 0);
 
             }
 
-        }
+        }*/
     }
 
     public static bool LineIntersection(out Vector3 intersection, Vector3 linePoint1,

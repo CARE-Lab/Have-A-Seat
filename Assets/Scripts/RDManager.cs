@@ -80,10 +80,8 @@ public class RDManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0)
-        {
+        if (Time.timeScale == 0 || !gameManager.ready)
             return;
-        }
 
         UpdateCurrentUserState();
         CalculateDelta();
@@ -98,12 +96,12 @@ public class RDManager : MonoBehaviour
         if (totalForcePointer == null && gameManager.debugMode)
         {
             totalForcePointer = Instantiate(ngArrow);
-            totalForcePointer.transform.position = Vector3.zero;
+            totalForcePointer.transform.position = new Vector3(0,0.06f,0);
         }
 
         if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
         {     
-            totalForcePointer.transform.position = currPos;
+            totalForcePointer.transform.position = currPos + new Vector3(0, 0.06f, 0); ;
 
             if (forceT.magnitude > 0)
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
@@ -203,7 +201,7 @@ public class RDManager : MonoBehaviour
         }
 
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
         {
             gameManager.trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);

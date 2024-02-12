@@ -83,12 +83,16 @@ public class SaccadicRedirector : MonoBehaviour
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         rdManager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
-        eyeData.SetText("");
+        //eyeData.SetText("");
     }
 
  
     private void Update()
     {
+
+        if(!gameManager.ready)
+            return;
+
         float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
         float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
 
@@ -96,7 +100,7 @@ public class SaccadicRedirector : MonoBehaviour
         {
             if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
             {
-                eyeData.SetText(eyeData.text + "Blink detected\n");
+               // eyeData.SetText(eyeData.text + "Blink detected\n");
                 InduceRot(rotPerBlink * Time.deltaTime);
                 blinkdetected = true;
             }
@@ -112,7 +116,7 @@ public class SaccadicRedirector : MonoBehaviour
             {
                 InduceRot(rotPerSaccade);
                 saccdetected = true;
-                eyeData.SetText(eyeData.text + "Sacc detected\n");
+                //eyeData.SetText(eyeData.text + "Sacc detected\n");
 
             }
 
@@ -126,7 +130,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (secCounter > downTime)
             {
                 saccdetected = false;
-                eyeData.SetText("");
+               // eyeData.SetText("");
                 secCounter = 0;
             }
         }
@@ -137,7 +141,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (blinkCounter > downTime)
             {
                 blinkdetected = false;
-                eyeData.SetText("");
+              //  eyeData.SetText("");
                 blinkCounter = 0;
             }
         }
@@ -154,7 +158,7 @@ public class SaccadicRedirector : MonoBehaviour
         /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
   
-        gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
         {
             gameManager.trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
