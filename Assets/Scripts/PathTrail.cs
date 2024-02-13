@@ -17,7 +17,7 @@ public class PathTrail : MonoBehaviour
     float MIN_DIST = 0.1f;
     [SerializeField, Range(0.01f, 0.5f)]
     float PATH_WIDTH = 0.05f;
-    const float PATH_HEIGHT = 0.002f;
+    const float PATH_HEIGHT = 0.02f;
 
     [SerializeField]
     Color realTrailColor = new Color(1, 1, 0, 0.5f), virtualPathColor = new Color(0, 0, 1, 0.5f);

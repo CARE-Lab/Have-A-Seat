@@ -89,22 +89,22 @@ public class SaccadicRedirector : MonoBehaviour
  
     private void Update()
     {
-
-        if(!gameManager.ready)
-            return;
-
-        float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
-        float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
-
-        if (!saccdetected)
+        if (userFace.ValidExpressions) // blink rotations
         {
-            if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
+            float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
+            float eyeClosedR = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedR);
+
+            if (!saccdetected)
             {
-               // eyeData.SetText(eyeData.text + "Blink detected\n");
-                InduceRot(rotPerBlink * Time.deltaTime);
-                blinkdetected = true;
+                if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
+                {
+                    // eyeData.SetText(eyeData.text + "Blink detected\n");
+                    InduceRot(rotPerBlink * Time.deltaTime);
+                    blinkdetected = true;
+                }
             }
         }
+        
       
         UpdateCurrentGazeDirection();
         Vector3 vel = CalculateAngularVelocity();

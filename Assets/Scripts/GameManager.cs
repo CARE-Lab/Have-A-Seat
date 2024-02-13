@@ -36,29 +36,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
 
+    private void Awake()
+    {
+        configured = OVRManager.boundary.GetConfigured();
+        if (configured)
+        {
+            IntializeArea();
+           // ready = true;
+        }
+    }
     void Start()
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
 
-        StartCoroutine(SetupCorotuine());
- 
+        //StartCoroutine(SetupCorotuine());
+       
+
     }
     IEnumerator SetupCorotuine()
     {
         yield return new WaitForSeconds(0.1f);
-        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+      /*  float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.XRTransform.Rotate(0, angleY, 0);
         Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-        red_manager.XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);
+        red_manager.XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);*/
         
         //Check if the boundary is configured
-        configured = OVRManager.boundary.GetConfigured();
-        if (configured)
-        {
-            IntializeArea();
-            ready = true;
-        }
+       
 
 
     }
@@ -122,7 +127,7 @@ public class GameManager : MonoBehaviour
 
         for(int i = 0; i < boundaryPoints.Length; i++)
         {
-            GameObject pi = Instantiate(wallMarker, boundaryPoints[i]+ red_manager.XRTransform.position, Quaternion.identity);
+            GameObject pi = Instantiate(wallMarker, boundaryPoints[i], Quaternion.identity);
             trackingSpacePoints.Add(pi);
         }
 
