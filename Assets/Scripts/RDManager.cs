@@ -40,7 +40,7 @@ public class RDManager : MonoBehaviour
 
     public GameObject VirtualTarget;
 
-    GameObject physicalTarget;
+    public GameObject physicalTarget;
  
     [HideInInspector]
     public Vector3 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -124,9 +124,20 @@ public class RDManager : MonoBehaviour
             var nearestPos = Utilities.GetNearestPos(currPosReal, new List<Vector2> { p, q });
             nearestPosList.Add(nearestPos);
         }
-
-        rf = 0;
+        rf = 0; // currently not used
         ng = Vector2.zero;
+
+        //ng = RepulsiveNegativeGradient(nearestPosList, currPosReal) + AttractiveNegativeGradient(currPosReal);
+        ng = AttractiveNegativeGradient(currPosReal);
+        ng = ng.normalized;
+        UpdateTotalForcePointer(ng);
+
+    }
+
+    private Vector2 RepulsiveNegativeGradient(List<Vector2> nearestPosList, Vector2 currPosReal)
+    {
+        float rf = 0; //total force
+        var ng = Vector2.zero;
         foreach (var obPos in nearestPosList)
         {
             rf += 1 / (currPosReal - obPos).magnitude;
@@ -135,14 +146,12 @@ public class RDManager : MonoBehaviour
             var gDelta = -Mathf.Pow(Mathf.Pow(currPosReal.x - obPos.x, 2) + Mathf.Pow(currPosReal.y - obPos.y, 2), -3f / 2) * (currPosReal - obPos);
             ng += -gDelta;//negtive gradient
         }
-        ng = ng.normalized;
-        UpdateTotalForcePointer(ng);
-
+        return ng;
     }
 
-    private Vector2 AttractiveNegtiveGradient()
+    private Vector2 AttractiveNegativeGradient(Vector2 currPosReal)
     {
-        var gDelta = 2 * (new Vector2(currPos.x - physicalTarget.transform.position.x, currPos.y - physicalTarget.transform.position.y));
+        var gDelta = 2 * (new Vector2(currPosReal.x - physicalTarget.transform.position.x, currPosReal.y - physicalTarget.transform.position.y));
         return -gDelta;//NegtiveGradient
     }
 
@@ -201,6 +210,7 @@ public class RDManager : MonoBehaviour
         }
 
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        physicalTarget.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
         {

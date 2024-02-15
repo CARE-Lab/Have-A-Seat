@@ -155,9 +155,10 @@ public class SaccadicRedirector : MonoBehaviour
             finalRotation*=rdManager.desiredSteeringDirection;
         
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        rdManager.physicalTarget.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
-  
+
         //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
         {
