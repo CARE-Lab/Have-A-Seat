@@ -80,12 +80,12 @@ public class RDManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0)
+        if (Time.timeScale == 0 || !gameManager.ready)
             return;
 
         UpdateCurrentUserState();
         CalculateDelta();
-        GetRepulsiveForceAndNegativeGradient(gameManager.trackingSpacePoints, out float rf, out Vector2 ng);
+        GetNegativeGradient(gameManager.trackingSpacePoints, out float rf, out Vector2 ng);
         ApplyRedirectionByNegativeGradient(ng);
         UpdatePreviousUserState();
 
@@ -97,7 +97,13 @@ public class RDManager : MonoBehaviour
         {
             totalForcePointer = Instantiate(ngArrow);
             totalForcePointer.transform.position = new Vector3(0,0.06f,0);
+
+            Vector3 newRot = Utilities.UnFlatten(forceT);
+            Quaternion currentQ = new Quaternion();
+            currentQ.eulerAngles = newRot;
+            totalForcePointer.transform.rotation = currentQ;
         }
+        totalForcePointer.SetActive(gameManager.debugMode);
 
         if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
         {     
@@ -106,10 +112,8 @@ public class RDManager : MonoBehaviour
             if (forceT.magnitude > 0)
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
         }
-
-        totalForcePointer.SetActive(gameManager.debugMode);
     }
-    public void GetRepulsiveForceAndNegativeGradient(List<GameObject> trackingSpacePoints, out float rf, out Vector2 ng)
+    public void GetNegativeGradient(List<GameObject> trackingSpacePoints, out float rf, out Vector2 ng)
     {
         var nearestPosList = new List<Vector2>();
         var currPosReal = Utilities.FlattenedPos2D(currPos);

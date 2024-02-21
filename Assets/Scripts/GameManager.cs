@@ -21,10 +21,8 @@ public class GameManager : MonoBehaviour
     public Transform startPos;
     public GameObject debug_UI;
     
-
-    [HideInInspector] public bool debug = false;
     [HideInInspector] public GameObject trackedArea;
-    [HideInInspector] public bool debugMode = false;
+    [HideInInspector] public bool debugMode = true;
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
 
@@ -36,41 +34,39 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
 
-    private void Awake()
-    {
-        configured = OVRManager.boundary.GetConfigured();
-        if (configured)
-        {
-            IntializeArea();
-           // ready = true;
-        }
-    }
     void Start()
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
 
-        //StartCoroutine(SetupCorotuine());
-       
-
+        //Check if the boundary is configured
+        configured = OVRManager.boundary.GetConfigured();
+        if (configured)
+            IntializeArea();
+            
+        StartCoroutine(SetupCorotuine());
     }
     IEnumerator SetupCorotuine()
     {
         yield return new WaitForSeconds(0.1f);
-      /*  float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.XRTransform.Rotate(0, angleY, 0);
-        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-        red_manager.XRTransform.transform.position += new Vector3(distDiff.x, 0, distDiff.z);*/
+        for (int i = 0; i < trackingSpacePoints.Count; i++)
+            trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(red_manager.XRTransform.transform.position), Vector3.up, angleY);
         
-        //Check if the boundary is configured
-       
+        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
+        distDiff = new Vector3(distDiff.x, 0, distDiff.z);
+        red_manager.XRTransform.transform.position += distDiff;
 
+        for (int i = 0; i < trackingSpacePoints.Count; i++)
+            trackingSpacePoints[i].transform.position += distDiff;
 
+        ready = true;
     }
 
     private void Update()
     {
-        bool button_one_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
+       /* bool button_one_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
         if (button_one_pressed != prev_state_button_one)
         {
             if (button_one_pressed)
@@ -91,7 +87,7 @@ public class GameManager : MonoBehaviour
 
             }
             prev_state_button_one = button_one_pressed;
-        }
+        }*/
 
         bool button_two_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
         if (button_two_pressed != prev_state_button_two)
@@ -104,14 +100,6 @@ public class GameManager : MonoBehaviour
             }
             prev_state_button_two = button_two_pressed;
         }
-    }
-
-    private void LateUpdate()
-    {
-        if (Time.timeScale == 0)
-        {
-            return;
-        } 
     }
 
     public void IntializeArea()

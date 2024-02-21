@@ -89,6 +89,11 @@ public class SaccadicRedirector : MonoBehaviour
  
     private void Update()
     {
+
+        if (Time.timeScale == 0 || !gameManager.ready)
+            return;
+
+
         if (userFace.ValidExpressions) // blink rotations
         {
             float eyeClosedL = userFace.GetWeight(OVRFaceExpressions.FaceExpression.EyesClosedL);
