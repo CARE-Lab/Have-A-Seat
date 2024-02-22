@@ -101,9 +101,10 @@ public class RDManager : MonoBehaviour
             Vector3 newRot = Utilities.UnFlatten(forceT);
             Quaternion currentQ = new Quaternion();
             currentQ.eulerAngles = newRot;
-            totalForcePointer.transform.rotation = currentQ;
+            totalForcePointer.transform.localRotation = currentQ;
         }
-        totalForcePointer.SetActive(gameManager.debugMode);
+
+        //totalForcePointer.SetActive(gameManager.debugMode);
 
         if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
         {     
@@ -155,7 +156,7 @@ public class RDManager : MonoBehaviour
 
     private Vector2 AttractiveNegativeGradient(Vector2 currPosReal)
     {
-        var gDelta = 2 * (new Vector2(currPosReal.x - physicalTarget.transform.position.x, currPosReal.y - physicalTarget.transform.position.y));
+        var gDelta = 2 * (new Vector2(currPosReal.x - physicalTarget.transform.position.x, currPosReal.y - physicalTarget.transform.position.z));
         return -gDelta;//NegtiveGradient
     }
 
