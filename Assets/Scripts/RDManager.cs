@@ -67,6 +67,8 @@ public class RDManager : MonoBehaviour
     float sumOfRealDistanceTravelled;
     float sumOfRealRot;
     float sumOfInjectedRotationFromRotationGain;
+    
+    private bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
 
 
     private void Start()
@@ -129,11 +131,13 @@ public class RDManager : MonoBehaviour
             var nearestPos = Utilities.GetNearestPos(currPosReal, new List<Vector2> { p, q });
             nearestPosList.Add(nearestPos);
         }
+        
+        IfChangeAlignmentState();
         rf = 0; // currently not used
         ng = Vector2.zero;
 
-        //ng = RepulsiveNegativeGradient(nearestPosList, currPosReal) + AttractiveNegativeGradient(currPosReal);
-        ng = AttractiveNegativeGradient(currPosReal);
+        ng = RepulsiveNegativeGradient(nearestPosList, currPosReal) + AttractiveNegativeGradient(currPosReal);
+        //ng = AttractiveNegativeGradient(currPosReal);
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
 
@@ -158,6 +162,33 @@ public class RDManager : MonoBehaviour
     {
         var gDelta = 2 * (new Vector2(currPosReal.x - physicalTarget.transform.position.x, currPosReal.y - physicalTarget.transform.position.z));
         return -gDelta;//NegtiveGradient
+    }
+    
+    public void IfChangeAlignmentState(){
+        if (alignmentState)
+            return;
+
+        //position and direction in physical tracking space
+        var objVirtualPos = Utilities.FlattenedPos2D(VirtualTarget.transform.position);
+        var objPhysicalPos = Utilities.FlattenedPos2D(physicalTarget.transform.position);
+
+        //the virtual distance from the user to the alignment target
+        var Dv = (objVirtualPos - Utilities.FlattenedPos2D(currPos)).magnitude;
+
+        //the physical distance from the user to the alignment target
+        var Dp = (objPhysicalPos - Utilities.FlattenedPos2D(currPos)).magnitude;
+
+        var gt = MIN_TRANS_GAIN + 1;
+        var Gt = MAX_TRANS_GAIN + 1;
+        //the physical rotational oﬀset
+        var phiP = Vector2.Angle(currDir, objPhysicalPos - Utilities.FlattenedPos2D(currPos)) * Mathf.Deg2Rad;
+        if (gt * Dp < Dv && Dv < Gt * Dp) {
+            if (phiP < Mathf.Asin((Dp * 1 / CURVATURE_RADIUS) / 2))
+            {
+                alignmentState = true;
+                Debug.Log("alignmentState = true");
+            }
+        }
     }
 
     public void ApplyRedirectionByNegativeGradient(Vector2 ng)
