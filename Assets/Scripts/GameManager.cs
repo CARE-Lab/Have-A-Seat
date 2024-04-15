@@ -41,15 +41,13 @@ public class GameManager : MonoBehaviour
 
         //Check if the boundary is configured
         configured = OVRManager.boundary.GetConfigured();
-        if (configured)
-            IntializeArea();
-            
+        
         StartCoroutine(SetupCorotuine());
     }
     IEnumerator SetupCorotuine()
     {
-        yield return new WaitForSeconds(0.1f);
-        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        yield return new WaitForSeconds(5f);
+        /*float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.XRTransform.Rotate(0, angleY, 0);
         for (int i = 0; i < trackingSpacePoints.Count; i++)
             trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(red_manager.XRTransform.transform.position), Vector3.up, angleY);
@@ -61,7 +59,13 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < trackingSpacePoints.Count; i++)
             trackingSpacePoints[i].transform.position += distDiff;
 
-        ready = true;
+        ready = true;*/
+
+        if (configured)
+        {
+            IntializeArea();
+            ready = true;
+        }
     }
 
     private void Update()
