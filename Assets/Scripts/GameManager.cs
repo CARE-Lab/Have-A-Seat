@@ -12,7 +12,6 @@ using static UnityEngine.GraphicsBuffer;
 public class GameManager : MonoBehaviour
 {
     RDManager red_manager;
-    bool configured;
     PathTrail pathTrail;
     bool prev_state_button_one = false;
     bool prev_state_button_two = false;
@@ -38,16 +37,17 @@ public class GameManager : MonoBehaviour
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
-
-        //Check if the boundary is configured
-        configured = OVRManager.boundary.GetConfigured();
         
         StartCoroutine(SetupCorotuine());
     }
     IEnumerator SetupCorotuine()
     {
-        yield return new WaitForSeconds(5f);
-        /*float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        yield return new WaitForSeconds(.5f);
+        //Check if the boundary is configured
+        bool configured = OVRManager.boundary.GetConfigured();
+        if (configured)
+            IntializeArea();
+        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.XRTransform.Rotate(0, angleY, 0);
         for (int i = 0; i < trackingSpacePoints.Count; i++)
             trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(red_manager.XRTransform.transform.position), Vector3.up, angleY);
@@ -59,13 +59,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < trackingSpacePoints.Count; i++)
             trackingSpacePoints[i].transform.position += distDiff;
 
-        ready = true;*/
-
-        if (configured)
-        {
-            IntializeArea();
-            ready = true;
-        }
+        ready = true;
     }
 
     private void Update()

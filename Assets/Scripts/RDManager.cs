@@ -55,6 +55,7 @@ public class RDManager : MonoBehaviour
     public int desiredSteeringDirection;
 
     [SerializeField] GameObject userDirVector;
+    public bool PauseRedirection;
 
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
@@ -69,7 +70,7 @@ public class RDManager : MonoBehaviour
     float sumOfInjectedRotationFromRotationGain;
     
     private bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
-
+ 
 
     private void Start()
     {
@@ -82,7 +83,7 @@ public class RDManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0 || !gameManager.ready)
+        if (Time.timeScale == 0 || !gameManager.ready || PauseRedirection)
             return;
 
         UpdateCurrentUserState();

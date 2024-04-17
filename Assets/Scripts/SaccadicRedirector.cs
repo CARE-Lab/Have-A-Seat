@@ -90,7 +90,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 
-        if (Time.timeScale == 0 || !gameManager.ready)
+        if (Time.timeScale == 0 || !gameManager.ready || rdManager.PauseRedirection)
             return;
 
 
