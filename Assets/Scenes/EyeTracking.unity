@@ -187,7 +187,7 @@ MonoBehaviour:
   debugMode: 1
   trackingSpacePoints: []
   ready: 0
-  wallMarker: {fileID: 6566333907726082592, guid: 792515f1c03d9b048966ead47658659f,
+  wallMarker: {fileID: 7623447661903317802, guid: f72d5abcc586ffc46a66fec4454cc039,
     type: 3}
   dirMarker: {fileID: 4725135521580789018, guid: 5c60bca12d07e0740a4987660655a874,
     type: 3}
@@ -2388,6 +2388,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2039511091352765394, guid: 0f35b98739529f9448c26470b6f4187b,
         type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2039511091352765394, guid: 0f35b98739529f9448c26470b6f4187b,
+        type: 3}
       propertyPath: m_StaticEditorFlags
       value: 2147483647
       objectReference: {fileID: 0}
@@ -3602,6 +3607,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: TV_FlatWithStand
+      objectReference: {fileID: 0}
+    - target: {fileID: 8130560282236414093, guid: 8d8fb26dd6a666247b80ad25ad1e316b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8130560282236414093, guid: 8d8fb26dd6a666247b80ad25ad1e316b,
         type: 3}
