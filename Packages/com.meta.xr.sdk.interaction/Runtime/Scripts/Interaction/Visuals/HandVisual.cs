@@ -30,19 +30,34 @@ namespace Oculus.Interaction
     /// </summary>
     public class HandVisual : MonoBehaviour, IHandVisual
     {
+        /// <summary>
+        /// The hand to render.
+        /// </summary>
         [SerializeField, Interface(typeof(IHand))]
         private UnityEngine.Object _hand;
         public IHand Hand { get; private set; }
 
+        /// <summary>
+        /// Determines the appearance of the hand.
+        /// </summary>
         [SerializeField]
         private SkinnedMeshRenderer _skinnedMeshRenderer;
 
+        /// <summary>
+        ///
+        /// </summary>
         [SerializeField]
         private bool _updateRootPose = true;
 
+        /// <summary>
+        ///
+        /// </summary>
         [SerializeField]
         private bool _updateRootScale = true;
 
+        /// <summary>
+        ///
+        /// </summary>
         [SerializeField, Optional]
         private Transform _root = null;
 

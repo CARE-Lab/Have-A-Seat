@@ -20,6 +20,7 @@
 
 using Oculus.Interaction.Grab;
 using Oculus.Interaction.Input;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,6 +32,7 @@ namespace Oculus.Interaction.HandGrab
     /// </summary>
     public class GrabPoseFinder
     {
+        [Obsolete]
         public enum FindResult
         {
             NotFound,
@@ -78,75 +80,62 @@ namespace Oculus.Interaction.HandGrab
         /// Remember that a HandGrabPoses can actually have a whole surface the user can snap to.
         /// </summary>
         /// <param name="userPose">Pose to compare to the snap point in world coordinates.</param>
+        /// <param name="offset">Offset from the Pose for accurate scoring</param>
         /// <param name="handScale">The scale of the tracked hand.</param>
         /// <param name="handedness">The handedness of the tracked hand.</param>
         /// <param name="scoringModifier">Parameters indicating how to score the different poses.</param>
         /// <param name="result">The resultant best pose found.</param>
         /// <returns>True if a good pose was found</returns>
-        public FindResult FindBestPose(Pose userPose, float handScale, Handedness handedness,
+        public bool FindBestPose(in Pose userPose, in Pose offset, float handScale, Handedness handedness,
             PoseMeasureParameters scoringModifier,
             ref HandGrabResult result)
         {
             if (_handGrabPoses.Count == 1)
             {
-                if (_handGrabPoses[0].CalculateBestPose(userPose,
-                    handedness, scoringModifier, _relativeTo, ref result))
-                {
-                    return FindResult.Found;
-                }
-                return FindResult.NotCompatible;
+                _handGrabPoses[0].CalculateBestPose(userPose, offset, _relativeTo, handedness, scoringModifier, ref result);
+                return true;
             }
             else if (_handGrabPoses.Count > 1)
             {
-                if (CalculateBestScaleInterpolatedPose(userPose,
-                    handedness, handScale, scoringModifier, ref result))
-                {
-                    return FindResult.Found;
-                }
-                return FindResult.NotCompatible;
+                CalculateBestScaleInterpolatedPose(userPose, offset,
+                    handedness, handScale, scoringModifier, ref result);
+                return true;
             }
-            return FindResult.NotFound;
+
+            return false;
         }
 
-        private bool CalculateBestScaleInterpolatedPose(Pose userPose, Handedness handedness,
+        private void CalculateBestScaleInterpolatedPose(in Pose userPose, in Pose offset, Handedness handedness,
             float handScale, PoseMeasureParameters scoringModifier, ref HandGrabResult result)
         {
             result.HasHandPose = false;
 
             float scale = handScale / _relativeTo.lossyScale.x;
-            bool rangeFound = FindInterpolationRange(scale, _handGrabPoses,
+            FindInterpolationRange(scale, _handGrabPoses,
                 out HandGrabPose under, out HandGrabPose over, out float t);
-
-            if (!rangeFound)
-            {
-                return false;
-            }
-
-            bool underFound;
-            bool overFound;
 
             if (t < 0)
             {
-                underFound = under.CalculateBestPose(userPose, handedness,
-                    scoringModifier, _relativeTo, ref _interpolationCache.underResult);
+                under.CalculateBestPose(userPose, offset, _relativeTo,
+                    handedness, scoringModifier, ref _interpolationCache.underResult);
                 Pose adjustedPose = _relativeTo.GlobalPose(_interpolationCache.underResult.RelativePose);
-                overFound = over.CalculateBestPose(adjustedPose, handedness,
-                    PoseMeasureParameters.DEFAULT, _relativeTo, ref _interpolationCache.overResult);
+                over.CalculateBestPose(adjustedPose, offset, _relativeTo,
+                    handedness, PoseMeasureParameters.DEFAULT, ref _interpolationCache.overResult);
             }
             else if (t > 1)
             {
-                overFound = over.CalculateBestPose(userPose, handedness,
-                    scoringModifier, _relativeTo, ref _interpolationCache.overResult);
+                over.CalculateBestPose(userPose, offset, _relativeTo,
+                    handedness, scoringModifier, ref _interpolationCache.overResult);
                 Pose adjustedPose = _relativeTo.GlobalPose(_interpolationCache.overResult.RelativePose);
-                underFound = under.CalculateBestPose(adjustedPose, handedness,
-                    PoseMeasureParameters.DEFAULT, _relativeTo, ref _interpolationCache.underResult);
+                under.CalculateBestPose(adjustedPose, offset, _relativeTo,
+                    handedness, PoseMeasureParameters.DEFAULT, ref _interpolationCache.underResult);
             }
             else
             {
-                underFound = under.CalculateBestPose(userPose, handedness,
-                    scoringModifier, _relativeTo, ref _interpolationCache.underResult);
-                overFound = over.CalculateBestPose(userPose, handedness,
-                    scoringModifier, _relativeTo, ref _interpolationCache.overResult);
+                under.CalculateBestPose(userPose, offset, _relativeTo,
+                    handedness, scoringModifier, ref _interpolationCache.underResult);
+                over.CalculateBestPose(userPose, offset, _relativeTo,
+                    handedness, scoringModifier, ref _interpolationCache.overResult);
             }
 
             if (_interpolationCache.underResult.HasHandPose
@@ -172,27 +161,9 @@ namespace Oculus.Interaction.HandGrab
                 result.RelativePose.CopyFrom(_interpolationCache.overResult.RelativePose);
             }
 
-            if (underFound && overFound)
-            {
-                result.Score = GrabPoseScore.Lerp(
-                    _interpolationCache.underResult.Score,
-                    _interpolationCache.overResult.Score, t);
-                return true;
-            }
-
-            if (underFound)
-            {
-                result.Score = _interpolationCache.underResult.Score;
-                return true;
-            }
-
-            if (overFound)
-            {
-                result.Score = _interpolationCache.overResult.Score;
-                return true;
-            }
-
-            return false;
+            result.Score = GrabPoseScore.Lerp(
+                _interpolationCache.underResult.Score,
+                _interpolationCache.overResult.Score, t);
         }
 
         /// <summary>

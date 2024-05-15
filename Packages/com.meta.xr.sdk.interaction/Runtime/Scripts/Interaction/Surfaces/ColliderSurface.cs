@@ -24,6 +24,9 @@ namespace Oculus.Interaction.Surfaces
 {
     public class ColliderSurface : MonoBehaviour, ISurface, IBounds
     {
+        /// <summary>
+        /// The Surface will be represented by this collider.
+        /// </summary>
         [Tooltip("The Surface will be represented by this collider.")]
         [SerializeField]
         private Collider _collider;

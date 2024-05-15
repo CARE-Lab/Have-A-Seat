@@ -30,7 +30,7 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
     {
         protected override bool UsesPrefab => false;
 
-        protected override List<GameObject> InstallRoutine()
+        protected override List<GameObject> InstallRoutine(GameObject selectedGameObject)
         {
             var syntheticHandBlockData = Meta.XR.BuildingBlocks.Editor.Utils.GetBlockData(BlockDataIds.SyntheticHandBlockData);
             var blocks = syntheticHandBlockData.GetBlocks();

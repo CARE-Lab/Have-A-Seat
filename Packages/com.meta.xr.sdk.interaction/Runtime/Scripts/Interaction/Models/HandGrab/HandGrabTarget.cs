@@ -18,6 +18,8 @@
  * limitations under the License.
  */
 
+using Oculus.Interaction.Grab;
+using System;
 using UnityEngine;
 
 namespace Oculus.Interaction.HandGrab
@@ -29,6 +31,7 @@ namespace Oculus.Interaction.HandGrab
     /// </summary>
     public class HandGrabTarget
     {
+        [Obsolete]
         public enum GrabAnchor
         {
             None,
@@ -49,9 +52,30 @@ namespace Oculus.Interaction.HandGrab
         }
 
         public HandAlignType HandAlignment { get; private set; } = HandAlignType.None;
-        public GrabAnchor Anchor { get; private set; } = GrabAnchor.None;
+        public GrabTypeFlags Anchor { get; private set; } = GrabTypeFlags.None;
 
+        [Obsolete("Use " + nameof(Set) + " with " + nameof(GrabTypeFlags) + " instead")]
         public void Set(Transform relativeTo, HandAlignType handAlignment, GrabAnchor anchor, HandGrabResult handGrabResult)
+        {
+            HandAlignment = handAlignment;
+            _relativeTo = relativeTo;
+            _handGrabResult.CopyFrom(handGrabResult);
+
+            switch (anchor)
+            {
+                case GrabAnchor.Pinch:
+                    Anchor = GrabTypeFlags.Pinch;
+                    break;
+                case GrabAnchor.Palm:
+                    Anchor = GrabTypeFlags.Palm;
+                    break;
+                default:
+                    Anchor = GrabTypeFlags.None;
+                    break;
+            }
+        }
+
+        public void Set(Transform relativeTo, HandAlignType handAlignment, GrabTypeFlags anchor, HandGrabResult handGrabResult)
         {
             Anchor = anchor;
             HandAlignment = handAlignment;

@@ -43,6 +43,12 @@ namespace Oculus.Interaction.Grab
             _positionRotationWeight = positionRotationWeight;
         }
 
+        public static PoseMeasureParameters Lerp(in PoseMeasureParameters from, in PoseMeasureParameters to, float t)
+        {
+            float positionRotationWeight = Mathf.Lerp(from._positionRotationWeight, to._positionRotationWeight, t);
+            return new PoseMeasureParameters(positionRotationWeight);
+        }
+
         public static readonly PoseMeasureParameters DEFAULT = new PoseMeasureParameters(0f);
     }
 }

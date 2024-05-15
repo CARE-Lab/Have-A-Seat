@@ -37,6 +37,10 @@ namespace Oculus.Interaction
 
         public void PublishPointerEvent(PointerEvent evt)
         {
+            if (PointableElement != null)
+            {
+                PointableElement.ProcessPointerEvent(evt);
+            }
             WhenPointerEventRaised(evt);
         }
 
@@ -54,30 +58,6 @@ namespace Oculus.Interaction
                 this.AssertField(PointableElement, nameof(PointableElement));
             }
             this.EndStart(ref _started);
-        }
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (_started)
-            {
-                if (PointableElement != null)
-                {
-                    WhenPointerEventRaised += PointableElement.ProcessPointerEvent;
-                }
-            }
-        }
-
-        protected override void OnDisable()
-        {
-            if (_started)
-            {
-                if (PointableElement != null)
-                {
-                    WhenPointerEventRaised -= PointableElement.ProcessPointerEvent;
-                }
-            }
-            base.OnDisable();
         }
 
         #region Inject

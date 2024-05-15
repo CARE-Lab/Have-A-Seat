@@ -25,6 +25,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Renders lines along the rotation axes tracked by the <cref="JointRotationActiveState" />. Lines are red while not rotating along that axis, and they fill up yellow as rotation amount increases toward the target, at which point they become green.
+    /// </summary>
     public class JointRotationDebugVisual : MonoBehaviour
     {
         [SerializeField]

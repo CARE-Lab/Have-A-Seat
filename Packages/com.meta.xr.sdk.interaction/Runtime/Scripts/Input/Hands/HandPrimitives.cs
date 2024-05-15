@@ -80,6 +80,14 @@ namespace Oculus.Interaction.Input
         ThumbMaxDot,
     }
 
+    public enum PalmGrabParamID
+    {
+        PoseVolumeOffsetRightVec3=0,
+        PoseVolumeOffsetLeftVec3,
+        StartThresholdFloat,
+        ReleaseThresholdFloat,
+    }
+
     [Flags]
     public enum HandFingerJointFlags
     {

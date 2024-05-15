@@ -18,8 +18,10 @@
  * limitations under the License.
  */
 
+using System;
 using Oculus.Interaction.Input;
 using System.Collections.Generic;
+using System.Linq;
 using Meta.XR.BuildingBlocks.Editor;
 using UnityEditor;
 using UnityEngine;
@@ -31,7 +33,7 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
         public GameObject _leftHand;
         public GameObject _rightHand;
 
-        protected override List<GameObject> InstallRoutine()
+        protected override List<GameObject> InstallRoutine(GameObject selectedGameObject)
         {
             var syntheticHands = new List<GameObject>();
             foreach (var hand in BlocksUtils.GetHands())
@@ -48,8 +50,18 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
         private GameObject InstantiateHand(Hand hand)
         {
             var handedness = hand.Handedness;
+
+            if (TryGetPreexistingNonBlock(handedness, out var syntheticHand)) return syntheticHand;
+
+            var handTrackingBlock = Meta.XR.BuildingBlocks.Editor.Utils.GetBlock(BlockDataIds.InteractionHandTracking);
+            if (handTrackingBlock == null)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot install block '{this.name}' : Cannot find block with type {handTrackingBlock.name} in the scene.");
+            }
+
             var prefab = handedness == Handedness.Left ? _leftHand : _rightHand;
-            var syntheticHand = Instantiate(prefab, hand.transform, false);
+            syntheticHand = Instantiate(prefab, handTrackingBlock.transform, false);
             Undo.RegisterCreatedObjectUndo(syntheticHand, "Create Synthetic Hand");
             syntheticHand.GetComponent<SyntheticHand>().InjectModifyDataFromSource(hand);
             syntheticHand.SetActive(true);
@@ -61,7 +73,8 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
 
         private void DisableUOIAssetsHandVisual()
         {
-            var handsBlocks = Meta.XR.BuildingBlocks.Editor.Utils.GetBlocks(Meta.XR.BuildingBlocks.Editor.BlockDataIds.HandTracking);
+            var handsBlocks =
+                Meta.XR.BuildingBlocks.Editor.Utils.GetBlocks(Meta.XR.BuildingBlocks.Editor.BlockDataIds.HandTracking);
             foreach (var hand in handsBlocks)
             {
                 var skeletonRenderer = hand.GetComponent<OVRSkeletonRenderer>();
@@ -73,5 +86,29 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
                 Undo.RegisterCompleteObjectUndo(hand, "Disable Hand Visual");
             }
         }
+
+        private bool TryGetPreexistingNonBlock(Handedness handedness, out GameObject syntheticHandObject)
+        {
+            syntheticHandObject = null;
+
+            var handTrackingBlock = Meta.XR.BuildingBlocks.Editor.Utils.GetBlock(BlockDataIds.InteractionHandTracking);
+            if (handTrackingBlock == null) return false;
+
+            syntheticHandObject = handTrackingBlock.transform.GetComponentsInChildren<SyntheticHand>()
+                .FirstOrDefault(syntheticHand => HasCorrectHandedness(syntheticHand, handedness)
+                                                 && HasVisuals(syntheticHand)
+                                                 && IsNotInsideInteractor(syntheticHand))?.gameObject;
+
+            return syntheticHandObject != null;
+        }
+
+        private bool HasCorrectHandedness(SyntheticHand syntheticHand, Handedness handedness)
+            => syntheticHand.Handedness == handedness;
+
+        private bool HasVisuals(SyntheticHand syntheticHand)
+            => syntheticHand.GetComponentInChildren<HandVisual>() != null;
+
+        private bool IsNotInsideInteractor(SyntheticHand syntheticHand)
+            => syntheticHand.GetComponentInParent<IInteractor>() == null;
     }
 }

@@ -89,10 +89,11 @@ namespace Oculus.Interaction
 
         protected virtual void Update()
         {
-            if (_active == ActiveState.Active) return;
+            bool active = ActiveState.Active;
+            if (_active == active) return;
 
-            _active = ActiveState.Active;
-            SetDependentsActive(ActiveState.Active);
+            _active = active;
+            SetDependentsActive(active);
         }
 
         private void SetDependentsActive(bool active)

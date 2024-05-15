@@ -24,6 +24,9 @@ using System.Collections.Generic;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Builds a visual representation of an IActiveState tree on a UI canvas, based on a provided root <cref="IActiveState" />. Two different node layout types are provided, ActiveStateDebugTreeHorizontal (for a left-to-right representation) and ActiveStateDebugTreeVertical (for a more compact top to bottom tree view).
+    /// </summary>
     public class ActiveStateDebugTree : DebugTree<IActiveState>
     {
         public ActiveStateDebugTree(IActiveState root) : base(root)

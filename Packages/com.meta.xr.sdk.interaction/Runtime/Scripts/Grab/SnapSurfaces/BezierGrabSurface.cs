@@ -64,6 +64,13 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
         public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, out Pose bestPose,
             in PoseMeasureParameters scoringModifier, Transform relativeTo)
         {
+            return CalculateBestPoseAtSurface(targetPose, Pose.identity, out bestPose,
+                scoringModifier, relativeTo);
+        }
+
+        public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, in Pose offset, out Pose bestPose,
+            in PoseMeasureParameters scoringModifier, Transform relativeTo)
+        {
             Pose testPose = Pose.identity;
             Pose smallestRotationPose = Pose.identity;
             bestPose = targetPose;
@@ -85,7 +92,7 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
                 {
                     Pose worldPose = currentControlPoint.GetPose(relativeTo);
                     testPose.CopyFrom(worldPose);
-                    score = new GrabPoseScore(targetPose, testPose, scoringModifier.PositionRotationWeight);
+                    score = new GrabPoseScore(targetPose, testPose, offset, scoringModifier);
                 }
                 else
                 {
@@ -96,7 +103,7 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
                     NearestPointInTriangle(targetPose.position, start.position, tangent, end.position, out float positionT);
                     float rotationT = ProgressForRotation(targetPose.rotation, start.rotation, end.rotation);
 
-                    score = GrabPoseHelper.CalculateBestPoseAtSurface(targetPose, out testPose, scoringModifier, relativeTo,
+                    score = GrabPoseHelper.CalculateBestPoseAtSurface(targetPose, offset, out testPose, scoringModifier, relativeTo,
                         (in Pose target, Transform relativeTo) =>
                         {
                             Pose result;

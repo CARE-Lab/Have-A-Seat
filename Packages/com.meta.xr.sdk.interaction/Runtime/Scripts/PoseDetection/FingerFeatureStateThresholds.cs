@@ -39,10 +39,15 @@ namespace Oculus.Interaction.PoseDetection
             _firstState = firstState;
             _secondState = secondState;
         }
-
+        /// <summary>
+        /// The value at which a state will transition from A to B or B to A.
+        /// </summary>
         [SerializeField]
         [Tooltip(FingerFeatureProperties.FeatureStateThresholdMidpointHelpText)]
         private float _thresholdMidpoint;
+        /// <summary>
+        /// How far the value must exceed the midpoint until the transition can occur. This is to prevent rapid flickering at transition edges.
+        /// </summary>
         [SerializeField]
         [Tooltip(FingerFeatureProperties.FeatureStateThresholdWidthHelpText)]
         private float _thresholdWidth;
@@ -88,7 +93,9 @@ namespace Oculus.Interaction.PoseDetection
     }
 
     /// <summary>
-    ///  A configuration class that contains a list of threshold boundaries
+    /// A ScriptableObject that defines the state thresholds for each finger feature.
+    /// A state threshold is a set of boundaries that determine when a finger has transitioned between states.
+    /// For example, the curl feature has 3 states: Open, Neutral, and Closed. So the state thresholds for curl use an angle in degrees to define when the finger's state has changed from Open to Neutral, Neutral to Closed, or vice-versa.
     /// </summary>
     [CreateAssetMenu(menuName = "Oculus/Interaction/SDK/Pose Detection/Finger Thresholds")]
     public class FingerFeatureStateThresholds : ScriptableObject,
@@ -98,6 +105,10 @@ namespace Oculus.Interaction.PoseDetection
         [Tooltip("List of all supported finger features, along with the state entry/exit thresholds.")]
         private List<FingerFeatureThresholds> _featureThresholds;
 
+        /// <summary>
+        /// How long the value must be in the new state before the feature will actually change to that state.
+        /// This is to prevent rapid flickering at transition edges. This value applies to all features.
+        /// </summary>
         [SerializeField]
         [Tooltip("Length of time that the finger must be in the new state before the feature " +
                  "state provider will use the new value.")]

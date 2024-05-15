@@ -23,6 +23,9 @@ using UnityEngine;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Used for interaction with cylindrical surfaces such as a curved UI.
+    /// </summary>
     public class CylinderSurface : MonoBehaviour, ISurface, IBounds
     {
         public enum NormalFacing
@@ -45,16 +48,25 @@ namespace Oculus.Interaction.Surfaces
             Out,
         }
 
+        /// <summary>
+        /// The cylinder that will drive this surface.
+        /// </summary>
         [Tooltip("The cylinder that will drive this surface.")]
         [SerializeField]
         private Cylinder _cylinder;
 
+        /// <summary>
+        /// Determines which face of the cylinder wall(s) raycasts will hit. In means that raycasts from outside will ignore the outer wall and hit the inner. Out means that the outer wall will be hit from outside, and raycasts from within the cylinder will not hit at all. Any will always return a hit for whichever surface is hit first.
+        /// </summary>
         [Tooltip("The normal facing of the surface. Hits will be " +
             "registered either on the outer or inner face of the cylinder " +
             "depending on this value.")]
         [SerializeField]
         private NormalFacing _facing = NormalFacing.Out;
 
+        /// <summary>
+        /// The height of the cylinder. 0 is infinite height.
+        /// </summary>
         [Tooltip("The height of the cylinder. If zero or " +
             "negative, height will be infinite.")]
         [SerializeField]
@@ -73,10 +85,10 @@ namespace Oculus.Interaction.Surfaces
         {
             get
             {
-                float maxScale = Mathf.Max(Transform.lossyScale.x, 
+                float maxScale = Mathf.Max(Transform.lossyScale.x,
                     Mathf.Max(Transform.lossyScale.y, Transform.lossyScale.z));
                 float maxSize = maxScale * (Height + Radius);
-                return new Bounds(Transform.position, 
+                return new Bounds(Transform.position,
                     new Vector3(maxSize, maxSize, maxSize));
             }
         }

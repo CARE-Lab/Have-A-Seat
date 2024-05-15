@@ -119,7 +119,7 @@ namespace Oculus.Interaction.HandGrab
             };
 
             HandGrabTarget.Set(SelectedInteractable.transform,
-                HandAlignType.AlignOnGrab, HandGrabTarget.GrabAnchor.Wrist, result);
+                HandAlignType.AlignOnGrab, Grab.GrabTypeFlags.None, result);
         }
 
         protected override void DoHoverUpdate()

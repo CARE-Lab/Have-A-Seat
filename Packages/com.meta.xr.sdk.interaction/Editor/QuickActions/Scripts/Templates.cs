@@ -95,6 +95,11 @@ namespace Oculus.Interaction.Editor.QuickActions
                 "b63e95c77d701bd44a848c316f6e9fa9"
                 );
 
+        public static readonly Template RayGrabInteractable =
+            new Template(
+                "ISDK_RayGrabInteraction",
+                "f1c9f92f4fa1883459a0dfa57e136262");
+
         #endregion Interactables
 
         #region Interactors
@@ -139,27 +144,27 @@ namespace Oculus.Interaction.Editor.QuickActions
                 "DistanceGrabInteractor",
                 "d9ef0d4c78b4bfd409cb884dfe1524d6");
 
-        private static Dictionary<Type, Template> _handInteractorTemplates = new()
+        private static Dictionary<InteractorTypes, Template> _handInteractorTemplates = new()
         {
-            [typeof(HandGrabInteractor)] = HandGrabInteractor,
-            [typeof(PokeInteractor)] = HandPokeInteractor,
-            [typeof(RayInteractor)] = HandRayInteractor,
-            [typeof(DistanceHandGrabInteractor)] = DistanceHandGrabInteractor,
+            [InteractorTypes.Grab] = HandGrabInteractor,
+            [InteractorTypes.Poke] = HandPokeInteractor,
+            [InteractorTypes.Ray] = HandRayInteractor,
+            [InteractorTypes.DistanceGrab] = DistanceHandGrabInteractor,
 
         };
 
-        private static Dictionary<Type, Template> _controllerInteractorTemplates = new()
+        private static Dictionary<InteractorTypes, Template> _controllerInteractorTemplates = new()
         {
-            [typeof(GrabInteractor)] = ControllerGrabInteractor,
-            [typeof(PokeInteractor)] = ControllerPokeInteractor,
-            [typeof(RayInteractor)] = ControllerRayInteractor,
-            [typeof(DistanceGrabInteractor)] = ControllerDistanceGrabInteractor,
+            [InteractorTypes.Grab] = ControllerGrabInteractor,
+            [InteractorTypes.Poke] = ControllerPokeInteractor,
+            [InteractorTypes.Ray] = ControllerRayInteractor,
+            [InteractorTypes.DistanceGrab] = ControllerDistanceGrabInteractor,
         };
 
         /// <summary>
         /// Gets the <see cref="Template"/> for a Hand interactor type
         /// </summary>
-        public static bool TryGetHandInteractorTemplate(Type type, out Template template)
+        public static bool TryGetHandInteractorTemplate(InteractorTypes type, out Template template)
         {
             return _handInteractorTemplates.TryGetValue(type, out template);
         }
@@ -167,7 +172,7 @@ namespace Oculus.Interaction.Editor.QuickActions
         /// <summary>
         /// Gets the <see cref="Template"/> for a Controller interactor type
         /// </summary>
-        public static bool TryGetControllerInteractorTemplate(Type type, out Template template)
+        public static bool TryGetControllerInteractorTemplate(InteractorTypes type, out Template template)
         {
             return _controllerInteractorTemplates.TryGetValue(type, out template);
         }

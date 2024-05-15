@@ -304,6 +304,47 @@ namespace Oculus.Interaction
             Root.AddSegment(p0, p1, LineWidth, Color, Color);
         }
 
+        public static void DrawQuad(Vector3 center, float width, float height, Transform t = null)
+        {
+            Vector3 topLeft = new Vector3(-width / 2, height / 2) + center;
+            Vector3 topRight = new Vector3(width / 2, height / 2) + center;
+            Vector3 bottomRight = new Vector3(width / 2, -height / 2) + center;
+            Vector3 bottomLeft = new Vector3(-width / 2, -height / 2) + center;
+            DrawLine(topLeft, topRight, t);
+            DrawLine(topRight, bottomRight, t);
+            DrawLine(bottomRight, bottomLeft, t);
+            DrawLine(bottomLeft, topLeft, t);
+        }
+
+        public static void DrawCurvedQuad(Vector3 center, float width, float height, float radius,
+                                          Transform t = null, int divisions = 20)
+        {
+            var xzPoints = new Vector3[divisions + 1];
+            float arcAngle = width / radius;
+            float stepAngle = arcAngle / divisions;
+            for (int i = 0; i <= divisions; i++)
+            {
+                float angle = i * stepAngle - arcAngle / 2;
+                Vector3 xz = new Vector3(Mathf.Sin(angle), 0, Mathf.Cos(angle) - 1) * radius;
+                xzPoints[i] = xz + center;
+            }
+
+            Vector3 halfH = new Vector3(0, height / 2, 0);
+
+            // Top and bottom arcs
+            for (int i = 0; i < divisions; i++)
+            {
+                Vector3 xz0 = xzPoints[i];
+                Vector3 xz1 = xzPoints[i+1];
+                DrawLine(xz0 + halfH, xz1 + halfH, t);
+                DrawLine(xz0 - halfH, xz1 - halfH, t);
+            }
+
+            // Side lines
+            DrawLine(xzPoints[0] + halfH, xzPoints[0] - halfH, t);
+            DrawLine(xzPoints[divisions] + halfH, xzPoints[divisions] - halfH, t);
+        }
+
         public static void DrawWireCube(Vector3 center, float size, Transform t = null)
         {
             for (int i = 0; i < CUBE_SEGMENTS.Count; i += 2)

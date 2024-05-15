@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+using System;
 using UnityEngine;
 
 namespace Oculus.Interaction.Grab.GrabSurfaces
@@ -29,15 +30,29 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
     /// </summary>
     public interface IGrabSurface
     {
+
         /// <summary>
         /// Finds the Pose at the surface that is the closest to the given pose.
         /// </summary>
-        /// <param name="targetPose">The pose to find the nearest to.</param>
+        /// <param name="targetPose">The root pose to find the nearest to.</param>
         /// <param name="bestPose">The best found pose at the surface.<</param>
         /// <param name="scoringModifier">Weight used to decide which target pose to select</param>
         /// <param name="relativeTo">Reference transform to measure the poses against</param>
         /// <returns>The score indicating how good the found pose was, -1 for invalid result.</returns>
+        [Obsolete("Use "+ nameof(CalculateBestPoseAtSurface) + " with offset instead")]
         GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, out Pose bestPose,
+            in PoseMeasureParameters scoringModifier, Transform relativeTo);
+
+        /// <summary>
+        /// Finds the Pose at the surface that is the closest to the given pose.
+        /// </summary>
+        /// <param name="targetPose">The root pose to find the nearest to.</param>
+        /// <param name="offset">The offset from the root, for accurate scoring</param>
+        /// <param name="bestPose">The best found pose at the surface.<</param>
+        /// <param name="scoringModifier">Weight used to decide which target pose to select</param>
+        /// <param name="relativeTo">Reference transform to measure the poses against</param>
+        /// <returns>The score indicating how good the found pose was, -1 for invalid result.</returns>
+        GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, in Pose offset, out Pose bestPose,
             in PoseMeasureParameters scoringModifier, Transform relativeTo);
 
         /// <summary>

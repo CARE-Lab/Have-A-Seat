@@ -101,6 +101,18 @@ namespace Oculus.Interaction.GrabAPI
         [DllImport("InteractionSdk")]
         private static extern ReturnValue isdk_FingerPalmGrabAPI_GetCenterOffset(int handle, out Vector3 score);
 
+        [DllImport("InteractionSdk")]
+        private static extern ReturnValue isdk_FingerPalmGrabAPI_GetConfigParamFloat(int handle, PalmGrabParamID paramID, out float outVal);
+
+        [DllImport("InteractionSdk")]
+        private static extern ReturnValue isdk_FingerPalmGrabAPI_SetConfigParamFloat(int handle, PalmGrabParamID paramID, float inVal);
+
+        [DllImport("InteractionSdk")]
+        private static extern ReturnValue isdk_FingerPalmGrabAPI_GetConfigParamVec3(int handle, PalmGrabParamID paramID, out Vector3 outVal);
+
+        [DllImport("InteractionSdk")]
+        private static extern ReturnValue isdk_FingerPalmGrabAPI_SetConfigParamVec3(int handle, PalmGrabParamID paramID, Vector3 inVal);
+
         #endregion
 
         private int apiHandle_ = -1;
@@ -166,6 +178,32 @@ namespace Oculus.Interaction.GrabAPI
             ReturnValue rv = isdk_FingerPalmGrabAPI_GetCenterOffset(GetHandle(), out Vector3 center);
             Debug.Assert(rv != ReturnValue.Failure, "FingerPalmGrabAPI: isdk_FingerPalmGrabAPI_GetCenterOffset failed");
             return center;
+        }
+
+        public void SetConfigParamFloat(PalmGrabParamID paramId, float paramVal)
+        {
+            ReturnValue rc = isdk_FingerPalmGrabAPI_SetConfigParamFloat(GetHandle(), paramId, paramVal);
+            Debug.Assert(rc != ReturnValue.Failure, "FingerPalmGrabAPI: isdk_FingerPalmGrabAPI_SetConfigParamFloat failed");
+        }
+
+        public float GetConfigParamFloat(PalmGrabParamID paramId)
+        {
+            ReturnValue rc = isdk_FingerPalmGrabAPI_GetConfigParamFloat(GetHandle(), paramId, out float paramVal);
+            Debug.Assert(rc != ReturnValue.Failure, "FingerPalmGrabAPI: isdk_FingerPalmGrabAPI_GetConfigParamFloat failed");
+            return paramVal;
+        }
+
+        public void SetConfigParamVec3(PalmGrabParamID paramId, Vector3 paramVal)
+        {
+            ReturnValue rc = isdk_FingerPalmGrabAPI_SetConfigParamVec3(GetHandle(), paramId, paramVal);
+            Debug.Assert(rc != ReturnValue.Failure, "FingerPalmGrabAPI: isdk_FingerPalmGrabAPI_SetConfigParamVec3 failed");
+        }
+
+        public Vector3 GetConfigParamVec3(PalmGrabParamID paramId)
+        {
+            ReturnValue rc = isdk_FingerPalmGrabAPI_GetConfigParamVec3(GetHandle(), paramId, out Vector3 paramVal);
+            Debug.Assert(rc != ReturnValue.Failure, "FingerPalmGrabAPI: isdk_FingerPalmGrabAPI_GetConfigParamVec3 failed");
+            return paramVal;
         }
     }
 }

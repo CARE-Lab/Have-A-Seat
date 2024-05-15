@@ -30,33 +30,35 @@ namespace Oculus.Interaction.Grab
         /// Finds the best pose comparing the one that requires the minimum rotation
         /// and minimum translation.
         /// </summary>
-        /// <param name="desiredPose">Pose to measure from.</param>
+        /// <param name="desiredPose">Root pose to measure from.</param>
+        /// <param name="offset">The offset from the root for accurate scoring</param>
         /// <param name="bestPose">Nearest pose to the desired one at the hand grab pose.</param>
         /// <param name="scoringModifier">Modifiers for the score based in rotation and distance.</param>
         /// <param name="relativeTo">The reference transform to apply the calculators to</param>
         /// <param name="minimalTranslationPoseCalculator">Delegate to calculate the nearest, by position, pose at a hand grab pose.</param>
         /// <param name="minimalRotationPoseCalculator">Delegate to calculate the nearest, by rotation, pose at a hand grab pose.</param>
         /// <returns>The score, normalized, of the best pose.</returns>
-        public static GrabPoseScore CalculateBestPoseAtSurface(in Pose desiredPose, out Pose bestPose,
+        public static GrabPoseScore CalculateBestPoseAtSurface(in Pose desiredPose, in Pose offset, out Pose bestPose,
             in PoseMeasureParameters scoringModifier, Transform relativeTo,
             PoseCalculator minimalTranslationPoseCalculator, PoseCalculator minimalRotationPoseCalculator)
         {
             if (scoringModifier.PositionRotationWeight == 1f)
             {
                 bestPose = minimalRotationPoseCalculator(desiredPose, relativeTo);
-                return new GrabPoseScore(desiredPose, bestPose, 1f);
+                return new GrabPoseScore(desiredPose, bestPose, offset, scoringModifier);
             }
 
             if (scoringModifier.PositionRotationWeight == 0f)
             {
                 bestPose = minimalTranslationPoseCalculator(desiredPose, relativeTo);
-                return new GrabPoseScore(desiredPose, bestPose, 0f);
+                return new GrabPoseScore(desiredPose, bestPose, offset, scoringModifier);
             }
 
             Pose minimalTranslationPose = minimalTranslationPoseCalculator(desiredPose, relativeTo);
             Pose minimalRotationPose = minimalRotationPoseCalculator(desiredPose, relativeTo);
             bestPose = SelectBestPose(minimalRotationPose, minimalTranslationPose,
-                desiredPose, scoringModifier, out GrabPoseScore bestScore);
+                desiredPose, offset, scoringModifier,
+                out GrabPoseScore bestScore);
             return bestScore;
 
         }
@@ -64,19 +66,18 @@ namespace Oculus.Interaction.Grab
         /// <summary>
         /// Compares two poses to a reference and returns the most similar one
         /// </summary>
-        /// <param name="poseA">First Pose to compare with the reference.</param>
-        /// <param name="poseB">Second Pose to compare with the reference.</param>
+        /// <param name="poseA">First root Pose to compare with the reference.</param>
+        /// <param name="poseB">Second root Pose to compare with the reference.</param>
         /// <param name="reference">Reference pose to measure from.</param>
+        /// <param name="offset">The offset from the roots, for accurate scoring</param>
         /// <param name="scoringModifier">Modifiers for the score based in rotation and distance.</param>
         /// <param name="bestScore">Out value with the score of the best pose.</param>
         /// <returns>The most similar pose to reference out of the poses</returns>
-        public static Pose SelectBestPose(in Pose poseA, in Pose poseB, in Pose reference,
+        public static Pose SelectBestPose(in Pose poseA, in Pose poseB, in Pose reference, in Pose offset,
             PoseMeasureParameters scoringModifier, out GrabPoseScore bestScore)
         {
-            GrabPoseScore poseAScore = new GrabPoseScore(reference, poseA,
-                scoringModifier.PositionRotationWeight);
-            GrabPoseScore poseBScore = new GrabPoseScore(reference, poseB,
-                scoringModifier.PositionRotationWeight);
+            GrabPoseScore poseAScore = new GrabPoseScore(reference, poseA, offset, scoringModifier);
+            GrabPoseScore poseBScore = new GrabPoseScore(reference, poseB, offset, scoringModifier);
 
             if (poseAScore.IsBetterThan(poseBScore))
             {

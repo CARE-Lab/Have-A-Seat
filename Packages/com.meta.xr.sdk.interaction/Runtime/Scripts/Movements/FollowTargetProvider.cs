@@ -20,7 +20,7 @@
 
 using UnityEngine;
 
-namespace Oculus.Interaction.HandGrab
+namespace Oculus.Interaction
 {
     /// <summary>
     /// This IPoseMovement constantly moves the pose at a fixed rate

@@ -22,22 +22,37 @@ using UnityEngine;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Clips a <cref="CylinderSurface" />. Each clipper represents the parameters of a cylinder segment.
+    /// </summary>
     public class CylinderClipper : MonoBehaviour, ICylinderClipper
     {
+        /// <summary>
+        /// The rotation on the Y axis, expressed in degrees where 0 degrees aligns with the positive Z axis of the Cylinder.
+        /// </summary>
         [Tooltip("The rotation of the center of the clip area " +
             "around the y axis, in degrees.")]
         [SerializeField, Range(-180f, 180f)]
         private float _rotation = 0f;
 
+        /// <summary>
+        /// The total arc degrees of the clip area, with the center point determined by Rotation.
+        /// </summary>
         [Tooltip("The arc degrees of the clip area, " +
             "centered at the rotation value.")]
         [SerializeField, Range(0f, 360f)]
         private float _arcDegrees = 360f;
 
+        /// <summary>
+        /// The lower edge relative to the Y position of the cylinder.
+        /// </summary>
         [Tooltip("The bottom extent of the clip area, along the y axis.")]
         [SerializeField]
         private float _bottom = -1;
 
+        /// <summary>
+        /// The upper edge relative to the Y position of the cylinder.
+        /// </summary>
         [Tooltip("The top extent of the clip area, along the y axis.")]
         [SerializeField]
         private float _top = 1;

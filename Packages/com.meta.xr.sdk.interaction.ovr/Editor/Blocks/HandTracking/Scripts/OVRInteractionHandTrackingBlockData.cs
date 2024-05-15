@@ -18,38 +18,22 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Meta.XR.BuildingBlocks.Editor;
-using UnityEditor;
+using Oculus.Interaction.Editor.QuickActions;
+using Oculus.Interaction.Input;
 
 namespace Oculus.Interaction.Editor.BuildingBlocks
 {
-    public class OVRInteractionHandTrackingBlockData : BlockData
+    public class OVRInteractionHandTrackingBlockData : OVRInteractionBaseBlockData
     {
-        public string _interactionBlockId;
-
-        protected override List<GameObject> InstallRoutine()
+        protected override bool TryGetPreexistingNonBlock(out GameObject nonBlockObject)
         {
-            var interactionBlockData = Meta.XR.BuildingBlocks.Editor.Utils.GetBlockData(_interactionBlockId);
-            var interactionBlock = interactionBlockData.GetBlock();
-            if (interactionBlock == null)
-            {
-                throw new InvalidOperationException(
-                    $"Cannot install block '{this.name}' : Cannot find block {interactionBlockData.name} in the scene.");
-            }
+            return TryGetInteractorBase<Hand>(InteractorUtils.HAND_INTERACTOR_PARENT_NAME,
+                out nonBlockObject);
+        }
 
-            var hands = Instantiate(Prefab, Vector3.zero, Quaternion.identity);
-            hands.SetActive(true);
-            hands.name = $"[SBB] {BlockName}";
-            hands.transform.parent = interactionBlock.transform;
-            BlocksUtils.UpdateForAutoWiring(hands);
-
-            Undo.RegisterCreatedObjectUndo(hands, $"Instantiate {hands.name}");
-            Undo.SetTransformParent(hands.transform, interactionBlock.transform, true, $"Parent {hands.name} to {interactionBlock.name}");
-
-            return  new List<GameObject>() { hands };
+        protected override void ApplyAdditionalHooks(GameObject blockObject)
+        {
         }
     }
 }

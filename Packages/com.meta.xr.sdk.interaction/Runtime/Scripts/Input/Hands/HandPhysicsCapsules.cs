@@ -24,6 +24,10 @@ using UnityEngine;
 
 namespace Oculus.Interaction.Input
 {
+    /// <summary>
+    /// Generates physics capsules based on the provided <cref="IHand" /> data.
+    /// This means you can generate physics capsules that match modified hand data, not just raw data from <cref="OVRHand" />.
+    /// </summary>
     public class HandPhysicsCapsules : MonoBehaviour
     {
         [SerializeField, Interface(typeof(IHandVisual))]
@@ -36,18 +40,31 @@ namespace Oculus.Interaction.Input
         private UnityEngine.Object _hand;
         private IHand Hand;
 
+        /// <summary>
+        /// Indicates how "thick" the fingers are at each bone. This information creates a capsule collider that wraps the bones accurately.
+        /// </summary>
+        [Tooltip("Indicates how \"thick\" the fingers are at each bone. This information creates a capsule collider that wraps the bones accurately.")]
         [SerializeField]
         private JointsRadiusFeature _jointsRadiusFeature;
 
         [Space]
+        /// <summary>
+        /// If checked, the capsules will be generated as triggers.
+        /// </summary>
         [SerializeField]
-        [Tooltip("Capsules will be generated as triggers")]
+        [Tooltip("If  checked, capsules will be generated as triggers.")]
         private bool _asTriggers = false;
+        /// <summary>
+        /// Capsules will be generated in this layer. The default layer is 0.
+        /// </summary>
         [SerializeField]
-        [Tooltip("Capsules will be generated in this Layer")]
+        [Tooltip("Capsules will be generated in this layer. The default layer is 0.")]
         private int _useLayer = 0;
+        /// <summary>
+        /// A joint. Capsules reaching this joint will not be generated.
+        /// </summary>
         [SerializeField]
-        [Tooltip("Capsules reaching this joint will not be generated")]
+        [Tooltip("A joint. Capsules reaching this joint will not be generated.")]
         private HandFingerJointFlags _mask = HandFingerJointFlags.All;
 
         private Action _whenCapsulesGenerated = delegate { };
@@ -335,12 +352,12 @@ namespace Oculus.Interaction.Input
         {
             _useLayer = useLayer;
         }
-        
+
         public void InjectMask(HandFingerJointFlags mask)
         {
             _mask = mask;
         }
-        
+
         public void InjectJointsRadiusFeature(JointsRadiusFeature jointsRadiusFeature)
         {
             _jointsRadiusFeature = jointsRadiusFeature;

@@ -21,6 +21,7 @@
 using Oculus.Interaction.Grab;
 using Oculus.Interaction.GrabAPI;
 using Oculus.Interaction.Input;
+using System;
 using UnityEngine;
 
 namespace Oculus.Interaction.HandGrab
@@ -32,7 +33,13 @@ namespace Oculus.Interaction.HandGrab
         float Slippiness { get; }
         bool SupportsHandedness(Handedness handedness);
         IMovement GenerateMovement(in Pose from, in Pose to);
+
+        [Obsolete("Use "+ nameof(CalculateBestPose) + " with offset instead")]
         bool CalculateBestPose(Pose userPose, float handScale, Handedness handedness,
+            ref HandGrabResult result);
+
+        void CalculateBestPose(in Pose userPose, in Pose offset, Transform relativeTo,
+            float handScale, Handedness handedness,
             ref HandGrabResult result);
 
         GrabTypeFlags SupportedGrabTypes { get; }

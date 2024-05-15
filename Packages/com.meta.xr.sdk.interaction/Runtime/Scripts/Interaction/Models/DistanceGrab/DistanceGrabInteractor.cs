@@ -135,7 +135,6 @@ namespace Oculus.Interaction
         protected override void InteractableUnselected(DistanceGrabInteractable interactable)
         {
             interactable.WhenPointerEventRaised -= HandleOtherPointerEventRaised;
-            _movement?.StopAndSetPose(_movement.Pose);
             base.InteractableUnselected(interactable);
             _movement = null;
 
@@ -171,7 +170,7 @@ namespace Oculus.Interaction
 
         protected override Pose ComputePointerPose()
         {
-            if (SelectedInteractable != null)
+            if (_movement != null)
             {
                 return _movement.Pose;
             }

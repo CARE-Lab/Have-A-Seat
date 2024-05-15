@@ -44,9 +44,16 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
         public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, out Pose bestPose,
             in PoseMeasureParameters scoringModifier, Transform relativeTo)
         {
+            return CalculateBestPoseAtSurface(targetPose, Pose.identity, out bestPose,
+                scoringModifier, relativeTo);
+        }
+
+        public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, in Pose offset, out Pose bestPose,
+            in PoseMeasureParameters scoringModifier, Transform relativeTo)
+        {
             Vector3 surfacePoint = NearestPointInSurface(targetPose.position);
             bestPose = new Pose(surfacePoint, targetPose.rotation);
-            return new GrabPoseScore(surfacePoint, targetPose.position);
+            return new GrabPoseScore(targetPose, bestPose, offset, scoringModifier);
         }
 
         public bool CalculateBestPoseAtSurface(Ray targetRay, out Pose bestPose, Transform relativeTo)

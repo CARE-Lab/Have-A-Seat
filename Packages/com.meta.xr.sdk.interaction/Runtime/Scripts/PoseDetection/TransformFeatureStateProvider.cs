@@ -33,6 +33,9 @@ namespace Oculus.Interaction.PoseDetection
         World
     }
 
+    /// <summary>
+    /// Influences state transitions computed via <cref="TransformFeatureStateProvider" />. It becomes active whenever all of the listed transform states are active.
+    /// </summary>
     [Serializable]
     public class TransformConfig
     {
@@ -173,14 +176,23 @@ namespace Oculus.Interaction.PoseDetection
     public class TransformFeatureStateProvider : MonoBehaviour,
         ITransformFeatureStateProvider, ITimeConsumer
     {
+        /// <summary>
+        /// The hand to use for finger state data.
+        /// </summary>
         [SerializeField, Interface(typeof(IHand))]
         private UnityEngine.Object _hand;
         public IHand Hand { get; private set; }
 
+        /// <summary>
+        /// The Hmd component.
+        /// </summary>
         [SerializeField, Interface(typeof(IHmd))]
         private UnityEngine.Object _hmd;
         public IHmd Hmd { get; private set; }
 
+        /// <summary>
+        /// The OVRInteraction prefab from the Interaction SDK Getting Started tutorial.
+        /// </summary>
         [SerializeField, Interface(typeof(ITrackingToWorldTransformer))]
         private UnityEngine.Object _trackingToWorldTransformer;
 

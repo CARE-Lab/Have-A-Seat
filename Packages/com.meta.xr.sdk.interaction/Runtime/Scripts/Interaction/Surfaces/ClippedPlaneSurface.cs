@@ -24,6 +24,9 @@ using System.Linq;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Clips a plane to create an interactable surface. If there are no clippers assigned, the surface area remains infinite.
+    /// </summary>
     public class ClippedPlaneSurface : MonoBehaviour, IClippedSurface<IBoundsClipper>
     {
         private static readonly Bounds InfiniteBounds = new Bounds(Vector3.zero,

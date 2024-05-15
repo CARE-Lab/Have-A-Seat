@@ -38,18 +38,17 @@ namespace Oculus.Interaction.Body.PoseDetection
         private BodyPoseComparerActiveState _bodyPoseComparer;
 
         /// <summary>
-        /// Gizmos will be drawn at joint positions of this body pose.
+        /// The body pose to overlay onto. This gizmo simply draws gizmos at joint locations - you must provide a body pose in order for this component to place the gizmos accurately.
         /// </summary>
-        [Tooltip("Gizmos will be drawn at joint positions of this body pose.")]
+        [Tooltip("The body pose to overlay onto. This gizmo simply draws gizmos at joint locations - you must provide a body pose in order for this component to place the gizmos accurately.")]
         [SerializeField, Interface(typeof(IBodyPose))]
         private UnityEngine.Object _bodyPose;
         private IBodyPose BodyPose;
 
         /// <summary>
-        /// The root transform of the body skeleton. Debug gizmos will be drawn in the local space of this transform.
+        /// The root transform of the body on which to overlay the spheres. For BodyPoseDebugGizmos, this is simply the transform of the component. For a skinned body model, this would be the Root transform.
         /// </summary>
-        [Tooltip("The root transform of the body skeleton. Debug " +
-            "gizmos will be drawn in the local space of this transform.")]
+        [Tooltip("The root transform of the body on which to overlay the spheres. For BodyPoseDebugGizmos, this is simply the transform of the component. For a skinned body model, this would be the Root transform.")]
         [SerializeField]
         private Transform _root;
 

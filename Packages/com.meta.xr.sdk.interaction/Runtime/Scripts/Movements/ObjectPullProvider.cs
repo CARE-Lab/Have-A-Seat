@@ -20,7 +20,7 @@
 
 using UnityEngine;
 
-namespace Oculus.Interaction.HandGrab
+namespace Oculus.Interaction
 {
     /// <summary>
     /// Pulls the selected interactable towards the interactor.

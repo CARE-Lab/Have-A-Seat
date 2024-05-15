@@ -25,6 +25,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Uses a line renderer to indicate if a finger feature is active on a specific finger (green) or not (red).
+    /// </summary>
     public class FingerFeatureSkeletalDebugVisual : MonoBehaviour
     {
         [SerializeField]

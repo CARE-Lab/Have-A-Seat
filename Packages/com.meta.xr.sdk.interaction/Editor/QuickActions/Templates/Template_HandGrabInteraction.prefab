@@ -130,6 +130,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1bedaac29a943f844a7074b53c8bdf9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grabbable: {fileID: 250190464475097619}
+  _pointable: {fileID: 250190464475097619}
   _rigidbody: {fileID: 0}
   _scaleMassWithSize: 1

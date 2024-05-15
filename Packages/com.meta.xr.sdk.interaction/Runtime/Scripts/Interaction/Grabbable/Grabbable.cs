@@ -45,6 +45,10 @@ namespace Oculus.Interaction
         [SerializeField, Interface(typeof(ITransformer)), Optional]
         private UnityEngine.Object _twoGrabTransformer = null;
 
+        /// <summary>
+        /// Takes a target object to transform instead of transforming the object that has the Grabbable component.
+        /// The object with the Grabbable component acts as a controller that projects its transforms onto the target object.
+        /// </summary>
         [Tooltip("The target transform of the Grabbable. If unassigned, " +
             "the transform of this GameObject will be used.")]
         [SerializeField]

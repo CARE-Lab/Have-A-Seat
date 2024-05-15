@@ -23,28 +23,47 @@ using UnityEngine.Profiling;
 
 namespace Oculus.Interaction.UnityCanvas
 {
+    /// <summary>
+    /// Maps a RenderTexture to a Mesh Renderer.
+    /// There are two types of CanvasRenderer components included in the Interaction SDK, CanvasMeshRenderer and OVRCanvasMeshRenderer.
+    /// </summary>
     public class CanvasMeshRenderer : MonoBehaviour
     {
         private static readonly int MainTexShaderID = Shader.PropertyToID("_MainTex");
 
+        /// <summary>
+        /// The canvas texture that will be rendered.
+        /// </summary>
         [Tooltip("The canvas texture that will be rendered.")]
         [SerializeField]
         protected CanvasRenderTexture _canvasRenderTexture;
 
+        /// <summary>
+        /// The mesh renderer that will be driven.
+        /// </summary>
         [Tooltip("The mesh renderer that will be driven.")]
         [SerializeField]
         protected MeshRenderer _meshRenderer;
 
+        /// <summary>
+        /// Determines the shader used for rendering. For details on these rendering modes, see https://developer.oculus.com/documentation/unity/unity-isdk-curved-canvases/#rendermodes.
+        /// </summary>
         [Tooltip("Determines the shader used for rendering. " +
-            "See the documentation for details on these rendering modes.")]
+            "For details on these rendering modes, see the Curved Canvas topic in the documentation.")]
         [SerializeField]
         protected int _renderingMode = (int)RenderingMode.AlphaCutout;
 
+        /// <summary>
+        /// Requires MSAA. Provides limited transparency useful for anti-aliasing soft edges of UI elements.
+        /// </summary>
         [Tooltip("Requires MSAA. Provides limited transparency useful for " +
                  "anti-aliasing soft edges of UI elements.")]
         [SerializeField]
         private bool _useAlphaToMask = true;
 
+        /// <summary>
+        /// Select the alpha cutoff used for the cutout rendering.
+        /// </summary>
         [Tooltip("Select the alpha cutoff used for the cutout rendering.")]
         [Range(0, 1)]
         [SerializeField]

@@ -49,6 +49,9 @@ namespace Oculus.Interaction.PoseDetection
         }
     }
 
+    /// <summary>
+    /// Provides the finger states of the tracked hands and contains the state transition thresholds for each finger.
+    /// </summary>
     public interface IFingerFeatureStateProvider
     {
         bool GetCurrentState(HandFinger finger, FingerFeature fingerFeature, out string currentState);
@@ -162,11 +165,12 @@ namespace Oculus.Interaction.PoseDetection
                 var featureStateProvider = _state.GetStateProvider(finger);
                 if (featureStateProvider == null)
                 {
+                    Func<float> getTime = () => _timeProvider();
                     featureStateProvider =
                         new FeatureStateProvider<FingerFeature, string>(
                             feature => GetFeatureValue(finger, feature),
                             feature => (int)feature,
-                            _timeProvider);
+                            getTime);
 
                     _state.InitializeFinger(fingerStateThresholds.Finger,
                         featureStateProvider);

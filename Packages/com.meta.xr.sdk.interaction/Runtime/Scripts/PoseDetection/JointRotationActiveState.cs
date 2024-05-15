@@ -25,6 +25,10 @@ using System.Collections.Generic;
 
 namespace Oculus.Interaction.PoseDetection
 {
+    /// <summary>
+    /// Tracks angular velocities (rotation deltas over the last two frames) for a list of joints and compares them to a rotation target around the provided axes.
+    /// If the rotation target (degrees per second) is met for the minimum time threshold, the state becomes Active.
+    /// </summary>
     public class JointRotationActiveState : MonoBehaviour,
         IActiveState, ITimeConsumer
     {

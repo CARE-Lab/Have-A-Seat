@@ -27,6 +27,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Creates a series of <cref="FingerFeatureSkeletalDebugVisual" />s for the features belonging to a <cref="ShapeRecognizerActiveState" />.
+    /// </summary>
     public class HandShapeSkeletalDebugVisual : MonoBehaviour
     {
         [SerializeField]

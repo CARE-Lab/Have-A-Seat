@@ -39,18 +39,27 @@ namespace Oculus.Interaction.Locomotion
             Smooth
         }
 
+        /// <summary>
+        /// Interactor that the state is read from so that when it selects, the events are fired.
+        /// </summary>
         [SerializeField, Interface(typeof(IInteractor))]
-        [Tooltip("The interactor defines when the Locomotion events are sent based on its Select state")]
+        [Tooltip("The interactor defines when the Locomotion events are sent based on its Select state.")]
         private UnityEngine.Object _interactor;
         private IInteractor Interactor { get; set; }
 
+        /// <summary>
+        /// 1D axis (from -1 to 1) to read in order to produce the direction and strength of the turn.
+        /// </summary>
         [SerializeField, Interface(typeof(IAxis1D))]
-        [Tooltip("Axis from -1 to 1 indicating the turning direction and velocity")]
+        [Tooltip("Axis from -1 to 1 indicating the turning direction and velocity.")]
         private UnityEngine.Object _axis;
         private IAxis1D Axis { get; set; }
 
+        /// <summary>
+        /// Either Snap (instantaneous) turning or Smooth (continuous) turning.
+        /// </summary>
         [SerializeField]
-        [Tooltip("Snap turn fires once during Select, while Smooth fires continuously during Select")]
+        [Tooltip("Snap turn fires once during Select, while Smooth fires continuously during Select.")]
         private TurnMode _turnMethod;
         /// <summary>
         /// Snap turn fires once during Select, while Smooth fires continuously during Select
@@ -67,6 +76,9 @@ namespace Oculus.Interaction.Locomotion
             }
         }
 
+        /// <summary>
+        /// When in Snap turn mode, the amount of degrees to instantly turn. This ignores the strength of the axis and cares only about the direction.
+        /// </summary>
         [SerializeField]
         [Tooltip("Degrees to instantly turn when in Snap turn mode. Note the direction is provided by the axis")]
         private float _snapTurnDegrees = 45f;

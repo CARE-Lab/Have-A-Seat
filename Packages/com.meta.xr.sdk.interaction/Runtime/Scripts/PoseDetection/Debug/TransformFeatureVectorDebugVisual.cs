@@ -24,6 +24,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Uses a line renderer to visualize a simple vector.
+    /// </summary>
     public class TransformFeatureVectorDebugVisual : MonoBehaviour
     {
         public IHand Hand { get; private set; }

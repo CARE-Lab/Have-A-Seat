@@ -25,6 +25,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Renders lines along the velocity axes tracked by the <cref="JointVelocityActiveState" />. Lines are red while not moving along that axis, and they fill up yellow as velocity increases toward the target, at which point they become green.
+    /// </summary>
     public class JointVelocityDebugVisual : MonoBehaviour
     {
         [SerializeField]

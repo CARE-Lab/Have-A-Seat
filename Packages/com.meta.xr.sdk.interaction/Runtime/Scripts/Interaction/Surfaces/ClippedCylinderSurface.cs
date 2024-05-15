@@ -24,6 +24,9 @@ using System.Linq;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Used to manually clip a <cref="CylinderSurface" /> to the desired size.
+    /// </summary>
     public class ClippedCylinderSurface : MonoBehaviour, IClippedSurface<ICylinderClipper>
     {
         private const float EPSILON = 0.0001f;

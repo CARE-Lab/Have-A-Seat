@@ -198,16 +198,25 @@ namespace Oculus.Interaction.HandGrab
         public bool CalculateBestPose(Pose userPose, float handScale, Handedness handedness,
             ref HandGrabResult result)
         {
-            GrabPoseFinder.FindResult findResult = _grabPoseFinder.FindBestPose(userPose,
-                handScale, handedness, SCORE_MODIFIER, ref result);
-            if (findResult == GrabPoseFinder.FindResult.NotFound)
-            {
-                result.HasHandPose = false;
-                result.Score = new GrabPoseScore(userPose.position, this.transform.position);
-                result.RelativePose = new Pose(RelativeTo.Delta(this.transform).position, Quaternion.Inverse(RelativeTo.rotation) * userPose.rotation);
-            }
+            CalculateBestPose(userPose, Pose.identity, RelativeTo, handScale, handedness, ref result);
+            return true;
+        }
 
-            return findResult != GrabPoseFinder.FindResult.NotCompatible;
+        public void CalculateBestPose(in Pose userPose, in Pose offset, Transform relativeTo,
+            float handScale, Handedness handedness,
+            ref HandGrabResult result)
+        {
+            bool poseFound = _grabPoseFinder.FindBestPose(userPose, offset,
+                handScale, handedness, SCORE_MODIFIER,
+                ref result);
+
+            if (!poseFound)
+            {
+                Pose targetPose = PoseUtils.Multiply(userPose, offset);
+                result.HasHandPose = false;
+                result.Score = new GrabPoseScore(targetPose.position, this.transform.position);
+                result.RelativePose = new Pose(RelativeTo.Delta(this.transform).position, Quaternion.Inverse(RelativeTo.rotation) * targetPose.rotation);
+            }
         }
 
         public bool UsesHandPose => _grabPoseFinder.UsesHandPose;

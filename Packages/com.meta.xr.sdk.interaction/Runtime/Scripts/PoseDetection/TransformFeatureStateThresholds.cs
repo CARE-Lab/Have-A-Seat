@@ -24,6 +24,9 @@ using UnityEngine;
 
 namespace Oculus.Interaction.PoseDetection
 {
+    /// <summary>
+    /// Defines the transform feature thresholds for each orientation. The transform feature thresholds use the same properties as the <cref="FingerFeatureStateThresholds" />.
+    /// </summary>
     [Serializable]
     public class TransformFeatureStateThreshold : IFeatureStateThreshold<string>
     {

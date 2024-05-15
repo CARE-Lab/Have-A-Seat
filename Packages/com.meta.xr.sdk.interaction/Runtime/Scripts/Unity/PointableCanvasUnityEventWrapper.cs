@@ -25,34 +25,56 @@ using UnityEngine.Events;
 namespace Oculus.Interaction
 {
     /// <summary>
-    /// This component makes it possible to connect PointableCanvases in the
-    /// inspector to Unity Events that are broadcast from PointableCanvasModule.
-    /// Useful for hooking into uGUI navigation.
+    /// Hooks into events raised from <cref="PointableCanvasModule" /> that correspond to a referenced <cref="IPointableCanvas" />, and tracks Unity Selectable (button, toggle, etc) events on that canvas rather than hooking into each Selectable on the Canvas individually.
     /// </summary>
     public class PointableCanvasUnityEventWrapper : MonoBehaviour
     {
+        /// <summary>
+        /// The <cref="IPointableCanvas" /> component to wrap.
+        /// </summary>
         [SerializeField, Interface(typeof(IPointableCanvas))]
         private UnityEngine.Object _pointableCanvas;
         private IPointableCanvas PointableCanvas;
 
+        /// <summary>
+        /// If true, hover events will be ignored while the pointer is dragging.
+        /// </summary>
         [SerializeField, Tooltip("Selection and hover events will not be fired while dragging.")]
         private bool _suppressWhileDragging = true;
 
+        /// <summary>
+        /// Raised when any Selectable on the canvas is hovered.
+        /// </summary>
         [SerializeField, Tooltip("Raised when beginning hover of a uGUI selectable")]
         private UnityEvent _whenBeginHighlight;
 
+        /// <summary>
+        /// Raised when any Selectable on the canvas is unhovered.
+        /// </summary>
         [SerializeField, Tooltip("Raised when ending hover of a uGUI selectable")]
         private UnityEvent _whenEndHighlight;
 
+        /// <summary>
+        /// Raised when a pointer press happens on a Selectable.
+        /// </summary>
         [SerializeField, Tooltip("Raised when selecting a hovered uGUI selectable")]
         private UnityEvent _whenSelectedHovered;
 
+        /// <summary>
+        /// Raised when a pointer press happens over an empty area.
+        /// </summary>
         [SerializeField, Tooltip("Raised when selecting with no uGUI selectable hovered")]
         private UnityEvent _whenSelectedEmpty;
 
+        /// <summary>
+        /// Raised when a pointer release happens on a Selectable.
+        /// </summary>
         [SerializeField, Tooltip("Raised when deselecting a hovered uGUI selectable")]
         private UnityEvent _whenUnselectedHovered;
 
+        /// <summary>
+        /// Raised when a pointer release happens over an empty area.
+        /// </summary>
         [SerializeField, Tooltip("Raised when deselecting with no uGUI selectable hovered")]
         private UnityEvent _whenUnselectedEmpty;
 

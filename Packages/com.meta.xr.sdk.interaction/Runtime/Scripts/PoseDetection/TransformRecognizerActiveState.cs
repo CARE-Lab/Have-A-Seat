@@ -41,20 +41,35 @@ namespace Oculus.Interaction.PoseDetection
     {
     }
 
+    /// <summary>
+    /// Used in hand pose detection to get the current state of the hand's transforms and compares it to the required transforms. If both match, the state is active.
+    /// </summary>
     public class TransformRecognizerActiveState : MonoBehaviour, IActiveState
     {
+        /// <summary>
+        /// The hand to read for transform state data.
+        /// </summary>
         [SerializeField, Interface(typeof(IHand))]
         private UnityEngine.Object _hand;
         public IHand Hand { get; private set; }
-
+        /// <summary>
+        /// An <cref="ITransformFeatureStateProvider" />, which provides the current state of the tracked hand's transforms.
+        /// </summary>
         [SerializeField, Interface(typeof(ITransformFeatureStateProvider))]
         private UnityEngine.Object _transformFeatureStateProvider;
 
         protected ITransformFeatureStateProvider TransformFeatureStateProvider;
-
+        /// <summary>
+        /// A list of required transforms that the tracked hand must match for the pose to become active (assuming all shapes are also active).
+        /// Each transform is an orientation and a boolean (ex. PalmTowardsFace is True.)
+        /// </summary>
         [SerializeField]
         private TransformFeatureConfigList _transformFeatureConfigs;
 
+        /// <summary>
+        /// Influences state transitions computed via <cref="TransformFeatureStateProvider" />. It becomes active whenever all of the listed transform states are active.
+        /// State provider uses this to determine the state of features during real time, so edit at runtime at your own risk.
+        /// </summary>
         [SerializeField]
         [Tooltip("State provider uses this to determine the state of features during real time, so" +
             " edit at runtime at your own risk.")]

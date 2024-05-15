@@ -25,55 +25,95 @@ using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {
+    /// <summary>
+    /// Makes an object pokable.
+    /// </summary>
     public class PokeInteractable : PointerInteractable<PokeInteractor, PokeInteractable>
     {
+        /// <summary>
+        /// An ISurfacePatch, which provides both the backing surface (generally infinite) and pokable area (generally finite) of the interactor.
+        /// </summary>
         [Tooltip("Represents the pokeable surface area of this interactable.")]
         [SerializeField, Interface(typeof(ISurfacePatch))]
         private UnityEngine.Object _surfacePatch;
         public ISurfacePatch SurfacePatch { get; private set; }
 
+        /// <summary>
+        /// The distance from the surface along the normal that hover begins.
+        /// </summary>
         [SerializeField]
         [FormerlySerializedAs("_maxDistance")]
         [Tooltip("The distance required for a poke interactor to enter hovering, " +
                  "measured along the normal to the surface (in meters)")]
         private float _enterHoverNormal = 0.03f;
+
+        /// <summary>
+        /// The distance from the surface perpendicular to the normal that hover begins.
+        /// </summary>
         [SerializeField]
         [Tooltip("The distance required for a poke interactor to enter hovering, " +
                  "measured along the tangent plane to the surface (in meters)")]
         private float _enterHoverTangent = 0;
+
+        /// <summary>
+        /// The distance from the surface along the normal that hover ends.
+        /// </summary>
         [SerializeField]
         [Tooltip("The distance required for a poke interactor to exit hovering, " +
                  "measured along the normal to the surface (in meters)")]
         private float _exitHoverNormal = 0.05f;
+
+        /// <summary>
+        /// The distance from the surface perpendicular to the normal that hover ends.
+        /// </summary>
         [SerializeField]
         [Tooltip("The distance required for a poke interactor to exit hovering, " +
                  "measured along the tangent plane to the surface (in meters)")]
         private float _exitHoverTangent = 0f;
+
+        /// <summary>
+        /// The distance you must poke through the surface in order for selection to cancel.
+        /// A zero value means selection is never canceled no matter how deeply you penetrate the surface.
+        /// </summary>
         [SerializeField]
         [FormerlySerializedAs("_releaseDistance")]
         [Tooltip("If greater than zero, " +
                  "the distance required for a selecting poke interactor to cancel selection, " +
-                 "measured along the negative normal to the surface (in meters)")]
+                 "measured along the negative normal to the surface (in meters).")]
         private float _cancelSelectNormal = 0.3f;
+
+        /// <summary>
+        /// If greater than zero, the distance required for a selecting poke interactor to cancel selection, measured along the tangent plane to the surface (in meters).
+        /// A zero value means selection is never cancelled no matter how far away you are from the surface.
+        /// </summary>
         [SerializeField]
         [Tooltip("If greater than zero, " +
                  "the distance required for a selecting poke interactor to cancel selection, " +
-                 "measured along the tangent plane to the surface (in meters)")]
+                 "measured along the tangent plane to the surface (in meters).")]
         private float _cancelSelectTangent = 0.03f;
 
+        /// <summary>
+        /// Configures the minimum distance required for a poke interactor to surpass before it can hover.
+        /// </summary>
         [Serializable]
         public class MinThresholdsConfig
         {
             [Tooltip("If true, minimum thresholds will be applied.")]
             public bool Enabled;
+            /// <summary>
+            /// The minimum distance required for a poke interactor to surpass before being able to hover, measured along the normal to the surface (in meters).
+            /// </summary>
             [Tooltip("The minimum distance required for a poke interactor to surpass before " +
-                     "being able to hover, measured along the normal to the surface (in meters)")]
+                     "being able to hover, measured along the normal to the surface (in meters).")]
             public float MinNormal = 0.01f;
         }
 
+        /// <summary>
+        /// If enabled, a poke interactor must approach the surface from at least a minimum distance of the surface (in meters).
+        /// </summary>
         [SerializeField]
         [Tooltip("If enabled, a poke interactor must approach the surface from at least a " +
-                 "minimum distance of the surface (in meters)")]
+                 "minimum distance of the surface (in meters).")]
         private MinThresholdsConfig _minThresholds =
             new MinThresholdsConfig()
             {
@@ -81,19 +121,31 @@ namespace Oculus.Interaction
                 MinNormal = 0.01f
             };
 
+        /// <summary>
+        /// Configures the drag thresholds, which are useful for distinguishing between press and drag and suppressing move pointer events when a poke interactor follows a pressing motion.
+        /// </summary>
         [Serializable]
         public class DragThresholdsConfig
         {
             [Tooltip("If true, drag thresholds will be applied.")]
             public bool Enabled;
+            /// <summary>
+            /// The distance a poke interactor must travel to be treated as a press, measured along the normal to the surface (in meters).
+            /// </summary>
             [FormerlySerializedAs("ZThreshold")]
             [Tooltip("The distance a poke interactor must travel to be treated as a press, " +
-                     "measured as a distance along the normal to the surface (in meters)")]
+                     "measured as a distance along the normal to the surface (in meters).")]
             public float DragNormal;
+            /// <summary>
+            /// The distance a poke interactor must travel to be treated as a press, measured along the tangent plane to the surface (in meters
+            /// </summary>
             [FormerlySerializedAs("SurfaceThreshold")]
             [Tooltip("The distance a poke interactor must travel to be treated as a drag, " +
-                     "measured as a distance along the tangent plane to the surface (in meters)")]
+                     "measured as a distance along the tangent plane to the surface (in meters).")]
             public float DragTangent;
+            /// <summary>
+            /// The curve that a poke interactor will use to ease when transitioning between a press and drag state.
+            /// </summary>
             [Tooltip("The curve that a poke interactor will use to ease when transitioning " +
                      "between a press and drag state.")]
             public ProgressCurve DragEaseCurve;
@@ -113,17 +165,29 @@ namespace Oculus.Interaction
                 DragEaseCurve = new ProgressCurve(AnimationCurve.EaseInOut(0, 0, 1, 1), 0.05f)
             };
 
+        /// <summary>
+        /// Position pinning is applied to surface motion during drag. Useful for adding a sense of friction to initial drag motion.
+        /// </summary>
         [Serializable]
         public class PositionPinningConfig
         {
             [Tooltip("If true, position pinning will be applied.")]
             public bool Enabled;
+            /// <summary>
+            /// The distance over which a poke interactor drag motion will be remapped to the surface (in meters).
+            /// </summary>
             [Tooltip("The distance over which a poke interactor drag motion will be remapped " +
                      "measured along the tangent plane to the surface (in meters)")]
             public float MaxPinDistance;
+            /// <summary>
+            /// The poke interactor position will be remapped along this curve from the initial touch point to the current position on surface.
+            /// </summary>
             [Tooltip("The poke interactor position will be remapped along this curve from the " +
                 "initial touch point to the current position on surface.")]
             public AnimationCurve PinningEaseCurve;
+            /// <summary>
+            /// In cases where a resync is necessary between the pinned position and the unpinned position, this time-based curve will be used.
+            /// </summary>
             [Tooltip("In cases where a resync is necessary between the pinned position and the " +
                 "unpinned position, this time-based curve will be used.")]
             public ProgressCurve ResyncCurve;
@@ -141,31 +205,60 @@ namespace Oculus.Interaction
                 ResyncCurve = new ProgressCurve(AnimationCurve.EaseInOut(0, 0, 1, 1), 0.2f)
             };
 
+        /// <summary>
+        /// Recoil assist will affect unselection and reselection criteria.
+        /// Useful for triggering unselect in response to a smaller motion in the negative direction from a surface.
+        /// </summary>
         [Serializable]
         public class RecoilAssistConfig
         {
             [Tooltip("If true, recoil assist will be applied.")]
             public bool Enabled;
-
+            /// <summary>
+            /// If true, DynamicDecayCurve will be used to decay the max distance based on the normal velocity.
+            /// </summary>
             [Tooltip("If true, DynamicDecayCurve will be used to decay the max distance based on the normal velocity.")]
             public bool UseDynamicDecay;
+            /// <summary>
+            /// A function of the normal movement ratio to determine the rate of decay.
+            /// </summary>
             [Tooltip("A function of the normal movement ratio to determine the rate of decay.")]
             public AnimationCurve DynamicDecayCurve;
-
+            /// <summary>
+            /// Expand recoil window when fast Z motion is detected.
+            /// </summary>
             [Tooltip("Expand recoil window when fast Z motion is detected.")]
             public bool UseVelocityExpansion;
+            /// <summary>
+            /// When average velocity in interactable Z is greater than min speed, the recoil window will begin expanding.
+            /// </summary>
             [Tooltip("When average velocity in interactable Z is greater than min speed, the recoil window will begin expanding.")]
             public float VelocityExpansionMinSpeed;
+            /// <summary>
+            /// Full recoil window expansion reached at this speed.
+            /// </summary>
             [Tooltip("Full recoil window expansion reached at this speed.")]
             public float VelocityExpansionMaxSpeed;
+            /// <summary>
+            /// Window will expand by this distance when Z velocity reaches max speed.
+            /// </summary>
             [Tooltip("Window will expand by this distance when Z velocity reaches max speed.")]
             public float VelocityExpansionDistance;
+            /// <summary>
+            /// Window will contract toward ExitDistance at this rate (in meters) per second when velocity lowers.
+            /// </summary>
             [Tooltip("Window will contract toward ExitDistance at this rate (in meters) per second when velocity lowers.")]
             public float VelocityExpansionDecayRate;
 
+            /// <summary>
+            /// The distance over which a poke interactor must surpass to trigger an early unselect, measured along the normal to the surface (in meters).
+            /// </summary>
             [Tooltip("The distance over which a poke interactor must surpass to trigger " +
                      "an early unselect, measured along the normal to the surface (in meters)")]
             public float ExitDistance;
+            /// <summary>
+            /// When in recoil, the distance which a poke interactor must surpass to trigger a subsequent select, measured along the negative normal to the surface (in meters).
+            /// </summary>
             [Tooltip("When in recoil, the distance which a poke interactor must surpass to trigger " +
                      "a subsequent select, measured along the negative normal to the surface (in meters)")]
             public float ReEnterDistance;

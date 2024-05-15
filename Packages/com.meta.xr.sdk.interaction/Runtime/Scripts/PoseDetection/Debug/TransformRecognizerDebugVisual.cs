@@ -26,6 +26,10 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Creates a series of <cref="TransformFeatureDebugVisual" />s to visually debug the TransformFeatureStates belonging to a collection of <cref="TransformRecognizerActiveState" />.
+    /// This allows one to visually debug the active state of each transform feature via the created instances of <cref="TransformFeatureDebugVisual" />.
+    /// </summary>
     public class TransformRecognizerDebugVisual : MonoBehaviour
     {
         [SerializeField]

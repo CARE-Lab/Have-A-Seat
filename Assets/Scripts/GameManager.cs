@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Meta.XR.MRUtilityKit;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.XR.Oculus;
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject wallMarker;
     [SerializeField] GameObject dirMarker;
     [SerializeField] GameObject realPlanePrefab;
+    [SerializeField] private AnchorPrefabSpawner _couchSpawner;
 
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
@@ -37,16 +39,20 @@ public class GameManager : MonoBehaviour
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
-        
-        StartCoroutine(SetupCorotuine());
     }
-    IEnumerator SetupCorotuine()
+
+    public void Setup()
     {
-        yield return new WaitForSeconds(.5f);
+        //StartCoroutine(SetupCorotuine());//yield return new WaitForSeconds(.5f);
+        Debug.Log("Setting up");
         //Check if the boundary is configured
         bool configured = OVRManager.boundary.GetConfigured();
         if (configured)
+        {
             IntializeArea();
+            Debug.Log("is configured");
+        }
+            
         float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.XRTransform.Rotate(0, angleY, 0);
         for (int i = 0; i < trackingSpacePoints.Count; i++)
@@ -59,8 +65,17 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < trackingSpacePoints.Count; i++)
             trackingSpacePoints[i].transform.position += distDiff;
 
+     
+        _couchSpawner.SpawnPrefabs();
         ready = true;
     }
+    
+    /*
+    IEnumerator SetupCorotuine()
+    {
+        
+    }
+    */
 
     private void Update()
     {

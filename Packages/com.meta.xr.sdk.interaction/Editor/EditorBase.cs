@@ -373,9 +373,16 @@ namespace Oculus.Interaction.Editor
                     EditorGUILayout.PropertyField(property, includeChildren: true);
                 }
             }
+            catch (ExitGUIException e)
+            {
+                // "exception handling in your GUI code, should not catch this exception type"
+                // https://docs.unity3d.com/ScriptReference/ExitGUIException.html
+                throw e;
+            }
             catch (Exception e)
             {
-                Debug.LogError($"Error drawing property {e.Message}");
+                Debug.LogError($"Error drawing '{property.name}' property {e.Message}");
+                Debug.LogException(e);
             }
         }
 

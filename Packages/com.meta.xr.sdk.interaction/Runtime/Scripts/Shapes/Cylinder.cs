@@ -22,8 +22,14 @@ using UnityEngine;
 
 namespace Oculus.Interaction
 {
+    /// <summary>
+    /// Helps determine the position, orientation, and size of curved components such as the CanvasCylinder, CylinderSurface, and ClippedCylinderSurface. In a curved UI with multiple canvases, a single cylinder can be used to drive all panels, removing the need to manually align each panel in a cylinder orientation.
+    /// </summary>
     public class Cylinder : MonoBehaviour
     {
+        /// <summary>
+        /// The radius of the cylinder.
+        /// </summary>
         [Tooltip("The radius of the cylinder.")]
         [SerializeField]
         private float _radius = 1f;

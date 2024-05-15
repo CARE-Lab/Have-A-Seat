@@ -22,6 +22,7 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
 {
     internal static class BlockDataIds
     {
+        public const string Interaction = "81f55626-5fad-45e9-a1df-184f330da7ba";
         public const string InteractionHandTracking = "0393ca30-f2a9-4865-a40f-f9a68d01c3a9";
         public const string SyntheticHandBlockData = "6b67162c-2460-4766-a931-980388647573";
         public const string HandGrab = "f8766c17-aaf8-4b55-9431-de8deea83842";

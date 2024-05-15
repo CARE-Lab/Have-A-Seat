@@ -39,10 +39,11 @@ namespace Oculus.Interaction
 
         protected override void Start()
         {
-            base.Start();
+            this.BeginStart(ref _started, () => base.Start());
             this.AssertField(Canvas, nameof(Canvas));
             this.AssertIsTrue(Canvas.TryGetComponent(out GraphicRaycaster raycaster),
                 $"{nameof(PointableCanvas)} requires that the {nameof(Canvas)} object has an attached GraphicRaycaster.");
+            this.EndStart(ref _started);
         }
 
         private void Register()

@@ -35,22 +35,22 @@ namespace Meta.XR.BuildingBlocks.Editor
         {
             public Type InteractableType;
             public Type InteractorType;
-            
+
             public abstract IEnumerable<GameObject> Create(GameObject target);
         }
-        
+
         internal class InteractableCreationDescription<TWizard> : InteractableCreationDescriptionBase
             where TWizard : QuickActionsWizard
         {
             public Func<GameObject, bool, Action<TWizard>, IEnumerable<GameObject>> CreationDelegate;
             public Action<TWizard> Injections;
-            
+
             public override IEnumerable<GameObject> Create(GameObject target)
             {
                 return CreationDelegate?.Invoke(target, false, Injections);
             }
         }
-        
+
         private enum InteractableTypes
         {
             HandGrab,
@@ -59,12 +59,12 @@ namespace Meta.XR.BuildingBlocks.Editor
             DistanceHandGrabAnchorAtHand,
             DistanceHandGrabHandToInteractable
         }
-        
+
         protected override bool UsesPrefab => false;
 
         [SerializeField]
         private InteractableTypes _type;
-        
+
         internal InteractableCreationDescriptionBase CreationDescription
         {
             get
@@ -82,57 +82,55 @@ namespace Meta.XR.BuildingBlocks.Editor
         private static readonly Dictionary<InteractableTypes, InteractableCreationDescriptionBase>
             InteractableCreationDescriptions = new Dictionary<InteractableTypes, InteractableCreationDescriptionBase>
             {
-                { 
-                    InteractableTypes.HandGrab, 
+                {
+                    InteractableTypes.HandGrab,
                     new InteractableCreationDescription<GrabWizard>()
                     {
                         InteractableType =  typeof(HandGrabInteractable),
                         InteractorType = typeof(HandGrabInteractor),
                         CreationDelegate = QuickActionsWizard.CreateWithDefaults
-                    } 
+                    }
                 },
-                { 
-                    InteractableTypes.DistanceHandGrab, 
+                {
+                    InteractableTypes.DistanceHandGrab,
                     new InteractableCreationDescription<DistanceGrabWizard>()
                     {
                         InteractableType =  typeof(DistanceHandGrabInteractable),
                         InteractorType = typeof(DistanceHandGrabInteractor),
                         CreationDelegate = QuickActionsWizard.CreateWithDefaults,
                         Injections = wizard => { wizard.InjectMode(DistanceGrabWizard.Mode.InteractableToHand); }
-                    } 
+                    }
                 },
-                { 
-                    InteractableTypes.DistanceHandGrabAnchorAtHand, 
+                {
+                    InteractableTypes.DistanceHandGrabAnchorAtHand,
                     new InteractableCreationDescription<DistanceGrabWizard>()
                     {
                         InteractableType =  typeof(DistanceHandGrabInteractable),
                         InteractorType = typeof(DistanceHandGrabInteractor),
                         CreationDelegate = QuickActionsWizard.CreateWithDefaults,
                         Injections = wizard => { wizard.InjectMode(DistanceGrabWizard.Mode.AnchorAtHand); }
-                    } 
+                    }
                 },
-                { 
-                    InteractableTypes.DistanceHandGrabHandToInteractable, 
+                {
+                    InteractableTypes.DistanceHandGrabHandToInteractable,
                     new InteractableCreationDescription<DistanceGrabWizard>()
                     {
                         InteractableType =  typeof(DistanceHandGrabInteractable),
                         InteractorType = typeof(DistanceHandGrabInteractor),
                         CreationDelegate = QuickActionsWizard.CreateWithDefaults,
                         Injections = wizard => { wizard.InjectMode(DistanceGrabWizard.Mode.HandToInteractable); }
-                    } 
+                    }
                 },
-                { 
-                    InteractableTypes.TouchHandGrab, 
+                {
+                    InteractableTypes.TouchHandGrab,
                     new InteractableCreationDescription<TouchHandGrabBlockWizard>()
                     {
                         InteractableType =  typeof(TouchHandGrabInteractable),
                         InteractorType = typeof(TouchHandGrabInteractor),
                         CreationDelegate = QuickActionsWizard.CreateWithDefaults
-                    } 
+                    }
                 }
             };
-
-        protected override List<GameObject> InstallRoutine() => InstallRoutine(null);
 
         protected override List<GameObject> InstallRoutine(GameObject selectedObject)
         {

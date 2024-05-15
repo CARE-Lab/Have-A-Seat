@@ -93,6 +93,7 @@ namespace Oculus.Interaction
                 SelectSurface = Surface;
                 _selectSurface = SelectSurface as MonoBehaviour;
             }
+
             this.EndStart(ref _started);
         }
 
@@ -106,7 +107,6 @@ namespace Oculus.Interaction
         /// <returns>Returns true if hit.</returns>
         public bool Raycast(Ray ray, out SurfaceHit hit, in float maxDistance, bool selectSurface)
         {
-            hit = new SurfaceHit();
             ISurface surface = selectSurface ? SelectSurface : Surface;
             return surface.Raycast(ray, out hit, maxDistance);
         }

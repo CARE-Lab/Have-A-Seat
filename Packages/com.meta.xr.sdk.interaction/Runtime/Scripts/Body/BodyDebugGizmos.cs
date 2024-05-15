@@ -44,11 +44,11 @@ namespace Oculus.Interaction.Body
 
         /// <summary>
         /// The coordinate space in which to draw the skeleton. World space draws the skeleton at the world Body location.
-        /// Local draws the skeleton relative to this transform's position.
+        /// Local draws the skeleton relative to this transform's position, and can be placed, scaled, or mirrored as desired.
         /// </summary>
         [Tooltip("The coordinate space in which to draw the skeleton. " +
             "World space draws the skeleton at the world Body location. " +
-            "Local draws the skeleton relative to this transform.")]
+            "Local draws the skeleton relative to this transform's position, and can be placed, scaled, or mirrored as desired.")]
         [SerializeField]
         private CoordSpace _space = CoordSpace.World;
 

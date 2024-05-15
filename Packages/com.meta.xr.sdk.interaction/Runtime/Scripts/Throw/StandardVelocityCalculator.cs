@@ -27,8 +27,8 @@ using UnityEngine.Assertions;
 namespace Oculus.Interaction.Throw
 {
     /// <summary>
-    /// Velocity calculator that depends only on an IPoseInputDevice,
-    /// which means its input agnostic.
+    /// Velocity calculator that depends only on an <cref="IPoseInputDevice" />, which means it's input agnostic.
+    /// The calculator determines the final velocity of a thrown GameObject by using buffered pose data that accounts for factors like trend velocity, tangential velocity, and external velocity.
     /// </summary>
     [Obsolete("Use " + nameof(RANSACVelocityCalculator) + " instead")]
     public class StandardVelocityCalculator : MonoBehaviour,
@@ -64,10 +64,16 @@ namespace Oculus.Interaction.Throw
             }
         }
 
+        /// <summary>
+        /// The input device to buffer pose data from.
+        /// </summary>
         [SerializeField, Interface(typeof(IPoseInputDevice))]
         private UnityEngine.Object _throwInputDevice;
         public IPoseInputDevice ThrowInputDevice { get; private set; }
 
+        /// <summary>
+        /// Offsets the computed center of mass of the input device. Use this if the computed center of mass is incorrect.
+        /// </summary>
         [SerializeField]
         [Tooltip("The reference position is the center of mass of the hand or controller." +
             " Use this offset this in case the computed center of mass is not entirely correct.")]
@@ -77,25 +83,46 @@ namespace Oculus.Interaction.Throw
             "velocity calculation.")]
         private BufferingParams _bufferingParams;
 
+        /// <summary>
+        /// The influence of latest velocities when the GameObject is thrown. Can be a value between 0 and 1, inclusive.
+        /// </summary>
         [SerializeField, Tooltip("Influence of latest velocities upon release.")]
         [Range(0.0f, 1.0f)]
         private float _instantVelocityInfluence = 1.0f;
+
+        /// <summary>
+        /// The influence of derived velocities trend when the GameObject is thrown. Can be a value between 0 and 1, inclusive.
+        /// </summary>
         [SerializeField]
         [Range(0.0f, 1.0f), Tooltip("Influence of derived velocities trend upon release.")]
         private float _trendVelocityInfluence = 1.0f;
+
+        /// <summary>
+        ///  The influence of tangential velocities when the GameObject is thrown, which can be affected by rotation. Can be a value between 0 and 1, inclusive.
+        /// </summary>
         [SerializeField]
         [Range(0.0f, 1.0f), Tooltip("Influence of tangential velcities upon release, which" +
             " can be affected by rotational motion.")]
         private float _tangentialVelocityInfluence = 1.0f;
+
+        /// <summary>
+        /// The influence of external velocities when the GameObject is thrown. For hands, this can include fingers. Can be a value between 0 and 1, inclusive.
+        /// </summary>
         [SerializeField]
         [Range(0.0f, 1.0f), Tooltip("Influence of external velocities upon release. For hands, " +
             "this can include fingers.")]
         private float _externalVelocityInfluence = 0.0f;
 
+        /// <summary>
+        /// The time of anticipated release in seconds. Defaults to 0.08. Hand tracking may have greater latency compared to controllers.
+        /// </summary>
         [SerializeField, Tooltip("Time of anticipated release. Hand tracking " +
             "might experience greater latency compared to controllers.")]
         private float _stepBackTime = 0.08f;
 
+        /// <summary>
+        /// Trend velocity uses a window of velocities, assuming not too many of those velocities are zero. If the number of velocities that are zero exceeds this max percentage, then a last resort method is used.
+        /// </summary>
         [SerializeField, Tooltip("Trend velocity uses a window of velocities, " +
             "assuming not too many of those velocities are zero. If they exceed a max percentage " +
             "then a last resort method is used.")]

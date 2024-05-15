@@ -254,8 +254,7 @@ namespace Oculus.Interaction.Editor.QuickActions
             {
                 if (types.HasFlag(interactor) &&
                     !GetExistingHandInteractors(parentTransform).HasFlag(interactor) &&
-                    TryGetTypeForHandInteractor(interactor, out Type type) &&
-                    Templates.TryGetHandInteractorTemplate(type, out var template))
+                    Templates.TryGetHandInteractorTemplate(interactor, out var template))
                 {
                     GameObject newInteractor = AddInteractor(template, hmd, parentTransform, group);
                     newInteractor.GetComponent<HandRef>().InjectHand(hand);
@@ -278,8 +277,7 @@ namespace Oculus.Interaction.Editor.QuickActions
             {
                 if (types.HasFlag(interactor) &&
                     !GetExistingControllerInteractors(parentTransform).HasFlag(interactor) &&
-                    TryGetTypeForControllerInteractor(interactor, out Type type) &&
-                    Templates.TryGetControllerInteractorTemplate(type, out var template))
+                    Templates.TryGetControllerInteractorTemplate(interactor, out var template))
                 {
                     GameObject newInteractor = AddInteractor(template, hmd, parentTransform, group);
                     newInteractor.GetComponent<ControllerRef>().InjectController(controller);

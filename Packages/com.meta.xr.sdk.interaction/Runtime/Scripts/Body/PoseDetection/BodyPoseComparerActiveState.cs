@@ -93,6 +93,7 @@ namespace Oculus.Interaction.Body.PoseDetection
 
         /// <summary>
         /// A new state must be maintaned for at least this many seconds before the Active property changes.
+        /// Prevents unwanted momentary activations/deactivations of the IActiveState.
         /// </summary>
         [Tooltip("A new state must be maintaned for at least this " +
             "many seconds before the Active property changes.")]

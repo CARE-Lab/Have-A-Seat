@@ -29,7 +29,7 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
 {
     public class OVRHandPhysicsBlockData : BlockData
     {
-        protected override List<GameObject> InstallRoutine()
+        protected override List<GameObject> InstallRoutine(GameObject selectedGameObject)
         {
             var handPhysicsBlocks = new List<GameObject>();
             foreach (var hand in BlocksUtils.GetHands())

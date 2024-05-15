@@ -25,17 +25,30 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection
 {
+    /// <summary>
+    /// Used during hand pose detection to compare the current state of a hand's fingers to the state required by a given shape. The shape's required state is defined in a <cref="ShapeRecognizer" />.
+    /// If the two match, this state becomes active.
+    /// </summary>
     public class ShapeRecognizerActiveState : MonoBehaviour, IActiveState
     {
+        /// <summary>
+        /// The hand to read for state data.
+        /// </summary>
         [SerializeField, Interface(typeof(IHand))]
         private UnityEngine.Object _hand;
         public IHand Hand { get; private set; }
 
+        /// <summary>
+        /// Provides the current state of the tracked hand's fingers.
+        /// </summary>
         [SerializeField, Interface(typeof(IFingerFeatureStateProvider))]
         private UnityEngine.Object _fingerFeatureStateProvider;
 
         protected IFingerFeatureStateProvider FingerFeatureStateProvider;
 
+        /// <summary>
+        /// A list of shape configs that define the pose. The states in these shape configs are compared to the finger states from the <cref="IFingerFeatureStateProvider" />.
+        /// </summary>
         [SerializeField]
         private ShapeRecognizer[] _shapes;
         public IReadOnlyList<ShapeRecognizer> Shapes => _shapes;

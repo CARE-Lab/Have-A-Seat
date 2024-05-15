@@ -18,10 +18,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Assertions;
 using Oculus.Interaction.Surfaces;
+using UnityEngine;
 
 namespace Oculus.Interaction
 {

@@ -26,6 +26,10 @@ using System.Collections.Generic;
 
 namespace Oculus.Interaction.PoseDetection
 {
+    /// <summary>
+    /// Tracks velocities (position deltas over the last two frames) for a list of joints and compares them to a velocity target along the provided axes.
+    /// If the velocity target (units per second) is met for the minimum time threshold, the state becomes Active.
+    /// </summary>
     public class JointVelocityActiveState : MonoBehaviour,
         IActiveState, ITimeConsumer
     {

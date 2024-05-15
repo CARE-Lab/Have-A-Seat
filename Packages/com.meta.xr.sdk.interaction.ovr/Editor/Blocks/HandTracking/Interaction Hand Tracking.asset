@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 0393ca30-f2a9-4865-a40f-f9a68d01c3a9
   version: 1
-  blockName: Hand Tracking
+  blockName: Hand Interactions
   description: Interaction internal hand tracking logic
   tags:
     array:
@@ -23,9 +23,11 @@ MonoBehaviour:
   thumbnail: {fileID: 0}
   order: 0
   prefab: {fileID: 6388487641241208223, guid: 44ed1c64fbd105143bff979a6c52c4d6, type: 3}
+  externalBlockDependencies: []
   dependencies:
   - 81f55626-5fad-45e9-a1df-184f330da7ba
   - 8b26b298-7bf4-490e-b245-a039c0184303
+  packageDependencies: []
   isSingleton: 1
   usageInstructions: 
   _interactionBlockId: 81f55626-5fad-45e9-a1df-184f330da7ba

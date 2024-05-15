@@ -20,7 +20,7 @@
 
 using UnityEngine;
 
-namespace Oculus.Interaction.HandGrab
+namespace Oculus.Interaction
 {
     /// <summary>
     /// Snaps the selected interactable to your interactor.

@@ -24,8 +24,15 @@ using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {
+    /// <summary>
+    /// Remaps Pointable events on the surface of a CanvasRenderMesh to Pointable events on the underlying Canvas.
+    /// This should be used to forward Pointable events to a Pointable Canvas when using Curved Canvases.
+    /// </summary>
     public class PointableCanvasMesh : PointableElement
     {
+        /// <summary>
+        /// This CanvasMesh determines the Pose of PointerEvents.
+        /// </summary>
         [Tooltip("This CanvasMesh determines the Pose of PointerEvents.")]
         [SerializeField]
         [FormerlySerializedAs("_canvasRenderTextureMesh")]

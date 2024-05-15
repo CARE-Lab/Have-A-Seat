@@ -33,6 +33,9 @@ namespace Oculus.Interaction
         Cancel
     }
 
+    /// <summary>
+    /// Used to create event payloads when an interaction occurs. Contains information about the type of interaction, where it occurred in space, and any custom data associated with the interaction.
+    /// </summary>
     public struct PointerEvent: IEvent
     {
         public int Identifier { get; }

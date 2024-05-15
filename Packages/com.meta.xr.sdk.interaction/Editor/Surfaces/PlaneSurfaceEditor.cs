@@ -51,7 +51,8 @@ namespace Oculus.Interaction.Editor
             if (SceneView.lastActiveSceneView?.camera != null)
             {
                 Transform camTransform = SceneView.lastActiveSceneView.camera.transform;
-                bool isBehind = Vector3.Dot(camTransform.forward, plane.transform.forward) < 0f;
+                bool isBehind = Vector3.Dot(camTransform.position, plane.transform.forward)
+                    - Vector3.Dot(plane.transform.position, plane.transform.forward) > 0f;
                 if (isBehind)
                 {
                     color = ColorBack;

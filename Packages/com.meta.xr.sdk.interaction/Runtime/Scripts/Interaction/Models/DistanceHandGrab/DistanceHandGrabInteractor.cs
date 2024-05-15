@@ -265,7 +265,7 @@ namespace Oculus.Interaction.HandGrab
                 (evt.Type == PointerEventType.Select || evt.Type == PointerEventType.Unselect))
             {
                 WristToGrabPoseOffset = this.GetGrabOffset();
-                TrySetTarget(SelectedInteractable, this.CurrentGrabType());
+                SetTarget(SelectedInteractable, _currentGrabType);
                 this.Movement = this.GenerateMovement(SelectedInteractable);
 
                 Pose fromPose = this.GetTargetGrabPose();
@@ -347,7 +347,7 @@ namespace Oculus.Interaction.HandGrab
         {
             WristToGrabPoseOffset = this.GetGrabOffset();
             GrabTypeFlags selectingGrabTypes = SelectingGrabTypes(interactable);
-            TrySetTarget(interactable, selectingGrabTypes);
+            SetTarget(interactable, selectingGrabTypes);
             float grabStrength = HandGrabInteraction.ComputeHandGrabScore(this, interactable, out _);
             SetGrabStrength(grabStrength);
         }
@@ -362,18 +362,14 @@ namespace Oculus.Interaction.HandGrab
                 out GrabTypeFlags selectingGrabTypes, true);
             if (grabStrength <= interactable.Slippiness)
             {
-                TrySetTarget(interactable, selectingGrabTypes);
+                SetTarget(interactable, selectingGrabTypes);
             }
         }
 
-        private bool TrySetTarget(IHandGrabInteractable interactable, GrabTypeFlags selectingGrabTypes)
+        private void SetTarget(IHandGrabInteractable interactable, GrabTypeFlags selectingGrabTypes)
         {
-            if (this.TryCalculateBestGrab(interactable, selectingGrabTypes, out HandGrabTarget.GrabAnchor anchorMode, ref _cachedResult))
-            {
-                HandGrabTarget.Set(interactable.RelativeTo, interactable.HandAlignment, anchorMode, _cachedResult);
-                return true;
-            }
-            return false;
+            this.CalculateBestGrab(interactable, selectingGrabTypes, out GrabTypeFlags activeGrabType, ref _cachedResult);
+            HandGrabTarget.Set(interactable.RelativeTo, interactable.HandAlignment, activeGrabType, _cachedResult);
         }
 
         private void SetGrabStrength(float strength)

@@ -83,9 +83,10 @@ namespace Oculus.Interaction
                 _emittedOnFirstUpdate = true;
             }
 
-            if (_savedState != ActiveState.Active)
+            bool active = ActiveState.Active;
+            if (_savedState != active)
             {
-                _savedState = ActiveState.Active;
+                _savedState = active;
                 InvokeEvent();
             }
         }

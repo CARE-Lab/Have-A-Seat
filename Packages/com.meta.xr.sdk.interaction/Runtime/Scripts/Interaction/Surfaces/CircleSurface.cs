@@ -22,13 +22,22 @@ using UnityEngine;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Used for interaction with circular surfaces. Computes the closest world point on a coordinate plane defined by the X and Y axes of the transform, within a provided radius from the transform’s origin.
+    /// </summary>
     public class CircleSurface : MonoBehaviour, ISurfacePatch
     {
+        /// <summary>
+        /// The circle will lay upon this plane, with the circle's center at the plane surface's origin.
+        /// </summary>
         [Tooltip("The circle will lay upon this plane, with " +
             "the circle's center at the plane surface's origin.")]
         [SerializeField]
         private PlaneSurface _planeSurface;
 
+        /// <summary>
+        /// The radius of the circle, scaled by the lossy scale of the transform.
+        /// </summary>
         [Tooltip("The radius of the circle.")]
         [SerializeField]
         private float _radius = 0.1f;

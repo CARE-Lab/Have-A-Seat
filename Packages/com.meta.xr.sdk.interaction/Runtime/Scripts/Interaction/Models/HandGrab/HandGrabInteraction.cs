@@ -22,6 +22,7 @@ using Oculus.Interaction.Grab;
 using UnityEngine;
 using Oculus.Interaction.GrabAPI;
 using Oculus.Interaction.Input;
+using System;
 
 namespace Oculus.Interaction.HandGrab
 {
@@ -41,42 +42,62 @@ namespace Oculus.Interaction.HandGrab
         /// <param name="anchorMode">The anchor to use for grabbing</param>
         /// <param name="handGrabResult">The a variable to store the result</param>
         /// <returns>True if a valid pose was found</returns>
+        [Obsolete("Use " + nameof(CalculateBestGrab) + " instead")]
         public static bool TryCalculateBestGrab(this IHandGrabInteractor handGrabInteractor,
             IHandGrabInteractable interactable, GrabTypeFlags grabTypes,
             out HandGrabTarget.GrabAnchor anchorMode, ref HandGrabResult handGrabResult)
         {
-            grabTypes = grabTypes & interactable.SupportedGrabTypes;
-            anchorMode = HandGrabInteractionPoses.GetBestAvailableAnchor(handGrabInteractor, grabTypes);
-            Pose handPose = HandGrabInteractionPoses.GetHandAlignmentPoint(handGrabInteractor, interactable.UsesHandPose, anchorMode);
+            CalculateBestGrab(handGrabInteractor, interactable, grabTypes,
+                out GrabTypeFlags activeGrabFlags, ref handGrabResult);
 
-            if (interactable.CalculateBestPose(handPose,
-                handGrabInteractor.Hand.Scale, handGrabInteractor.Hand.Handedness, ref handGrabResult))
+            if (activeGrabFlags.HasFlag(GrabTypeFlags.Pinch))
             {
-                return true;
+                anchorMode = HandGrabTarget.GrabAnchor.Pinch;
             }
-            return false;
+            else if (activeGrabFlags.HasFlag(GrabTypeFlags.Palm))
+            {
+                anchorMode = HandGrabTarget.GrabAnchor.Palm;
+            }
+            else
+            {
+                anchorMode = HandGrabTarget.GrabAnchor.Wrist;
+            }
+
+            return true;
+        }
+
+        [Obsolete]
+        public static GrabTypeFlags CurrentGrabType(this IHandGrabInteractor handGrabInteractor)
+        {
+            return handGrabInteractor.HandGrabTarget.Anchor;
         }
 
         /// <summary>
-        /// Gets the current GrabAnchor as a GrabTypeFlag
+        /// Calculates a new target. That is the point of the
+        /// interactable at which the HandGrab will happen.
         /// </summary>
-        /// <param name="handGrabInteractor">The interactor whose anchor tor inspect</param>
-        /// <returns>A GrabTypeFlags matching the actual Anchor</returns>
-        public static GrabTypeFlags CurrentGrabType(this IHandGrabInteractor handGrabInteractor)
+        /// <param name="handGrabInteractor">The interactor grabbing</param>
+        /// <param name="interactable">The interactable to be HandGrabbed</param>
+        /// <param name="grabFlags">The supported GrabTypes</param>
+        /// <param name="activeGrabFlags">The anchor to use for grabbing</param>
+        /// <param name="result">The a variable to store the result</param>
+        public static void CalculateBestGrab(this IHandGrabInteractor handGrabInteractor,
+        IHandGrabInteractable interactable, GrabTypeFlags grabFlags,
+        out GrabTypeFlags activeGrabFlags, ref HandGrabResult result)
         {
-            switch (handGrabInteractor.HandGrabTarget.Anchor)
-            {
-                case HandGrabTarget.GrabAnchor.Pinch: return GrabTypeFlags.Pinch;
-                case HandGrabTarget.GrabAnchor.Palm: return GrabTypeFlags.Palm;
-                case HandGrabTarget.GrabAnchor.Wrist: return GrabTypeFlags.All;
-                default: return GrabTypeFlags.None;
-            }
+            activeGrabFlags = grabFlags & interactable.SupportedGrabTypes;
+            GetPoseOffset(handGrabInteractor, activeGrabFlags, out Pose handPose, out Pose grabOffset);
+
+            interactable.CalculateBestPose(handPose, grabOffset, interactable.RelativeTo,
+                handGrabInteractor.Hand.Scale, handGrabInteractor.Hand.Handedness,
+               ref result);
         }
 
         /// <summary>
         /// Initiates the movement of the Interactable
         /// with the current HandGrabTarget
         /// </summary>
+        /// <param name="handGrabInteractor">The interactor grabbing</param>
         /// <param name="interactable">The interactable to be HandGrabbed</param>
         public static IMovement GenerateMovement(this IHandGrabInteractor handGrabInteractor, IHandGrabInteractable interactable)
         {
@@ -91,7 +112,7 @@ namespace Oculus.Interaction.HandGrab
         /// <returns>The pose in world coordinates</returns>
         public static Pose GetHandGrabPose(this IHandGrabInteractor handGrabInteractor)
         {
-            Pose wristPose = HandGrabInteractionPoses.GetPose(handGrabInteractor, HandGrabTarget.GrabAnchor.Wrist);
+            GetPoseOffset(handGrabInteractor, GrabTypeFlags.None, out Pose wristPose, out _);
             return PoseUtils.Multiply(wristPose, handGrabInteractor.WristToGrabPoseOffset);
         }
 
@@ -99,6 +120,7 @@ namespace Oculus.Interaction.HandGrab
         /// Calculates the GrabPoseScore for an interactable with the
         /// given grab modes.
         /// </summary>
+        /// <param name="handGrabInteractor">The interactor grabbing</param>
         /// <param name="interactable">The interactable to measure to</param>
         /// <param name="grabTypes">The supported grab types for the grab</param>
         /// <param name="result">Calculating the score requires finding the best grab pose. It is stored here.</param>
@@ -106,15 +128,14 @@ namespace Oculus.Interaction.HandGrab
         public static GrabPoseScore GetPoseScore(this IHandGrabInteractor handGrabInteractor, IHandGrabInteractable interactable,
             GrabTypeFlags grabTypes, ref HandGrabResult result)
         {
-            grabTypes = grabTypes & interactable.SupportedGrabTypes;
-            HandGrabTarget.GrabAnchor anchorMode = HandGrabInteractionPoses.GetBestAvailableAnchor(handGrabInteractor, grabTypes);
-            Pose handPose = HandGrabInteractionPoses.GetHandAlignmentPoint(handGrabInteractor, interactable.UsesHandPose, anchorMode);
-            if (interactable.CalculateBestPose(handPose,
-                handGrabInteractor.Hand.Scale, handGrabInteractor.Hand.Handedness, ref result))
-            {
-                return result.Score;
-            }
-            return GrabPoseScore.Max;
+            GrabTypeFlags activeGrabFlags = grabTypes & interactable.SupportedGrabTypes;
+            GetPoseOffset(handGrabInteractor, activeGrabFlags, out Pose handPose, out Pose grabOffset);
+
+            interactable.CalculateBestPose(handPose, grabOffset, interactable.RelativeTo,
+                handGrabInteractor.Hand.Scale, handGrabInteractor.Hand.Handedness,
+                ref result);
+
+            return result.Score;
         }
 
         /// <summary>
@@ -131,16 +152,7 @@ namespace Oculus.Interaction.HandGrab
                 return false;
             }
 
-            GrabTypeFlags handGrabTypes = GrabTypeFlags.None;
-            if (SupportsPinch(handGrabInteractor, handGrabInteractable))
-            {
-                handGrabTypes |= GrabTypeFlags.Pinch;
-            }
-            if (SupportsPalm(handGrabInteractor, handGrabInteractable))
-            {
-                handGrabTypes |= GrabTypeFlags.Palm;
-            }
-            return handGrabTypes != GrabTypeFlags.None;
+            return (handGrabInteractor.SupportedGrabTypes & handGrabInteractable.SupportedGrabTypes) != GrabTypeFlags.None;
         }
 
         /// <summary>
@@ -151,9 +163,8 @@ namespace Oculus.Interaction.HandGrab
         /// <returns>The local offset from the wrist to the grab point</returns>
         public static Pose GetGrabOffset(this IHandGrabInteractor handGrabInteractor)
         {
-            Pose grabPose = HandGrabInteractionPoses.GetPose(handGrabInteractor, handGrabInteractor.HandGrabTarget.Anchor);
-            Pose wristPose = HandGrabInteractionPoses.GetPose(handGrabInteractor, HandGrabTarget.GrabAnchor.Wrist);
-            Pose wristToGrabPoseOffset = PoseUtils.Delta(wristPose, grabPose);
+            GetPoseOffset(handGrabInteractor, handGrabInteractor.HandGrabTarget.Anchor,
+                out _, out Pose wristToGrabPoseOffset);
             return wristToGrabPoseOffset;
 
         }
@@ -299,58 +310,42 @@ namespace Oculus.Interaction.HandGrab
         private static bool SupportsPinch(IHandGrabInteractor handGrabInteractor,
             GrabTypeFlags grabTypes)
         {
-            return (handGrabInteractor.SupportedGrabTypes & GrabTypeFlags.Pinch) != 0 &&
-                (grabTypes & GrabTypeFlags.Pinch) != 0;
+            return (handGrabInteractor.SupportedGrabTypes & grabTypes & GrabTypeFlags.Pinch) != 0;
         }
 
         private static bool SupportsPalm(IHandGrabInteractor handGrabInteractor,
             GrabTypeFlags grabTypes)
         {
-            return (handGrabInteractor.SupportedGrabTypes & GrabTypeFlags.Palm) != 0 &&
-                (grabTypes & GrabTypeFlags.Palm) != 0;
+            return (handGrabInteractor.SupportedGrabTypes & grabTypes & GrabTypeFlags.Palm) != 0;
         }
 
-        private class HandGrabInteractionPoses
+        /// <summary>
+        /// Calculates the root of a grab and the practica offset to the grabbing point
+        /// </summary>
+        /// <param name="handGrabInteractor">The interactor grabbing</param>
+        /// <param name="anchorMode">The grab types to be used</param>
+        /// <param name="pose">The root of the grab pose to use</param>
+        /// <param name="offset">The offset form the root for accurate scoring</param>
+        public static void GetPoseOffset(this IHandGrabInteractor handGrabInteractor, GrabTypeFlags anchorMode,
+            out Pose pose, out Pose offset)
         {
-            public static HandGrabTarget.GrabAnchor GetBestAvailableAnchor(IHandGrabInteractor handGrabInteractor,
-                GrabTypeFlags grabTypes)
-            {
-                if (handGrabInteractor.PalmPoint != null
-                    && (grabTypes & GrabTypeFlags.Palm) != 0)
-                {
-                    return HandGrabTarget.GrabAnchor.Palm;
-                }
-                else if (handGrabInteractor.PinchPoint != null
-                    && (grabTypes & GrabTypeFlags.Pinch) != 0)
-                {
-                    return HandGrabTarget.GrabAnchor.Pinch;
-                }
-                else
-                {
-                    return HandGrabTarget.GrabAnchor.Wrist;
-                }
-            }
+            handGrabInteractor.Hand.GetRootPose(out pose);
+            offset = Pose.identity;
 
-            public static Pose GetHandAlignmentPoint(IHandGrabInteractor handGrabInteractor,
-                bool forceWrist, HandGrabTarget.GrabAnchor anchorMode)
+            if (anchorMode == GrabTypeFlags.None)
             {
-                return GetPose(handGrabInteractor, forceWrist ? HandGrabTarget.GrabAnchor.Wrist : anchorMode);
+                return;
             }
-
-            public static Pose GetPose(IHandGrabInteractor handGrabInteractor,
-                HandGrabTarget.GrabAnchor anchorMode)
+            else if ((anchorMode & GrabTypeFlags.Pinch) != 0
+                && handGrabInteractor.PinchPoint != null)
             {
-                if (anchorMode == HandGrabTarget.GrabAnchor.Pinch && handGrabInteractor.PinchPoint != null)
-                {
-                    return handGrabInteractor.PinchPoint.GetPose();
-                }
-                else if (anchorMode == HandGrabTarget.GrabAnchor.Palm && handGrabInteractor.PalmPoint != null)
-                {
-                    return handGrabInteractor.PalmPoint.GetPose();
-                }
-
-                return handGrabInteractor.WristPoint.GetPose();
+                offset = PoseUtils.Delta(pose, handGrabInteractor.PinchPoint.GetPose());
             }
+            else if ((anchorMode & GrabTypeFlags.Palm) != 0
+                && handGrabInteractor.PalmPoint != null)
+            {
+                offset = PoseUtils.Delta(pose, handGrabInteractor.PalmPoint.GetPose());
+            };
         }
     }
 }

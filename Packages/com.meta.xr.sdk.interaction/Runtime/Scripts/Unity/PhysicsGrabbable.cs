@@ -24,13 +24,22 @@ using UnityEngine.Serialization;
 
 namespace Oculus.Interaction
 {
+    /// <summary>
+    /// Makes the GameObject it's attached to kinematic during a grab. As a result, the GameObject can be transformed 1-1 without any undesirable effects.
+    /// </summary>
     public class PhysicsGrabbable : MonoBehaviour
     {
+        /// <summary>
+        /// The <cref="IPointable" /> of the non-kinematic GameObject that should be kinematic during a grab.
+        /// </summary>
         [SerializeField, Interface(typeof(IPointable))]
         [FormerlySerializedAs("_grabbable")]
         private UnityEngine.Object _pointable;
         private IPointable Pointable { get; set; }
 
+        /// <summary>
+        /// The <cref="Rigidbody" /> of the non-kinematic GameObject that should be kinematic during a grab.
+        /// </summary>
         [SerializeField]
         private Rigidbody _rigidbody;
 

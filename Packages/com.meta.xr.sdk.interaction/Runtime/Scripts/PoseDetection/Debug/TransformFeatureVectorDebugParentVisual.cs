@@ -23,6 +23,10 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Creates vector debug views for the FeatureStates belonging to a <cref="TransformRecognizerActiveState" />, one vector for the feature and another vector for the hand.
+    /// When both vectors are visualized, one can see how close the (blue) hand vector is to the (black) feature vector that it is being tested against in <cref="TransformFeatureValueProvider" />.
+    /// </summary>
     public class TransformFeatureVectorDebugParentVisual : MonoBehaviour
     {
         [SerializeField]

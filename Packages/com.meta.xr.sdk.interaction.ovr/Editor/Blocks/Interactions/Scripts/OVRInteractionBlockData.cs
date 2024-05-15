@@ -22,18 +22,20 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Meta.XR.BuildingBlocks.Editor;
+using Oculus.Interaction.Input;
 using UnityEditor;
 
 namespace Oculus.Interaction.Editor.BuildingBlocks
 {
     public class OVRInteractionBlockData : BlockData
     {
-        public string _cameraRigBlockId;
-
-        protected override List<GameObject> InstallRoutine()
+        protected override List<GameObject> InstallRoutine(GameObject selectedGameObject)
         {
-            var cameraRigBlockData = Meta.XR.BuildingBlocks.Editor.Utils.GetBlockData(_cameraRigBlockId);
-            var cameraRigBlock = cameraRigBlockData.GetBlock();
+            // Early out if we can find a pre-existing non block version. It will get blockified
+            if (TryGetPreexistingNonBlock(out var nonBlockObject)) return new List<GameObject>() { nonBlockObject };
+
+            // Early out if we cannot find the camera rig block as it is required as a dependency
+            var cameraRigBlock = Meta.XR.BuildingBlocks.Editor.Utils.GetBlock(Meta.XR.BuildingBlocks.Editor.BlockDataIds.CameraRig);
             if (cameraRigBlock == null)
             {
                 throw new InvalidOperationException(
@@ -47,7 +49,15 @@ namespace Oculus.Interaction.Editor.BuildingBlocks
             BlocksUtils.UpdateForAutoWiring(interaction);
             Undo.RegisterFullObjectHierarchyUndo(interaction, $"Auto-Wiring {BlockName}");
 
-            return  new List<GameObject>() { interaction };
+            return new List<GameObject>() { interaction };
+        }
+
+        private static bool TryGetPreexistingNonBlock(out GameObject nonBlockObject)
+        {
+            var hmd = FindObjectOfType<Hmd>();
+            var interactions = hmd != null ? hmd.transform.parent : null;
+            nonBlockObject = interactions != null ? interactions.gameObject : null;
+            return nonBlockObject != null;
         }
     }
 }

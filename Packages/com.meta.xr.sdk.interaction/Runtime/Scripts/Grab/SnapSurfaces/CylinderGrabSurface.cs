@@ -296,11 +296,17 @@ namespace Oculus.Interaction.Grab.GrabSurfaces
             return projectedPoint;
         }
 
-
         public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, out Pose bestPose,
             in PoseMeasureParameters scoringModifier, Transform relativeTo)
         {
-            return GrabPoseHelper.CalculateBestPoseAtSurface(targetPose, out bestPose,
+            return CalculateBestPoseAtSurface(targetPose, Pose.identity, out bestPose,
+                scoringModifier, relativeTo);
+        }
+
+        public GrabPoseScore CalculateBestPoseAtSurface(in Pose targetPose, in Pose offset, out Pose bestPose,
+            in PoseMeasureParameters scoringModifier, Transform relativeTo)
+        {
+            return GrabPoseHelper.CalculateBestPoseAtSurface(targetPose, offset, out bestPose,
                 scoringModifier, relativeTo,
                 MinimalTranslationPoseAtSurface,
                 MinimalRotationPoseAtSurface);

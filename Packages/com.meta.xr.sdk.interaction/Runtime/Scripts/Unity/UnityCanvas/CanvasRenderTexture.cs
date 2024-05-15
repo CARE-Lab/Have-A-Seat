@@ -30,7 +30,7 @@ namespace Oculus.Interaction.UnityCanvas
 {
     /// <summary>
     /// A component that, given a Canvas, renders the canvas to a RenderTexture.
-    /// Used in Interaction SDK's curved canvas.
+    /// Used in Interaction SDK's curved canvas. Each render mode has a unique use case.
     /// </summary>
     [DisallowMultipleComponent]
     public class CanvasRenderTexture : MonoBehaviour
@@ -63,9 +63,10 @@ namespace Oculus.Interaction.UnityCanvas
         private Canvas _canvas;
 
         /// <summary>
+        /// Used to increase resolution of rendered canvas.
         /// If you need extra resolution, you can use this as a whole-integer multiplier of the final resolution used to render the texture.
         /// </summary>
-        [Tooltip("If you need extra resolution, you can use this as a whole-integer multiplier " +
+        [Tooltip("Used to increase resolution of rendered canvas. If you need extra resolution, you can use this as a whole-integer multiplier " +
             "of the final resolution used to render the texture.")]
         [Range(1, 3)]
         [Delayed]
@@ -98,9 +99,9 @@ namespace Oculus.Interaction.UnityCanvas
         private bool _generateMipMaps = false;
 
         /// <summary>
-        /// Pixels per unit ratio used to drive the texture dimensions.
+        /// Pixels per unit ratio used to drive the texture dimensions. Determines the RenderTexture size from the canvas world size.
         /// </summary>
-        [Tooltip("Pixels per unit ratio used to drive the texture dimensions.")]
+        [Tooltip("Pixels per unit ratio used to drive the texture dimensions. Determines the RenderTexture size from the canvas world size.")]
         [SerializeField]
         private int _pixelsPerUnit = 100;
 

@@ -21,6 +21,7 @@
 using Oculus.Interaction.Grab;
 using Oculus.Interaction.Grab.GrabSurfaces;
 using Oculus.Interaction.Input;
+using System;
 using UnityEngine;
 
 namespace Oculus.Interaction.HandGrab
@@ -104,27 +105,29 @@ namespace Oculus.Interaction.HandGrab
             return _usesHandPose;
         }
 
+        [Obsolete("Use " + nameof(CalculateBestPose) + " with offset instead")]
         public virtual bool CalculateBestPose(Pose userPose,
             Handedness handedness, PoseMeasureParameters scoringModifier,
             Transform relativeTo, ref HandGrabResult result)
         {
-            result.HasHandPose = false;
-            if (HandPose != null
-                && HandPose.Handedness != handedness)
-            {
-                return false;
-            }
+            CalculateBestPose(userPose, Pose.identity, relativeTo, handedness, scoringModifier, ref result);
+            return true;
+        }
 
-            result.Score = CompareNearPoses(userPose,
-                scoringModifier, relativeTo, out Pose worldPose);
+        public virtual void CalculateBestPose(in Pose userPose, in Pose offset, Transform relativeTo,
+            Handedness handedness, PoseMeasureParameters scoringModifier,
+            ref HandGrabResult result)
+        {
+            result.HasHandPose = false;
+
+            result.Score = CompareNearPoses(userPose, offset, relativeTo,
+                scoringModifier, out Pose worldPose);
             result.RelativePose = PoseUtils.Delta(relativeTo, worldPose);
             if (HandPose != null)
             {
                 result.HasHandPose = true;
                 result.HandPose.CopyFrom(HandPose);
             }
-
-            return true;
         }
 
         /// <summary>
@@ -136,19 +139,18 @@ namespace Oculus.Interaction.HandGrab
         /// <param name="relativeTo">Reference transform used to measure the local parameters</param>
         /// <param name="bestWorldPose">Best pose available that is near the desired one</param>
         /// <returns>The score from the desired worldPoint to the result BestWorldPose</returns>
-        private GrabPoseScore CompareNearPoses(in Pose worldPoint,
-            PoseMeasureParameters scoringModifier, Transform relativeTo,
-            out Pose bestWorldPose)
+        private GrabPoseScore CompareNearPoses(in Pose worldPoint, in Pose offset,
+            Transform relativeTo, PoseMeasureParameters scoringModifier, out Pose bestWorldPose)
         {
             GrabPoseScore bestScore;
             if (SnapSurface != null)
             {
-                bestScore = SnapSurface.CalculateBestPoseAtSurface(worldPoint, out bestWorldPose, scoringModifier, relativeTo);
+                bestScore = SnapSurface.CalculateBestPoseAtSurface(worldPoint, offset, out bestWorldPose, scoringModifier, relativeTo);
             }
             else
             {
                 bestWorldPose = PoseUtils.GlobalPoseScaled(relativeTo, this.RelativePose);
-                bestScore = new GrabPoseScore(worldPoint, bestWorldPose, scoringModifier.PositionRotationWeight);
+                bestScore = new GrabPoseScore(worldPoint, bestWorldPose, offset, scoringModifier);
             }
 
             return bestScore;

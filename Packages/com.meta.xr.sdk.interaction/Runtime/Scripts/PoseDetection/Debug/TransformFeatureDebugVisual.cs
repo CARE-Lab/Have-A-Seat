@@ -25,6 +25,9 @@ using UnityEngine.Assertions;
 
 namespace Oculus.Interaction.PoseDetection.Debug
 {
+    /// <summary>
+    /// Changes the color of a target renderer to green if the specific TransformFeatureState is active, or red if not.
+    /// </summary>
     public class TransformFeatureDebugVisual : MonoBehaviour
     {
         [SerializeField]

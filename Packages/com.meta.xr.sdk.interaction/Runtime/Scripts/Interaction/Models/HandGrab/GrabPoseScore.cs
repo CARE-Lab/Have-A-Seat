@@ -33,22 +33,21 @@ namespace Oculus.Interaction.Grab
     {
         private float _translationScore;
         private float _rotationScore;
-        private float _rotationWeight;
+        private PoseMeasureParameters _measureParameters;
 
-        public static readonly GrabPoseScore Max = new GrabPoseScore(float.PositiveInfinity, float.PositiveInfinity, 0);
+        public static readonly GrabPoseScore Max = new GrabPoseScore(float.PositiveInfinity, float.PositiveInfinity, PoseMeasureParameters.DEFAULT);
 
         /// <summary>
         /// Creates a GrabPoseScore with the given values.
         /// </summary>
         /// <param name="translationScore">The translational score</param>
         /// <param name="rotationScore">The rotational score</param>
-        /// <param name="rotationWeight">The weight indicating preference
-        /// between translational (0) or rotational (1) scores</param>
-        public GrabPoseScore(float translationScore, float rotationScore, float rotationWeight)
+        /// <param name="measureParameters">Paremeters indicating how to compare scores</param>
+        public GrabPoseScore(float translationScore, float rotationScore, PoseMeasureParameters measureParameters)
         {
             _translationScore = translationScore;
             _rotationScore = rotationScore;
-            _rotationWeight = rotationWeight;
+            _measureParameters = measureParameters;
         }
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace Oculus.Interaction.Grab
         {
             _translationScore = PositionalScore(fromPoint, toPoint);
             _rotationScore = 0f;
-            _rotationWeight = 0f;
+            _measureParameters = PoseMeasureParameters.DEFAULT;
             if (isInside)
             {
                 _translationScore = -Mathf.Abs(_translationScore);
@@ -73,15 +72,17 @@ namespace Oculus.Interaction.Grab
         /// Calculates and creates a score from a desired pose
         /// to a reference pose.
         /// </summary>
-        /// <param name="poseA">The desired pose</param>
-        /// <param name="poseB">The reference pose</param>
-        /// <param name="rotationWeight">The weight indicating preference
-        /// between translational (0) or rotational (1) scores</param>
-        public GrabPoseScore(in Pose poseA, in Pose poseB, float rotationWeight)
+        /// <param name="poseA">The desired root pose</param>
+        /// <param name="poseB">The reference root pose</param>
+        /// <param name="offset">Offset from the poses for scoring</param>
+        /// <param name="measureParameters">Paremeters indicating how to compare scores</param>
+        public GrabPoseScore(in Pose poseA, in Pose poseB, in Pose offset, PoseMeasureParameters measureParameters)
         {
-            _translationScore = PositionalScore(poseA.position, poseB.position);
-            _rotationScore = RotationalScore(poseA.rotation, poseB.rotation);
-            _rotationWeight = rotationWeight;
+            Pose poseAOffset = PoseUtils.Multiply(poseA, offset);
+            Pose poseBOffset = PoseUtils.Multiply(poseB, offset);
+            _translationScore = PositionalScore(poseAOffset.position, poseBOffset.position);
+            _rotationScore = RotationalScore(poseAOffset.rotation, poseBOffset.rotation);
+            _measureParameters = measureParameters;
         }
 
         public bool IsValid()
@@ -92,7 +93,7 @@ namespace Oculus.Interaction.Grab
 
         private float Score(float maxDistance)
         {
-            return Mathf.Lerp(_translationScore, _rotationScore * maxDistance, _rotationWeight);
+            return Mathf.Lerp(_translationScore, _rotationScore * maxDistance, _measureParameters.PositionRotationWeight);
         }
 
         private static float PositionalScore(in Vector3 from, in Vector3 to)
@@ -128,7 +129,7 @@ namespace Oculus.Interaction.Grab
             return new GrabPoseScore(
                 Mathf.Lerp(from._translationScore, to._translationScore, t),
                 Mathf.Lerp(from._rotationScore, to._rotationScore, t),
-                Mathf.Lerp(from._rotationWeight, to._rotationWeight, t));
+                PoseMeasureParameters.Lerp(from._measureParameters, to._measureParameters, t));
         }
 
         /// <summary>

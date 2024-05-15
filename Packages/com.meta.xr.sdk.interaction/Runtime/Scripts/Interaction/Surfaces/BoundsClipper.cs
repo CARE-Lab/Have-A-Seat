@@ -22,14 +22,23 @@ using UnityEngine;
 
 namespace Oculus.Interaction.Surfaces
 {
+    /// <summary>
+    /// Clips a <cref"PlaneSurface" />. Each BoundsClipper represents a bounding box, similar to Unity’s BoxCollider.
+    /// </summary>
     public class BoundsClipper : MonoBehaviour, IBoundsClipper
     {
+        /// <summary>
+        /// The position offset from transform origin in local space.
+        /// </summary>
         [Tooltip("The offset of the bounding box center relative to " +
             "the transform origin, in local space.")]
         [SerializeField]
         private Vector3 _position = Vector3.zero;
 
-        [Tooltip("The local size of the bounding box.")]
+        /// <summary>
+        /// The size of the bounding box in local space.
+        /// </summary>
+        [Tooltip("The size of the bounding box in local space.")]
         [SerializeField]
         private Vector3 _size = Vector3.one;
 

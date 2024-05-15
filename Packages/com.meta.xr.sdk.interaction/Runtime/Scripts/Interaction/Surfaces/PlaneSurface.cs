@@ -24,6 +24,9 @@ namespace Oculus.Interaction.Surfaces
 {
     public class PlaneSurface : MonoBehaviour, ISurface, IBounds
     {
+        /// <summary>
+        /// Used for interaction with flat surfaces, and acts in much the same way as Unity’s Plane.
+        /// </summary>
         public enum NormalFacing
         {
             /// <summary>
@@ -37,12 +40,18 @@ namespace Oculus.Interaction.Surfaces
             Forward,
         }
 
+        /// <summary>
+        /// The direction the normal faces. If Forward,  the normal faces positive Z. If Backward, the normal faces negative Z.
+        /// </summary>
         [Tooltip("The normal facing of the surface. Hits will be " +
             "registered either on the front or back of the plane " +
             "depending on this value.")]
         [SerializeField]
         private NormalFacing _facing = NormalFacing.Backward;
 
+        /// <summary>
+        /// Determines whether raycasts will hit both sides of the plane. Note that the raycast hit normal will respect Facing regardless of this setting.
+        /// </summary>
         [SerializeField, Tooltip("Raycasts hit either side of plane, but hit normal " +
         "will still respect plane facing.")]
         private bool _doubleSided = false;
