@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         //StartCoroutine(SetupCorotuine());//yield return new WaitForSeconds(.5f);
         Debug.Log("Setting up");
         //Check if the boundary is configured
-        bool configured = OVRManager.boundary.GetConfigured();
+        /*bool configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
             IntializeArea();
@@ -63,10 +63,16 @@ public class GameManager : MonoBehaviour
         red_manager.XRTransform.transform.position += distDiff;
 
         for (int i = 0; i < trackingSpacePoints.Count; i++)
-            trackingSpacePoints[i].transform.position += distDiff;
+            trackingSpacePoints[i].transform.position += distDiff;*/
 
-     
+        var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
+        foreach (var wall in walls)
+        {
+            Debug.Log(wall.);
+        }
         _couchSpawner.SpawnPrefabs();
+        Vector3 pos = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
+        Debug.Log("spawned obj:"+pos);
         ready = true;
     }
     
