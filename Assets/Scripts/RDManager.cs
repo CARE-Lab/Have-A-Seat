@@ -39,8 +39,6 @@ public class RDManager : MonoBehaviour
     public GameObject ngArrow; // Arrow prefab
 
     public GameObject VirtualTarget;
-
-    public GameObject physicalTarget;
  
     [HideInInspector]
     public Vector3 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -161,7 +159,8 @@ public class RDManager : MonoBehaviour
 
     private Vector2 AttractiveNegativeGradient(Vector2 currPosReal)
     {
-        var gDelta = 2 * (new Vector2(currPosReal.x - physicalTarget.transform.position.x, currPosReal.y - physicalTarget.transform.position.z));
+        var physicalTargetPos = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
+        var gDelta = 2 * (new Vector2(currPosReal.x - physicalTargetPos.x, currPosReal.y -physicalTargetPos.y));
         return -gDelta;//NegtiveGradient
     }
     
@@ -171,7 +170,7 @@ public class RDManager : MonoBehaviour
 
         //position and direction in physical tracking space
         var objVirtualPos = Utilities.FlattenedPos2D(VirtualTarget.transform.position);
-        var objPhysicalPos = Utilities.FlattenedPos2D(physicalTarget.transform.position);
+        var objPhysicalPos = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
 
         //the virtual distance from the user to the alignment target
         var Dv = (objVirtualPos - Utilities.FlattenedPos2D(currPos)).magnitude;
@@ -246,6 +245,7 @@ public class RDManager : MonoBehaviour
         }
 
         XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        Transform physicalTarget = gameManager.physicalChair.transform;
         physicalTarget.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         physicalTarget.transform.Translate(translation, Space.World);
         //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);

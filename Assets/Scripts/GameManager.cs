@@ -20,16 +20,19 @@ public class GameManager : MonoBehaviour
     
     public Transform startPos;
     public GameObject debug_UI;
+    public TextMeshProUGUI eyeData;
     
     [HideInInspector] public GameObject trackedArea;
     [HideInInspector] public bool debugMode = true;
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
+    [HideInInspector] public GameObject physicalChair;
 
     [SerializeField] GameObject wallMarker;
     [SerializeField] GameObject dirMarker;
     [SerializeField] GameObject realPlanePrefab;
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
+   
 
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
@@ -43,45 +46,42 @@ public class GameManager : MonoBehaviour
 
     public void Setup()
     {
-        //StartCoroutine(SetupCorotuine());//yield return new WaitForSeconds(.5f);
-        Debug.Log("Setting up");
+        StartCoroutine(SetupCorotuine());
+    }
+    
+    IEnumerator SetupCorotuine()
+    {
+        yield return new WaitForSeconds(.5f);
+        eyeData.SetText(eyeData.text + "Setting up\n");
         //Check if the boundary is configured
-        /*bool configured = OVRManager.boundary.GetConfigured();
+        bool configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
             IntializeArea();
-            Debug.Log("is configured");
-        }
-            
-        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-        red_manager.XRTransform.Rotate(0, angleY, 0);
-        for (int i = 0; i < trackingSpacePoints.Count; i++)
-            trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(red_manager.XRTransform.transform.position), Vector3.up, angleY);
+            eyeData.SetText(eyeData.text + "is configured\n");
+            float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+            red_manager.XRTransform.Rotate(0, angleY, 0);
+            for (int i = 0; i < trackingSpacePoints.Count; i++)
+                trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(red_manager.XRTransform.transform.position), Vector3.up, angleY);
         
-        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-        distDiff = new Vector3(distDiff.x, 0, distDiff.z);
-        red_manager.XRTransform.transform.position += distDiff;
+            Vector3 distDiff = startPos.position - red_manager.headTransform.position;
+            distDiff = new Vector3(distDiff.x, 0, distDiff.z);
+            red_manager.XRTransform.transform.position += distDiff;
 
-        for (int i = 0; i < trackingSpacePoints.Count; i++)
-            trackingSpacePoints[i].transform.position += distDiff;*/
+            for (int i = 0; i < trackingSpacePoints.Count; i++)
+                trackingSpacePoints[i].transform.position += distDiff;
 
-        var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
-        foreach (var wall in walls)
-        {
-            Debug.Log(wall.);
+            /*var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
+            foreach (var wall in walls)
+            {
+
+            }*/
+            _couchSpawner.SpawnPrefabs();
+            physicalChair = new GameObject();
+            physicalChair.transform.position = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
+            ready = true;
         }
-        _couchSpawner.SpawnPrefabs();
-        Vector3 pos = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
-        Debug.Log("spawned obj:"+pos);
-        ready = true;
     }
-    
-    /*
-    IEnumerator SetupCorotuine()
-    {
-        
-    }
-    */
 
     private void Update()
     {
