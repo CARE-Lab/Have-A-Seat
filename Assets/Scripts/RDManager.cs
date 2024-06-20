@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using Meta.XR.MRUtilityKit;
 
 public class RDManager : MonoBehaviour
 {
@@ -86,7 +88,7 @@ public class RDManager : MonoBehaviour
 
         UpdateCurrentUserState();
         CalculateDelta();
-        GetNegativeGradient(gameManager.trackingSpacePoints, out float rf, out Vector2 ng);
+        GetNegativeGradient(out float rf, out Vector2 ng);
         ApplyRedirectionByNegativeGradient(ng);
         UpdatePreviousUserState();
 
@@ -115,28 +117,29 @@ public class RDManager : MonoBehaviour
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
         }
     }
-    public void GetNegativeGradient(List<GameObject> trackingSpacePoints, out float rf, out Vector2 ng)
+    public void GetNegativeGradient(out float rf, out Vector2 ng)
     {
         var nearestPosList = new List<Vector2>();
-        var currPosReal = Utilities.FlattenedPos2D(currPos);
-    
+        var currPosReal = Utilities.FlattenedPos3D(currPos);
+        
         //physical borders' contributions
-        for (int i = 0; i < trackingSpacePoints.Count; i++)
+        var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
+        foreach (var wall in walls)
         {
-            var p = trackingSpacePoints[i].transform.position;
-            var q = trackingSpacePoints[(i + 1) % trackingSpacePoints.Count].transform.position;
-            p = Utilities.FlattenedPos2D(p);
-            q = Utilities.FlattenedPos2D(q);
-            var nearestPos = Utilities.GetNearestPos(currPosReal, new List<Vector2> { p, q });
-            nearestPosList.Add(nearestPos);
+            Vector3 nearestPoint;
+            wall.GetClosestSurfacePosition(currPosReal, out nearestPoint);
+            Vector2 nearestPoint_2d = Utilities.FlattenedPos2D(nearestPoint);
+            nearestPosList.Add(nearestPoint_2d);
+            
         }
         
         IfChangeAlignmentState();
         rf = 0; // currently not used
         ng = Vector2.zero;
 
-        ng = RepulsiveNegativeGradient(nearestPosList, currPosReal) + AttractiveNegativeGradient(currPosReal);
-        
+        Vector2 currPosReal_2d = Utilities.FlattenedPos2D(currPosReal);
+        ng = RepulsiveNegativeGradient(nearestPosList, currPosReal_2d) + AttractiveNegativeGradient(currPosReal_2d);
+        //ng = RepulsiveNegativeGradient(nearestPosList, currPosReal_2d);
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
 
@@ -248,12 +251,7 @@ public class RDManager : MonoBehaviour
         Transform physicalTarget = gameManager.physicalChair.transform;
         physicalTarget.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         physicalTarget.transform.Translate(translation, Space.World);
-        //gameManager.trackedArea.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        for (int i = 0; i < gameManager.trackingSpacePoints.Count; i++)
-        {
-            gameManager.trackingSpacePoints[i].transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-            gameManager.trackingSpacePoints[i].transform.Translate(translation, Space.World);
-        }
+      
         if (gameManager.debugMode)
         {
             pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
@@ -261,6 +259,27 @@ public class RDManager : MonoBehaviour
         }
             
 
+    }
+
+    private void OnDrawGizmos()
+    {
+        #if UNITY_EDITOR
+        if (gameManager.ready)
+        {
+            Handles.color = Color.cyan;
+            var currPosReal = Utilities.FlattenedPos3D(currPos);
+            var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
+            foreach (var wall in walls)
+            {
+                Vector3 nearestPoint;
+                wall.GetClosestSurfacePosition(currPosReal, out nearestPoint);
+                nearestPoint = Utilities.FlattenedPos3D(nearestPoint);
+                Handles.DrawLine(currPosReal, nearestPoint);
+            }
+
+        }
+        #endif
+        
     }
 
 
