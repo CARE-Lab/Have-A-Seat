@@ -261,7 +261,7 @@ public class RDManager : MonoBehaviour
 
     }
 
-    private void OnDrawGizmos()
+    /*private void OnDrawGizmos()
     {
         #if UNITY_EDITOR
         if (gameManager.ready)
@@ -280,7 +280,7 @@ public class RDManager : MonoBehaviour
         }
         #endif
         
-    }
+    }*/
 
 
     void UpdateCurrentUserState()

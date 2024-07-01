@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
 
+    [SerializeField] private SaveData _saveData;
+
     void Start()
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
@@ -52,18 +54,18 @@ public class GameManager : MonoBehaviour
     IEnumerator SetupCorotuine()
     {
         yield return new WaitForSeconds(.5f);
-        eyeData.SetText(eyeData.text + "Setting up\n");
+        //eyeData.SetText(eyeData.text + "Setting up\n");
         //Check if the boundary is configured
         bool configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
-            eyeData.SetText(eyeData.text + "is configured\n");
-            float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+            //eyeData.SetText(eyeData.text + "is configured\n");
+            /*float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
             red_manager.XRTransform.Rotate(0, angleY, 0);
            
             Vector3 distDiff = startPos.position - red_manager.headTransform.position;
             distDiff = new Vector3(distDiff.x, 0, distDiff.z);
-            red_manager.XRTransform.transform.position += distDiff;
+            red_manager.XRTransform.transform.position += distDiff;*/
             
             _couchSpawner.SpawnPrefabs();
             physicalChair = new GameObject();
@@ -102,9 +104,9 @@ public class GameManager : MonoBehaviour
         {
             if (button_two_pressed)
             {
-                debug_UI.SetActive(!debug_UI.activeInHierarchy);
+                /*debug_UI.SetActive(!debug_UI.activeInHierarchy);
                 Time.timeScale = paused ? 1 : 0;
-                paused = !paused;
+                paused = !paused;*/
             }
             prev_state_button_two = button_two_pressed;
         }
