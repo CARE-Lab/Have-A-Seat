@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
@@ -39,16 +40,30 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI text3;
 
     [SerializeField] private SaveData _saveData;
+    
 
     void Start()
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
+        Setup();
     }
 
-    public void Setup()
+    void Setup()
     {
-        StartCoroutine(SetupCorotuine());
+        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        red_manager.XRTransform.Rotate(0, angleY, 0);
+
+        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
+        distDiff = new Vector3(distDiff.x, 0, distDiff.z);
+        red_manager.XRTransform.transform.position += distDiff;
+    }
+
+    public void FindChair()
+    {
+        physicalChair = new GameObject();
+        physicalChair.transform.position = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
+        ready = true;
     }
     
     IEnumerator SetupCorotuine()
@@ -59,18 +74,8 @@ public class GameManager : MonoBehaviour
         bool configured = OVRManager.boundary.GetConfigured();
         if (configured)
         {
-            //eyeData.SetText(eyeData.text + "is configured\n");
-            /*float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-            red_manager.XRTransform.Rotate(0, angleY, 0);
-           
-            Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-            distDiff = new Vector3(distDiff.x, 0, distDiff.z);
-            red_manager.XRTransform.transform.position += distDiff;*/
-            
             _couchSpawner.SpawnPrefabs();
-            physicalChair = new GameObject();
-            physicalChair.transform.position = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
-            ready = true;
+            
         }
     }
 

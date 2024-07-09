@@ -41,6 +41,8 @@ public class RDManager : MonoBehaviour
     public GameObject ngArrow; // Arrow prefab
 
     public GameObject VirtualTarget;
+
+    public GameObject Env;
  
     [HideInInspector]
     public Vector3 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -202,14 +204,14 @@ public class RDManager : MonoBehaviour
         //calculate translation
         if (Vector2.Dot(ng, currDir) < 0)
         {
-            g_t = MIN_TRANS_GAIN;
+            g_t = MAX_TRANS_GAIN;
         }
 
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
-        desiredSteeringDirection = -1*(int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
+        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
 
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
@@ -230,7 +232,7 @@ public class RDManager : MonoBehaviour
         var translation = g_t * deltaPos;
         if (translation.magnitude > 0)
         {
-            XRTransform.Translate(translation, Space.World);
+            Env.transform.Translate(translation, Space.World);
         }
 
         float finalRotation;
@@ -246,17 +248,13 @@ public class RDManager : MonoBehaviour
             finalRotation = g_c;
             g_r = 0;
         }
-
-        XRTransform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        Transform physicalTarget = gameManager.physicalChair.transform;
-        physicalTarget.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        physicalTarget.transform.Translate(translation, Space.World);
+        Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
       
-        if (gameManager.debugMode)
+        /*if (gameManager.debugMode)
         {
             pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
             pathTrail.realTrail.Translate(translation, Space.World);
-        }
+        }*/
             
 
     }
