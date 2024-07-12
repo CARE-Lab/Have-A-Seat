@@ -109,9 +109,9 @@ public class GameManager : MonoBehaviour
         {
             if (button_two_pressed)
             {
-                /*debug_UI.SetActive(!debug_UI.activeInHierarchy);
+                //debug_UI.SetActive(!debug_UI.activeInHierarchy);
                 Time.timeScale = paused ? 1 : 0;
-                paused = !paused;*/
+                paused = !paused;
             }
             prev_state_button_two = button_two_pressed;
         }

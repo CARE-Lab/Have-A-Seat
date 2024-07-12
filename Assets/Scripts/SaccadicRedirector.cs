@@ -103,7 +103,7 @@ public class SaccadicRedirector : MonoBehaviour
             {
                 if (eyeClosedL > blinkDetectionThreshold && eyeClosedR > blinkDetectionThreshold)
                 {
-                    // eyeData.SetText(eyeData.text + "Blink detected\n");
+                    //eyeData.SetText(eyeData.text + "Blink detected\n");
                     InduceRot(rotPerBlink * Time.deltaTime);
                     blinkdetected = true;
                 }
@@ -135,7 +135,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (secCounter > downTime)
             {
                 saccdetected = false;
-               // eyeData.SetText("");
+                //eyeData.SetText("");
                 secCounter = 0;
             }
         }
@@ -146,7 +146,7 @@ public class SaccadicRedirector : MonoBehaviour
             if (blinkCounter > downTime)
             {
                 blinkdetected = false;
-              //  eyeData.SetText("");
+                //eyeData.SetText("");
                 blinkCounter = 0;
             }
         }

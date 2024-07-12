@@ -40,15 +40,15 @@ public class RDManager : MonoBehaviour
 
     public GameObject ngArrow; // Arrow prefab
 
-    public GameObject VirtualTarget;
+    public Transform VirtualTarget;
 
     public GameObject Env;
  
     [HideInInspector]
-    public Vector3 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
+    public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
 
     [HideInInspector]
-    public Vector3 deltaPos;
+    public Vector2 deltaPos;
 
     [HideInInspector]
     public float deltaDir;
@@ -74,6 +74,10 @@ public class RDManager : MonoBehaviour
     private bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
  
 
+    public TextMeshProUGUI Text1;
+    public TextMeshProUGUI Text2;
+    public TextMeshProUGUI Text3;
+    
     private void Start()
     {
         pathTrail = gameObject.GetComponent<PathTrail>();
@@ -113,7 +117,7 @@ public class RDManager : MonoBehaviour
 
         if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
         {     
-            totalForcePointer.transform.position = currPos + new Vector3(0, 0.06f, 0); ;
+            totalForcePointer.transform.position = Utilities.UnFlatten(currPos)+ new Vector3(0, 0.06f, 0); ;
 
             if (forceT.magnitude > 0)
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
@@ -122,7 +126,7 @@ public class RDManager : MonoBehaviour
     public void GetNegativeGradient(out float rf, out Vector2 ng)
     {
         var nearestPosList = new List<Vector2>();
-        var currPosReal = Utilities.FlattenedPos3D(currPos);
+        var currPosReal = Utilities.UnFlatten(currPos);
         
         //physical borders' contributions
         var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
@@ -138,9 +142,8 @@ public class RDManager : MonoBehaviour
         IfChangeAlignmentState();
         rf = 0; // currently not used
         ng = Vector2.zero;
-
-        Vector2 currPosReal_2d = Utilities.FlattenedPos2D(currPosReal);
-        ng = RepulsiveNegativeGradient(nearestPosList, currPosReal_2d) + AttractiveNegativeGradient(currPosReal_2d);
+        
+        ng = RepulsiveNegativeGradient(nearestPosList, currPos) + AttractiveNegativeGradient(currPos);
         //ng = RepulsiveNegativeGradient(nearestPosList, currPosReal_2d);
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
@@ -178,15 +181,15 @@ public class RDManager : MonoBehaviour
         var objPhysicalPos = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
 
         //the virtual distance from the user to the alignment target
-        var Dv = (objVirtualPos - Utilities.FlattenedPos2D(currPos)).magnitude;
+        var Dv = (objVirtualPos - currPos).magnitude;
 
         //the physical distance from the user to the alignment target
-        var Dp = (objPhysicalPos - Utilities.FlattenedPos2D(currPos)).magnitude;
+        var Dp = (objPhysicalPos -currPos).magnitude;
 
         var gt = MIN_TRANS_GAIN + 1;
         var Gt = MAX_TRANS_GAIN + 1;
         //the physical rotational oﬀset
-        var phiP = Vector2.Angle(currDir, objPhysicalPos - Utilities.FlattenedPos2D(currPos)) * Mathf.Deg2Rad;
+        var phiP = Vector2.Angle(currDir, objPhysicalPos - currPos) * Mathf.Deg2Rad;
         if (gt * Dp < Dv && Dv < Gt * Dp) {
             if (phiP < Mathf.Asin((Dp * 1 / CURVATURE_RADIUS) / 2))
             {
@@ -201,17 +204,28 @@ public class RDManager : MonoBehaviour
         float g_r = 0;//rotation
         float g_t = 0;//translation
 
-        //calculate translation
-        if (Vector2.Dot(ng, currDir) < 0)
+        var physical_target = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
+        var dist_to_physical_target = Vector2.Distance(currPos, physical_target);
+        var dist_to_virtual_target = Vector2.Distance(currPos,
+            Utilities.FlattenedPos2D(VirtualTarget.position));
+        
+        //calculate translation Gain
+        var dotProduct = Vector2.Dot(ng, currDir);
+        if (dotProduct < -0.3)
         {
             g_t = MAX_TRANS_GAIN;
-        }
-
+        }else if (dist_to_virtual_target > dist_to_physical_target)
+            g_t = MIN_TRANS_GAIN;
+        
+        /*Text2.SetText(g_t.ToString());
+        Text1.SetText(dotProduct.ToString());*/
+        
+        
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
-        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(currDir, desiredFacingDirection));
+        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
 
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
@@ -229,10 +243,10 @@ public class RDManager : MonoBehaviour
         }
 
         // Translation Gain
-        var translation = g_t * deltaPos;
+        var translation = Utilities.UnFlatten(g_t * deltaPos);
         if (translation.magnitude > 0)
         {
-            Env.transform.Translate(translation, Space.World);
+            Env.transform.Translate(-1*translation, Space.World);
         }
 
         float finalRotation;
@@ -283,20 +297,21 @@ public class RDManager : MonoBehaviour
 
     void UpdateCurrentUserState()
     {
-        currPos = Utilities.FlattenedPos3D(headTransform.position);
-        currDir = Utilities.FlattenedDir3D(headTransform.forward);
+        currPos = Utilities.FlattenedPos2D(headTransform.position);
+        currDir = Utilities.FlattenedDir2D(headTransform.forward);
+        
     }
 
     void UpdatePreviousUserState()
     {
-        prevPos = Utilities.FlattenedPos3D(headTransform.position);
-        prevDir = Utilities.FlattenedDir3D(headTransform.forward);
+        prevPos = Utilities.FlattenedPos2D(headTransform.position);
+        prevDir = Utilities.FlattenedDir2D(headTransform.forward);
     }
 
     void CalculateDelta()
     {
         deltaPos = currPos - prevPos;
-        deltaDir = Utilities.GetSignedAngle(prevDir, currDir);
+        deltaDir = Utilities.GetSignedAngle(Utilities.UnFlatten(prevDir), Utilities.UnFlatten(currDir));
         float dirMag = Mathf.Round(deltaDir * 100f) / 100f;
         float distMag = Mathf.Round(deltaPos.magnitude * 100f) / 100f;
         sumOfRealDistanceTravelled += distMag;
