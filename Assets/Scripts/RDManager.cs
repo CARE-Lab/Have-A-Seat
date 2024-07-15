@@ -5,6 +5,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
+using Unity.VisualScripting;
 
 public class RDManager : MonoBehaviour
 {
@@ -99,6 +100,7 @@ public class RDManager : MonoBehaviour
         UpdatePreviousUserState();
 
     }
+    
     public void UpdateTotalForcePointer(Vector2 forceT)
     {
 
@@ -262,16 +264,14 @@ public class RDManager : MonoBehaviour
             finalRotation = g_c;
             g_r = 0;
         }
-        Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-      
-        /*if (gameManager.debugMode)
-        {
-            pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-            pathTrail.realTrail.Translate(translation, Space.World);
-        }*/
-            
-
+        Env.transform.RotateAround(Utilities.UnFlatten(currPos), Vector3.up, finalRotation);
+        
+        if (gameManager.debugMode)
+            pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+        
     }
+    
+ 
 
     /*private void OnDrawGizmos()
     {

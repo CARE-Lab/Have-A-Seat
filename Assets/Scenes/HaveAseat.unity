@@ -1875,7 +1875,7 @@ Transform:
   m_GameObject: {fileID: 440811006}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.05, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5435,8 +5435,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27b43385c9b10dc44825a5fe3ef4ea14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawRealTrail: 0
-  drawVirtualTrail: 0
+  drawRealTrail: 1
+  drawVirtualTrail: 1
   MIN_DIST: 0.1
   PATH_WIDTH: 0.05
   realTrailColor: {r: 1, g: 1, b: 0, a: 0.5}

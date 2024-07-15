@@ -163,9 +163,8 @@ public class SaccadicRedirector : MonoBehaviour
         /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
 
-        /*
         if(gameManager.debugMode)
-            pathTrail.realTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);*/
+            pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
         inducedRotSaccadic += Mathf.Abs(finalRotation);
     }

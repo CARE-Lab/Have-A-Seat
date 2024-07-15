@@ -118,21 +118,28 @@ public class PathTrail : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-
         if (isLogging)
         {
             if (drawRealTrail)
+            {
+                // Reset Position of Real Trail
+                realTrail.position = Vector3.zero;
+                realTrail.rotation = Quaternion.identity;
                 UpdateTrailPoints(realTrailVertices, realTrail, realTrailMesh);
+            }
+                
             if (drawVirtualTrail)
             {
                 // Reset Position of Virtual Trail
-                virtualTrail.position = Vector3.zero;
-                virtualTrail.rotation = Quaternion.identity;
+                /*virtualTrail.position = Vector3.zero;
+                virtualTrail.rotation = Quaternion.identity;*/
 
                 UpdateTrailPoints(virtualTrailVertices, virtualTrail, virtualTrailMesh, 2 * PATH_HEIGHT);
             }
         }
+        
     }
+    
 
     void UpdateTrailPoints(List<Vector3> vertices, Transform relativeTransform, Mesh mesh, float pathHeight = PATH_HEIGHT)
     {
