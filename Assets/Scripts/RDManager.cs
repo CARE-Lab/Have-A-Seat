@@ -38,9 +38,7 @@ public class RDManager : MonoBehaviour
     public Transform headTransform;
 
     public Transform XRTransform;
-
-    public GameObject ngArrow; // Arrow prefab
-
+    
     public Transform VirtualTarget;
 
     public GameObject Env;
@@ -56,8 +54,12 @@ public class RDManager : MonoBehaviour
 
     [HideInInspector]
     public int desiredSteeringDirection;
+    
+    [HideInInspector]
+    public Vector2 totalForce; 
 
     [SerializeField] GameObject userDirVector;
+    [SerializeField] GameObject ngArrow; // Arrow prefab
     public bool PauseRedirection;
 
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
@@ -104,6 +106,9 @@ public class RDManager : MonoBehaviour
     public void UpdateTotalForcePointer(Vector2 forceT)
     {
 
+        //record this new force
+        totalForce = forceT;
+        
         if (!totalForcePointer && gameManager.debugMode)
         {
             totalForcePointer = Instantiate(ngArrow);
@@ -236,12 +241,12 @@ public class RDManager : MonoBehaviour
 
         
         if (deltaDir * desiredSteeringDirection < 0)
-        {//rotate away from negtive gradient
-            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+        {//rotate away from negtive gradient, so we make them rotate more in VE and less in PE
+            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
         }
         else
-        {//rotate towards negtive gradient
-            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+        {//rotate towards negtive gradient, so we make them rotate more in PE and less in VE
+            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
         }
 
         // Translation Gain
