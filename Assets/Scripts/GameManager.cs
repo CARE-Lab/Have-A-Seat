@@ -22,9 +22,9 @@ public class GameManager : MonoBehaviour
     public Transform startPos;
     public GameObject debug_UI;
     public TextMeshProUGUI eyeData;
+    public bool debugMode = true;
     
-    [HideInInspector] public GameObject trackedArea;
-    [HideInInspector] public bool debugMode = true;
+    [HideInInspector] public GameObject trackedArea; 
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
     [HideInInspector] public GameObject physicalChair;
