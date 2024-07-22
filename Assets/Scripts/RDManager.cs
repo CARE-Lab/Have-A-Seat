@@ -57,7 +57,7 @@ public class RDManager : MonoBehaviour
     
     [HideInInspector]
     public Vector2 totalForce; 
-
+    
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
     public bool PauseRedirection;
@@ -67,6 +67,7 @@ public class RDManager : MonoBehaviour
 
     PathTrail pathTrail;
     GameManager gameManager;
+    APF_Resetter ApfResetter;
     GameObject totalForcePointer;//visualization of totalForce
 
     float sumOfInjectedRotationFromCurvatureGain;
@@ -74,8 +75,9 @@ public class RDManager : MonoBehaviour
     float sumOfRealRot;
     float sumOfInjectedRotationFromRotationGain;
     
-    private bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
- 
+    bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
+    bool inReset;
+    bool ifJustEndReset = false;//if just finishes reset, if true, execute redirection once then judge if reset, Prevent infinite loops
 
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
@@ -85,6 +87,7 @@ public class RDManager : MonoBehaviour
     {
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+        ApfResetter = GetComponent<APF_Resetter>();
         sumOfInjectedRotationFromCurvatureGain = 0;
         sumOfRealDistanceTravelled = 0;
         sumOfInjectedRotationFromRotationGain = 0;
@@ -97,10 +100,22 @@ public class RDManager : MonoBehaviour
 
         UpdateCurrentUserState();
         CalculateDelta();
-        GetNegativeGradient(out float rf, out Vector2 ng);
-        ApplyRedirectionByNegativeGradient(ng);
+        GetNegativeGradient(out float rf, out Vector2 ng, out bool collisionhappens);
+        if (collisionhappens && !inReset && !ifJustEndReset)
+        {
+            ApfResetter.InitializeReset();
+            inReset = true;
+        }
+        if(inReset)
+            ApfResetter.InjectResetting();
+        else
+        {
+            ApplyRedirectionByNegativeGradient(ng);
+            ifJustEndReset = false;
+        }
+            
+        
         UpdatePreviousUserState();
-
     }
     
     public void UpdateTotalForcePointer(Vector2 forceT)
@@ -130,7 +145,7 @@ public class RDManager : MonoBehaviour
                 totalForcePointer.transform.forward = transform.rotation * Utilities.UnFlatten(forceT);
         }
     }
-    public void GetNegativeGradient(out float rf, out Vector2 ng)
+    public void GetNegativeGradient(out float rf, out Vector2 ng, out bool collisionhappens)
     {
         var nearestPosList = new List<Vector2>();
         var currPosReal = Utilities.UnFlatten(currPos);
@@ -155,6 +170,7 @@ public class RDManager : MonoBehaviour
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
 
+        collisionhappens = IfCollisionHappens(nearestPosList, currPos);
     }
 
     private Vector2 RepulsiveNegativeGradient(List<Vector2> nearestPosList, Vector2 currPosReal)
@@ -275,8 +291,31 @@ public class RDManager : MonoBehaviour
             pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
         
     }
-    
- 
+
+    bool IfCollisionHappens(List<Vector2> nearestPosList, Vector2 currPosReal)
+    {
+        float minDist = Single.MaxValue;
+        
+        foreach (var obsPos in nearestPosList)
+        {
+            var dist = Vector2.Distance(obsPos, currPosReal);
+            if (dist < minDist)
+                minDist = dist;
+        }
+        
+        var dotProduct = Vector2.Dot(totalForce, currDir);
+        
+        Text1.SetText(minDist.ToString());
+        Text2.SetText(dotProduct.ToString());
+        
+        return dotProduct < -0.3 && minDist < 0.2;
+    }
+
+    public void OnResetEnd()
+    {
+        inReset = false;
+        ifJustEndReset = true;
+    }
 
     /*private void OnDrawGizmos()
     {

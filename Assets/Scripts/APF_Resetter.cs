@@ -7,9 +7,6 @@ using UnityEngine;
 
 public class APF_Resetter : MonoBehaviour
 {
-
-    public bool isResetting;
-
     [SerializeField] private GameObject HUD;
     [SerializeField] private TextMeshProUGUI HUD_text;
     
@@ -30,7 +27,6 @@ public class APF_Resetter : MonoBehaviour
 
     public void InitializeReset()
     {
-        isResetting = true;
         var currDir = _rdManager.currDir;
         totalF = _rdManager.totalForce;
         
@@ -66,9 +62,6 @@ public class APF_Resetter : MonoBehaviour
                 pathTrail.virtualTrail.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, requiredRotateSteerAngle);
 
             //reset end
-            //redirectionManager.OnResetEnd();
-            isResetting = false;
-            requiredRotateSteerAngle = 0;
             EndReset();
         }
         else
@@ -84,5 +77,7 @@ public class APF_Resetter : MonoBehaviour
     void EndReset()
     {
         HUD.SetActive(false);
+        requiredRotateSteerAngle = 0;
+        _rdManager.OnResetEnd();
     }
 }
