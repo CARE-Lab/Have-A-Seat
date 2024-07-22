@@ -185,8 +185,8 @@ MonoBehaviour:
   startPos: {fileID: 1941715038}
   debug_UI: {fileID: 847345408}
   eyeData: {fileID: 7637122084759093707}
-  trackedArea: {fileID: 0}
   debugMode: 1
+  trackedArea: {fileID: 0}
   trackingSpacePoints: []
   ready: 0
   physicalChair: {fileID: 0}
@@ -648,6 +648,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 776917576635390519, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 776917576635390519, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -37.6
+      objectReference: {fileID: 0}
     - target: {fileID: 1182570093859842205, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_text
@@ -667,12 +677,12 @@ PrefabInstance:
     - target: {fileID: 1253837120801125353, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 350
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 1253837120801125353, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 1469816469196336900, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
@@ -692,7 +702,22 @@ PrefabInstance:
     - target: {fileID: 4136827295901362558, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4136827295901362558, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4136827295901362558, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_VertexColorAlwaysGammaSpace
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4136827295901362558, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_AdditionalShaderChannelsFlag
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 6258182898195898803, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
@@ -718,7 +743,12 @@ PrefabInstance:
     - target: {fileID: 8475360996953446741, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_text
-      value: 
+      value: dfdfdfdfdfdfddd
+      objectReference: {fileID: 0}
+    - target: {fileID: 8475360996953446741, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 8475360996953446741, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
@@ -726,6 +756,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 18eb93125c4dc48309f35bea3f9afe65,
         type: 2}
+    - target: {fileID: 8475360996953446741, guid: a085edb04df81414c891d6d9db286494,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 8475360996953446741, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -5760,7 +5795,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c99eaba35479ec846a736e829c4e1b9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isResetting: 0
   HUD: {fileID: 160796962}
   HUD_text: {fileID: 160796963}
 --- !u!1 &1336376037
