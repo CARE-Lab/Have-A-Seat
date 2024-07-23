@@ -308,7 +308,7 @@ public class RDManager : MonoBehaviour
         Text1.SetText(minDist.ToString());
         Text2.SetText(dotProduct.ToString());
         
-        return dotProduct < -0.3 && minDist < 0.2;
+        return dotProduct < -0.3 && minDist < 0.3;
     }
 
     public void OnResetEnd()
