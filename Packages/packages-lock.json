@@ -68,22 +68,34 @@
       "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.interaction": {
-      "version": "file:com.meta.xr.sdk.interaction",
-      "depth": 0,
-      "source": "embedded",
+      "version": "64.0.0",
+      "depth": 1,
+      "source": "registry",
       "dependencies": {
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.ugui": "1.0.0"
-      }
+      },
+      "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.interaction.ovr": {
-      "version": "file:com.meta.xr.sdk.interaction.ovr",
-      "depth": 0,
-      "source": "embedded",
+      "version": "64.0.0",
+      "depth": 1,
+      "source": "registry",
       "dependencies": {
-        "com.meta.xr.sdk.interaction": "64.0.0",
-        "com.meta.xr.sdk.core": "64.0.0"
-      }
+        "com.meta.xr.sdk.core": "64.0.0",
+        "com.meta.xr.sdk.interaction": "64.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.meta.xr.sdk.interaction.ovr.samples": {
+      "version": "64.0.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.meta.xr.sdk.interaction.ovr": "64.0.0",
+        "com.meta.xr.sdk.sharedassets": "64.0.0"
+      },
+      "url": "https://packages.unity.com"
     },
     "com.meta.xr.sdk.platform": {
       "version": "64.0.0",
@@ -91,6 +103,16 @@
       "source": "registry",
       "dependencies": {
         "com.meta.xr.sdk.core": "64.0.0",
+        "com.unity.ugui": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.meta.xr.sdk.sharedassets": {
+      "version": "64.0.0",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.textmeshpro": "3.0.6",
         "com.unity.ugui": "1.0.0"
       },
       "url": "https://packages.unity.com"
