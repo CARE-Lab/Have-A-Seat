@@ -127,7 +127,7 @@ Material:
     - _OcclusionEnabled: 0
     - _OcclusionStrength: 1
     - _Opacity: 0
-    - _OutlineOpacity: 0
+    - _OutlineOpacity: 1
     - _OutlineWidth: 0.00134
     - _Parallax: 0.005
     - _PinkyGlowValue: 0
