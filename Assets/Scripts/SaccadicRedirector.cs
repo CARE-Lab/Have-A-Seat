@@ -67,7 +67,8 @@ public class SaccadicRedirector : MonoBehaviour
 
     Quaternion currDir, prevDir;
   
-    float inducedRotSaccadic = 0;
+    [HideInInspector]
+    public float inducedRotSaccadic = 0;
 
     PathTrail pathTrail;
     GameManager gameManager;
@@ -90,7 +91,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 
-        if (Time.timeScale == 0 || !gameManager.ready || rdManager.PauseRedirection)
+        if (Time.timeScale == 0 || !gameManager.ready || rdManager.condition == Redirector_condition.APF_only )
             return;
 
 

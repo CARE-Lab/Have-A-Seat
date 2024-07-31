@@ -6,7 +6,14 @@ using UnityEditor;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
 using Unity.VisualScripting;
+using UnityEngine.Serialization;
 
+public enum Redirector_condition
+{
+    APF_only = 0,
+    APF_Saccadic =1,
+    Saccadic_only =2
+}
 public class RDManager : MonoBehaviour
 {
 
@@ -42,6 +49,8 @@ public class RDManager : MonoBehaviour
     public Transform VirtualTarget;
 
     public GameObject Env;
+
+    [FormerlySerializedAs("Condition")] public Redirector_condition condition;
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -60,20 +69,18 @@ public class RDManager : MonoBehaviour
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
-    public bool PauseRedirection;
-
+    
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
 
     PathTrail pathTrail;
     GameManager gameManager;
     APF_Resetter ApfResetter;
+    private SaveData logger;
     GameObject totalForcePointer;//visualization of totalForce
-
-    float sumOfInjectedRotationFromCurvatureGain;
+    
     float sumOfRealDistanceTravelled;
-    float sumOfRealRot;
-    float sumOfInjectedRotationFromRotationGain;
+    int resetsPerTrial;
     
     bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
     bool inReset;
@@ -88,14 +95,21 @@ public class RDManager : MonoBehaviour
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         ApfResetter = GetComponent<APF_Resetter>();
-        sumOfInjectedRotationFromCurvatureGain = 0;
-        sumOfRealDistanceTravelled = 0;
-        sumOfInjectedRotationFromRotationGain = 0;
+        logger = GetComponent<SaveData>();
+        
     }
+
+    void StartTrial()
+    {
+        sumOfRealDistanceTravelled = 0;
+        resetsPerTrial = 0;
+        logger.StartCondition(condition.ToString());
+    }
+    
 
     void Update()
     {
-        if (Time.timeScale == 0 || !gameManager.ready || PauseRedirection)
+        if (Time.timeScale == 0 || !gameManager.ready || condition == Redirector_condition.Saccadic_only)
             return;
 
         UpdateCurrentUserState();
@@ -105,6 +119,7 @@ public class RDManager : MonoBehaviour
         {
             ApfResetter.InitializeReset();
             inReset = true;
+            resetsPerTrial += 1;
         }
         if(inReset)
             ApfResetter.InjectResetting();
@@ -359,7 +374,6 @@ public class RDManager : MonoBehaviour
         float dirMag = Mathf.Round(deltaDir * 100f) / 100f;
         float distMag = Mathf.Round(deltaPos.magnitude * 100f) / 100f;
         sumOfRealDistanceTravelled += distMag;
-        sumOfRealRot += dirMag;
     }
 
 

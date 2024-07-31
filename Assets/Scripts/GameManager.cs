@@ -38,10 +38,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
-
-    [SerializeField] private SaveData _saveData;
     
-
     void Start()
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
@@ -66,19 +63,6 @@ public class GameManager : MonoBehaviour
         ready = true;
     }
     
-    IEnumerator SetupCorotuine()
-    {
-        yield return new WaitForSeconds(.5f);
-        //eyeData.SetText(eyeData.text + "Setting up\n");
-        //Check if the boundary is configured
-        bool configured = OVRManager.boundary.GetConfigured();
-        if (configured)
-        {
-            _couchSpawner.SpawnPrefabs();
-            
-        }
-    }
-
     private void Update()
     {
        /* bool button_one_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
@@ -86,20 +70,7 @@ public class GameManager : MonoBehaviour
         {
             if (button_one_pressed)
             {
-                debugMode = !debugMode;
-                trackedArea.GetComponent<Renderer>().enabled = debugMode;
-                for (int i = 0; i < trackingSpacePoints.Count; i++)
-                {
-                    trackingSpacePoints[i].GetComponent<Renderer>().enabled = debugMode;
-                }
-                if (debugMode)
-                    pathTrail.BeginTrailDrawing();
-                else
-                {
-                    pathTrail.ClearTrail(PathTrail.REAL_TRAIL_NAME);
-                    pathTrail.ClearTrail(PathTrail.VIRTUAL_TRAIL_NAME);
-                }
-
+               
             }
             prev_state_button_one = button_one_pressed;
         }*/

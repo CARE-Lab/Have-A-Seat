@@ -147,7 +147,6 @@ GameObject:
   m_Component:
   - component: {fileID: 18433538}
   - component: {fileID: 18433539}
-  - component: {fileID: 18433540}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -200,20 +199,6 @@ MonoBehaviour:
   text1: {fileID: 847345410}
   text2: {fileID: 847345409}
   text3: {fileID: 1964602099}
-  _saveData: {fileID: 18433540}
---- !u!114 &18433540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18433536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 978a81fd4c719ef41880f20c6f108754, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  eyeData: {fileID: 7637122084759093707}
 --- !u!1 &54577523 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1535171795492828988, guid: b1d4b9203dee55f45a9082daca193c88,
@@ -5653,6 +5638,7 @@ GameObject:
   - component: {fileID: 1320128406}
   - component: {fileID: 1320128408}
   - component: {fileID: 1320128405}
+  - component: {fileID: 1320128409}
   m_Layer: 0
   m_Name: Redirection Manager
   m_TagString: Untagged
@@ -5703,6 +5689,7 @@ MonoBehaviour:
   XRTransform: {fileID: 578222137}
   VirtualTarget: {fileID: 1344330961}
   Env: {fileID: 440811006}
+  Condition: 1
   currPos: {x: 0, y: 0}
   prevPos: {x: 0, y: 0}
   currDir: {x: 0, y: 0}
@@ -5713,7 +5700,6 @@ MonoBehaviour:
   totalForce: {x: 0, y: 0}
   userDirVector: {fileID: 2053159677}
   ngArrow: {fileID: 717936904266117204, guid: f68566b61c5ebc74784982a22ecef585, type: 3}
-  PauseRedirection: 0
   Text1: {fileID: 847345410}
   Text2: {fileID: 847345409}
   Text3: {fileID: 1964602099}
@@ -5746,6 +5732,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HUD: {fileID: 160796962}
   HUD_text: {fileID: 160796963}
+--- !u!114 &1320128409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1320128404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 978a81fd4c719ef41880f20c6f108754, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  subjectNumber: 1
 --- !u!1 &1336376037
 GameObject:
   m_ObjectHideFlags: 0
@@ -7152,7 +7151,7 @@ PrefabInstance:
     - target: {fileID: 2296141232796561049, guid: cee191920b8eb41b0960b1082a393a3e,
         type: 3}
       propertyPath: Colliders
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2296141232796561049, guid: cee191920b8eb41b0960b1082a393a3e,
         type: 3}

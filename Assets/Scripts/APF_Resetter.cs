@@ -42,9 +42,9 @@ public class APF_Resetter : MonoBehaviour
     {
         HUD.SetActive(true);
         if(rotateDir > 0)
-            HUD_text.SetText("Spin in Place\n ->>");
+            HUD_text.SetText("Spin slowly in Place till this massage disappears\n ->>");
         else
-            HUD_text.SetText("Spin in Place\n <<-");
+            HUD_text.SetText("Spin slowly in Place till this massage disappears\n <<-");
         
     }
     
