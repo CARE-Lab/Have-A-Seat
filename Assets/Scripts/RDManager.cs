@@ -50,7 +50,7 @@ public class RDManager : MonoBehaviour
 
     public GameObject Env;
 
-    [FormerlySerializedAs("Condition")] public Redirector_condition condition;
+    public Redirector_condition condition;
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
