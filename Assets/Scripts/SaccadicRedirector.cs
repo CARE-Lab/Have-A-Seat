@@ -157,12 +157,21 @@ public class SaccadicRedirector : MonoBehaviour
 
     void InduceRot(float finalRotation)
     {
-        if(rdManager.desiredSteeringDirection != 0)
-            finalRotation*=rdManager.desiredSteeringDirection;
+        /*if(rdManager.desiredSteeringDirection != 0)
+            finalRotation*=rdManager.desiredSteeringDirection;*/
+        Vector3 physical_for = gameManager.physicalChair.transform.forward;
+        Vector3 virtual_for = rdManager.VirtualTarget.forward;
         
+        if (Vector3.Dot(physical_for, virtual_for) > 0.99)
+            return;
+     
+        int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
+        int desired_alpha = -1 * sign_alpha;
+    
+        finalRotation *= desired_alpha;
         rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        /*XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
-        XRTransform.Translate(Vector3.right * (transRight / 100) * Time.deltaTime);*/
+       // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
+        
 
         if(gameManager.debugMode)
             pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);

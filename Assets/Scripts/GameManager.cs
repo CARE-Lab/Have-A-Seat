@@ -28,16 +28,14 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
     [HideInInspector] public GameObject physicalChair;
-
-    [SerializeField] GameObject wallMarker;
-    [SerializeField] GameObject dirMarker;
-    [SerializeField] GameObject realPlanePrefab;
+    
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
    
 
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
+    [SerializeField] GameObject axis_ref;
     
     void Start()
     {
@@ -49,17 +47,20 @@ public class GameManager : MonoBehaviour
     void Setup()
     {
         float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-        red_manager.XRTransform.Rotate(0, angleY, 0);
+        red_manager.Env.transform.RotateAround(red_manager.currPos, -angleY);
+        //red_manager.XRTransform.Rotate(0, angleY, 0);
 
         Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-        distDiff = new Vector3(distDiff.x, 0, distDiff.z);
-        red_manager.XRTransform.transform.position += distDiff;
+        distDiff = Utilities.FlattenedPos3D(distDiff);
+        red_manager.Env.transform.position -= distDiff;
     }
 
     public void FindChair()
     {
         physicalChair = new GameObject();
-        physicalChair.transform.position = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0].position;
+        Pose p = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0];
+        physicalChair.transform.position = p.position;
+        physicalChair.transform.forward = p.right;
         ready = true;
     }
     

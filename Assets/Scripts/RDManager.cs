@@ -5,6 +5,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
+using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine.Serialization;
 
@@ -240,24 +241,27 @@ public class RDManager : MonoBehaviour
     {
         float g_c = 0;//curvature
         float g_r = 0;//rotation
-        float g_t = 0;//translation
+        float g_t = 1;//translation
 
-        var physical_target = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
-        var dist_to_physical_target = Vector2.Distance(currPos, physical_target);
-        var dist_to_virtual_target = Vector2.Distance(currPos,
-            Utilities.FlattenedPos2D(VirtualTarget.position));
+        var physical_target = gameManager.physicalChair.transform.position;
         
         //calculate translation Gain
-        var dotProduct = Vector2.Dot(ng, currDir);
-        if (dotProduct < -0.3)
+        Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
+        var label_list = new List<String> { "WALL_FACE" , "COUCH"};
+        if (MRUK.Instance.GetCurrentRoom().Raycast(ray, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
         {
-            g_t = MAX_TRANS_GAIN;
-        }else if (dist_to_virtual_target > dist_to_physical_target)
-            g_t = MIN_TRANS_GAIN;
-        
-        /*Text2.SetText(g_t.ToString());
-        Text1.SetText(dotProduct.ToString());*/
-        
+            float physical_dist = hit.distance;
+            if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8))
+            {
+                float virtual_dist = hit_v.distance;
+                if (virtual_dist > physical_dist)
+                    g_t = MAX_TRANS_GAIN;
+                else
+                    g_t = MIN_TRANS_GAIN;
+                
+               // Text1.SetText($"t_g: {g_t}");
+            }
+        }
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
@@ -270,18 +274,51 @@ public class RDManager : MonoBehaviour
 
         g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
 
+        Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.position - Utilities.UnFlatten(currPos));
+        Vector3 physical_vec = Utilities.FlattenedDir3D(physical_target - Utilities.UnFlatten(currPos));
         
-        if (deltaDir * desiredSteeringDirection < 0)
-        {//rotate away from negtive gradient, so we make them rotate more in VE and less in PE
-            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+        var sign_theta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
+
+        if (Vector3.Dot(physical_vec, virtual_vec) > 0.99)
+        { // work on Alpha here? maybe....
+           
+            Vector3 physical_for = gameManager.physicalChair.transform.forward;
+            Vector3 virtual_for = VirtualTarget.forward;
+            
+            Text2. SetText($"Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
+            if (Vector3.Dot(physical_for, virtual_for) > 0.99)
+                g_r = 0;
+            else
+            {
+                int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
+                int desired_alpha = -1 * sign_alpha;
+                if (deltaDir * desired_alpha < 0)
+                {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
+                    g_r = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+                }
+                else
+                {//if we are moving with theta, rotate more in VE and less in PE
+                    g_r = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+                }
+            }
+           
         }
         else
-        {//rotate towards negtive gradient, so we make them rotate more in PE and less in VE
-            g_r = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+        {
+            if (deltaDir * sign_theta < 0)
+            {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
+                g_r = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+            }
+            else
+            {//if we are moving with theta, rotate more in VE and less in PE
+                g_r = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+            }
         }
+        Text1.SetText($"Theta Dot: {Vector3.Dot(physical_vec, virtual_vec)}");
+       
 
         // Translation Gain
-        var translation = Utilities.UnFlatten(g_t * deltaPos);
+        var translation = g_t * Utilities.UnFlatten(deltaPos);
         if (translation.magnitude > 0)
         {
             Env.transform.Translate(-1*translation, Space.World);
@@ -300,6 +337,9 @@ public class RDManager : MonoBehaviour
             finalRotation = g_c;
             g_r = 0;
         }
+
+        
+        
         Env.transform.RotateAround(Utilities.UnFlatten(currPos), Vector3.up, finalRotation);
         
         if (gameManager.debugMode)
@@ -320,10 +360,10 @@ public class RDManager : MonoBehaviour
         
         var dotProduct = Vector2.Dot(totalForce, currDir);
         
-        Text1.SetText(minDist.ToString());
-        Text2.SetText(dotProduct.ToString());
+        /*Text1.SetText($"Min Dist: {minDist}");
+        Text2.SetText($"dot Product: {dotProduct}");*/
         
-        return dotProduct < -0.3 && minDist < 0.3;
+        return dotProduct < -0.2 && minDist < 0.3;
     }
 
     public void OnResetEnd()
