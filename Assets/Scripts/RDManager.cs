@@ -206,7 +206,7 @@ public class RDManager : MonoBehaviour
 
     private Vector2 AttractiveNegativeGradient(Vector2 currPosReal)
     {
-        var physicalTargetPos = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
+        var physicalTargetPos = Utilities.FlattenedPos2D(gameManager.physicalChair.position);
         var gDelta = 2 * (new Vector2(currPosReal.x - physicalTargetPos.x, currPosReal.y -physicalTargetPos.y));
         return -gDelta;//NegtiveGradient
     }
@@ -217,7 +217,7 @@ public class RDManager : MonoBehaviour
 
         //position and direction in physical tracking space
         var objVirtualPos = Utilities.FlattenedPos2D(VirtualTarget.transform.position);
-        var objPhysicalPos = Utilities.FlattenedPos2D(gameManager.physicalChair.transform.position);
+        var objPhysicalPos = Utilities.FlattenedPos2D(gameManager.physicalChair.position);
 
         //the virtual distance from the user to the alignment target
         var Dv = (objVirtualPos - currPos).magnitude;
@@ -243,7 +243,7 @@ public class RDManager : MonoBehaviour
         float g_r = 0;//rotation
         float g_t = 1;//translation
 
-        var physical_target = gameManager.physicalChair.transform.position;
+        var physical_target = gameManager.physicalChair.position;
         
         //calculate translation Gain
         Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
@@ -282,10 +282,10 @@ public class RDManager : MonoBehaviour
         if (Vector3.Dot(physical_vec, virtual_vec) > 0.99)
         { // work on Alpha here? maybe....
            
-            Vector3 physical_for = gameManager.physicalChair.transform.forward;
+            Vector3 physical_for = gameManager.physicalChair.forward;
             Vector3 virtual_for = VirtualTarget.forward;
             
-            Text2. SetText($"Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
+            Text2. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Vector3.Dot(physical_for, virtual_for) > 0.99)
                 g_r = 0;
             else
@@ -319,26 +319,24 @@ public class RDManager : MonoBehaviour
 
         // Translation Gain
         var translation = g_t * Utilities.UnFlatten(deltaPos);
-        if (translation.magnitude > 0)
+        if (deltaPos.magnitude > 0.002)
         {
             Env.transform.Translate(-1*translation, Space.World);
         }
 
         float finalRotation;
-        if (Mathf.Abs(g_r) > Mathf.Abs(g_c))
-        {
-            // Rotation Gain
-            finalRotation = g_r;
-            g_c = 0;
-        }
-        else
+        if (deltaPos.magnitude > 0.002)
         {
             // Curvature Gain
             finalRotation = g_c;
             g_r = 0;
         }
-
-        
+        else
+        {
+            // Rotation Gain
+            finalRotation = g_r;
+            g_c = 0;
+        }
         
         Env.transform.RotateAround(Utilities.UnFlatten(currPos), Vector3.up, finalRotation);
         

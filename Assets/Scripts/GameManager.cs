@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Meta.XR.MRUtilityKit;
 using TMPro;
+using Unity.Mathematics;
 using Unity.VisualScripting.Antlr3.Runtime;
 using Unity.XR.Oculus;
 using UnityEngine;
@@ -27,7 +28,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public GameObject trackedArea; 
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
-    [HideInInspector] public GameObject physicalChair;
+    [HideInInspector] public Transform physicalChair;
     
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
    
@@ -57,10 +58,24 @@ public class GameManager : MonoBehaviour
 
     public void FindChair()
     {
-        physicalChair = new GameObject();
-        Pose p = MRUK.Instance.GetCurrentRoom().GetSeatPoses()[0];
-        physicalChair.transform.position = p.position;
-        physicalChair.transform.forward = p.right;
+        foreach (var an in MRUK.Instance.GetCurrentRoom().Anchors)
+        {
+            if (an.HasLabel("COUCH"))
+            {
+                Transform parent = an.gameObject.transform;
+                foreach (Transform child in parent.transform)
+                {
+                    if (child.tag == "Chair")
+                    {
+                        physicalChair = child;
+                        /*GameObject ar = Instantiate(axis_ref, physicalChair.position, Quaternion.identity);
+                        ar.transform.forward = physicalChair.forward;*/
+                    }
+                        
+                }
+            }
+        }
+        
         ready = true;
     }
     

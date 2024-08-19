@@ -159,7 +159,7 @@ public class SaccadicRedirector : MonoBehaviour
     {
         /*if(rdManager.desiredSteeringDirection != 0)
             finalRotation*=rdManager.desiredSteeringDirection;*/
-        Vector3 physical_for = gameManager.physicalChair.transform.forward;
+        Vector3 physical_for = gameManager.physicalChair.forward;
         Vector3 virtual_for = rdManager.VirtualTarget.forward;
         
         if (Vector3.Dot(physical_for, virtual_for) > 0.99)
