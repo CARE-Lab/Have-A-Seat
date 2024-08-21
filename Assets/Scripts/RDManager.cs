@@ -279,7 +279,7 @@ public class RDManager : MonoBehaviour
         
         var sign_theta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
 
-        if (Vector3.Dot(physical_vec, virtual_vec) > 0.99)
+        if (Vector3.Dot(physical_vec, virtual_vec) > 0.95)
         { // work on Alpha here? maybe....
            
             Vector3 physical_for = gameManager.physicalChair.forward;
@@ -291,8 +291,7 @@ public class RDManager : MonoBehaviour
             else
             {
                 int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
-                int desired_alpha = -1 * sign_alpha;
-                if (deltaDir * desired_alpha < 0)
+                if (deltaDir * sign_alpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
                     g_r = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
                 }

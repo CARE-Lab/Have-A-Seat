@@ -166,9 +166,8 @@ public class SaccadicRedirector : MonoBehaviour
             return;
      
         int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
-        int desired_alpha = -1 * sign_alpha;
     
-        finalRotation *= desired_alpha;
+        finalRotation *= sign_alpha;
         rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
        // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         
