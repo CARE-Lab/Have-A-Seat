@@ -254,6 +254,9 @@ public class RDManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8))
             {
                 float virtual_dist = hit_v.distance;
+                if (hit_v.transform.CompareTag("Chair"))
+                    physical_dist = Vector3.Distance(physical_target, Utilities.UnFlatten(currPos));
+                
                 if (virtual_dist > physical_dist)
                     g_t = MAX_TRANS_GAIN;
                 else
