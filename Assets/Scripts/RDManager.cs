@@ -73,7 +73,9 @@ public class RDManager : MonoBehaviour
     
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
+    private const float SMOOTHING_FACTOR = 0.125f;  //smoothing factor for rotation gain 
 
+    private float prevRotGain;
     PathTrail pathTrail;
     GameManager gameManager;
     APF_Resetter ApfResetter;
@@ -116,7 +118,7 @@ public class RDManager : MonoBehaviour
         UpdateCurrentUserState();
         CalculateDelta();
         GetNegativeGradient(out float rf, out Vector2 ng, out bool collisionhappens);
-        if (collisionhappens && !inReset && !ifJustEndReset)
+        /*if (collisionhappens && !inReset && !ifJustEndReset)
         {
             ApfResetter.InitializeReset();
             inReset = true;
@@ -125,10 +127,10 @@ public class RDManager : MonoBehaviour
         if(inReset)
             ApfResetter.InjectResetting();
         else
-        {
+        {*/
             ApplyRedirectionByNegativeGradient(ng);
-            ifJustEndReset = false;
-        }
+            /*ifJustEndReset = false;
+        }*/
             
         
         UpdatePreviousUserState();
@@ -254,12 +256,14 @@ public class RDManager : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8))
             {
                 float virtual_dist = hit_v.distance;
+                if (hit_v.transform.CompareTag("Chair"))
+                    physical_dist = Vector3.Distance(Utilities.UnFlatten(currPos), physical_target);
+                
                 if (virtual_dist > physical_dist)
                     g_t = MAX_TRANS_GAIN;
                 else
                     g_t = MIN_TRANS_GAIN;
                 
-               // Text1.SetText($"t_g: {g_t}");
             }
         }
         
@@ -279,25 +283,28 @@ public class RDManager : MonoBehaviour
         
         var sign_theta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
 
-        if (Vector3.Dot(physical_vec, virtual_vec) > 0.95)
+        float proposedRotation = 0;
+        if (Vector3.Dot(physical_vec, virtual_vec) > 0.97)
         { // work on Alpha here? maybe....
            
             Vector3 physical_for = gameManager.physicalChair.forward;
             Vector3 virtual_for = VirtualTarget.forward;
             
-            Text2. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
+            Text1.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
+            //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Vector3.Dot(physical_for, virtual_for) > 0.99)
-                g_r = 0;
+                proposedRotation = 0;
             else
             {
                 int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
+                Text3.SetText($"signAlpha: {sign_alpha}");
                 if (deltaDir * sign_alpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
-                    g_r = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+                    proposedRotation = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
                 }
                 else
                 {//if we are moving with theta, rotate more in VE and less in PE
-                    g_r = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+                    proposedRotation = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
                 }
             }
            
@@ -306,14 +313,20 @@ public class RDManager : MonoBehaviour
         {
             if (deltaDir * sign_theta < 0)
             {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
-                g_r = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+                proposedRotation = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
             }
             else
             {//if we are moving with theta, rotate more in VE and less in PE
-                g_r = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+                proposedRotation = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
             }
+            Text3.SetText($"signTheta: {sign_theta}");
         }
-        Text1.SetText($"Theta Dot: {Vector3.Dot(physical_vec, virtual_vec)}");
+
+        g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;
+        prevRotGain = g_r;
+        Text2.SetText($"g_r: {g_r}");
+        
+        //Text2.SetText($"Theta Dot: {Vector3.Dot(physical_vec, virtual_vec)}");
        
 
         // Translation Gain
