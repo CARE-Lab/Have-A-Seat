@@ -74,8 +74,12 @@ public class RDManager : MonoBehaviour
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
     private const float SMOOTHING_FACTOR = 0.125f;  //smoothing factor for rotation gain 
+    private const float TRANSLATION_DAMPENING = 0.6f; // dampen translation gain if PDE increases
 
     private float prevRotGain;
+    private float currPDE;
+    private float prevPDE = 100000f;
+    
     PathTrail pathTrail;
     GameManager gameManager;
     APF_Resetter ApfResetter;
@@ -246,6 +250,8 @@ public class RDManager : MonoBehaviour
         float g_t = 1;//translation
 
         var physical_target = gameManager.physicalChair.position;
+        var virtual_target = VirtualTarget.position;
+        currPDE = Vector3.Distance(physical_target, virtual_target);
         
         //calculate translation Gain
         Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
@@ -263,7 +269,12 @@ public class RDManager : MonoBehaviour
                     g_t = MAX_TRANS_GAIN;
                 else
                     g_t = MIN_TRANS_GAIN;
+
+                if (currPDE > prevPDE)
+                    g_t *= TRANSLATION_DAMPENING;
                 
+                prevPDE = currPDE;
+
             }
         }
         
