@@ -11,9 +11,8 @@ using UnityEngine.Serialization;
 
 public enum Redirector_condition
 {
-    APF_only = 0,
-    APF_Saccadic =1,
-    Saccadic_only =2
+    Original_APF = 0,
+    AlignmentAPF =1
 }
 public class RDManager : MonoBehaviour
 {
@@ -66,7 +65,11 @@ public class RDManager : MonoBehaviour
     public int desiredSteeringDirection;
     
     [HideInInspector]
-    public Vector2 totalForce; 
+    public Vector2 totalForce;
+
+    [HideInInspector] public float AlphaSignedAngle;
+
+    
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
@@ -80,9 +83,13 @@ public class RDManager : MonoBehaviour
     private float currPDE;
     private float prevPDE = 100000f;
     
+    private Vector3 physical_for, virtual_for;
+    
     PathTrail pathTrail;
     GameManager gameManager;
     APF_Resetter ApfResetter;
+    Alignment_Resetter alignmentResetter;
+    
     private SaveData logger;
     GameObject totalForcePointer;//visualization of totalForce
     
@@ -102,6 +109,7 @@ public class RDManager : MonoBehaviour
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         ApfResetter = GetComponent<APF_Resetter>();
+        alignmentResetter = GetComponent<Alignment_Resetter>();
         logger = GetComponent<SaveData>();
         
     }
@@ -116,7 +124,7 @@ public class RDManager : MonoBehaviour
 
     void Update()
     {
-        if (Time.timeScale == 0 || !gameManager.ready || condition == Redirector_condition.Saccadic_only)
+        if (Time.timeScale == 0 || !gameManager.ready)
             return;
 
         UpdateCurrentUserState();
@@ -247,7 +255,7 @@ public class RDManager : MonoBehaviour
     {
         float g_c = 0;//curvature
         float g_r = 0;//rotation
-        float g_t = 1;//translation
+        float g_t = 0;//translation
 
         var physical_target = gameManager.physicalChair.position;
         var virtual_target = VirtualTarget.position;
@@ -259,7 +267,7 @@ public class RDManager : MonoBehaviour
         if (MRUK.Instance.GetCurrentRoom().Raycast(ray, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
         {
             float physical_dist = hit.distance;
-            if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8))
+            if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8 | 1 << 7))
             {
                 float virtual_dist = hit_v.distance;
                 if (hit_v.transform.CompareTag("Chair"))
@@ -277,6 +285,9 @@ public class RDManager : MonoBehaviour
 
             }
         }
+        
+        Text1.SetText($"PDE: {currPDE}");
+        Text3.SetText($"g_t: {g_t}");
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
@@ -297,18 +308,15 @@ public class RDManager : MonoBehaviour
         float proposedRotation = 0;
         if (Vector3.Dot(physical_vec, virtual_vec) > 0.97)
         { // work on Alpha here? maybe....
-           
-            Vector3 physical_for = gameManager.physicalChair.forward;
-            Vector3 virtual_for = VirtualTarget.forward;
             
-            Text1.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
+            Text2.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
             //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Vector3.Dot(physical_for, virtual_for) > 0.99)
                 proposedRotation = 0;
             else
             {
-                int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
-                Text3.SetText($"signAlpha: {sign_alpha}");
+                int sign_alpha = (int)Mathf.Sign(AlphaSignedAngle);
+                //Text3.SetText($"signAlpha: {sign_alpha}");
                 if (deltaDir * sign_alpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
                     proposedRotation = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
@@ -330,12 +338,12 @@ public class RDManager : MonoBehaviour
             {//if we are moving with theta, rotate more in VE and less in PE
                 proposedRotation = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
             }
-            Text3.SetText($"signTheta: {sign_theta}");
+            //Text3.SetText($"signTheta: {sign_theta}");
         }
 
         g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;
         prevRotGain = g_r;
-        Text2.SetText($"g_r: {g_r}");
+        //Text2.SetText($"g_r: {g_r}");
         
         //Text2.SetText($"Theta Dot: {Vector3.Dot(physical_vec, virtual_vec)}");
        
@@ -393,33 +401,28 @@ public class RDManager : MonoBehaviour
         ifJustEndReset = true;
     }
 
-    /*private void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        #if UNITY_EDITOR
-        if (gameManager.ready)
-        {
-            Handles.color = Color.cyan;
-            var currPosReal = Utilities.FlattenedPos3D(currPos);
-            var walls =MRUK.Instance.GetCurrentRoom().WallAnchors;
-            foreach (var wall in walls)
-            {
-                Vector3 nearestPoint;
-                wall.GetClosestSurfacePosition(currPosReal, out nearestPoint);
-                nearestPoint = Utilities.FlattenedPos3D(nearestPoint);
-                Handles.DrawLine(currPosReal, nearestPoint);
-            }
-
-        }
-        #endif
+        /*#if UNITY_EDITOR
         
-    }*/
+            Handles.color = Color.cyan;
+            
+            var dir = Quaternion.Euler(0,270,0) * Vector3.forward;
+            Handles.DrawLine(Vector3.zero, dir*1);
+
+        
+        #endif*/
+        
+    }
 
 
     void UpdateCurrentUserState()
     {
         currPos = Utilities.FlattenedPos2D(headTransform.position);
         currDir = Utilities.FlattenedDir2D(headTransform.forward);
-        
+        physical_for = gameManager.physicalChair.forward;
+        virtual_for = VirtualTarget.forward;
+        AlphaSignedAngle = Utilities.GetSignedAngle(virtual_for, physical_for);
     }
 
     void UpdatePreviousUserState()

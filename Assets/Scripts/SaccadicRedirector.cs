@@ -91,7 +91,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 
-        if (Time.timeScale == 0 || !gameManager.ready || rdManager.condition == Redirector_condition.APF_only)
+        if (Time.timeScale == 0 || !gameManager.ready)
             return;
 
 
