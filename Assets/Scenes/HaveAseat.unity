@@ -6147,6 +6147,7 @@ MonoBehaviour:
   deltaDir: 0
   desiredSteeringDirection: 0
   totalForce: {x: 0, y: 0}
+  AlphaSignedAngle: 0
   userDirVector: {fileID: 2053159677}
   ngArrow: {fileID: 717936904266117204, guid: f68566b61c5ebc74784982a22ecef585, type: 3}
   Text1: {fileID: 847345410}
@@ -6181,6 +6182,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HUD: {fileID: 160796962}
   HUD_text: {fileID: 160796963}
+  _rdManager: {fileID: 0}
+  pathTrail: {fileID: 0}
+  gameManager: {fileID: 0}
+  rotateDir: 0
+  speedRatio: 0
+  totalF: {x: 0, y: 0}
+  requiredRotateSteerAngle: 0
 --- !u!114 &1320128409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6206,9 +6214,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0536f41b0cf352a49b42ca6cf9c5f2b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HUD: {fileID: 0}
-  HUD_text: {fileID: 0}
-  ResetDir: {fileID: 0}
+  HUD: {fileID: 160796962}
+  HUD_text: {fileID: 160796963}
+  _rdManager: {fileID: 0}
+  pathTrail: {fileID: 0}
+  gameManager: {fileID: 0}
+  rotateDir: 0
+  speedRatio: 0
+  totalF: {x: 0, y: 0}
+  requiredRotateSteerAngle: 0
+  ResetDir: {fileID: 717936904266117204, guid: b420e2af6a497a64b89fc6b650c67280, type: 3}
 --- !u!1 &1336376037
 GameObject:
   m_ObjectHideFlags: 0

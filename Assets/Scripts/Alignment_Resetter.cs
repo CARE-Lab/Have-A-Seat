@@ -6,28 +6,12 @@ using Oculus.Interaction.PoseDetection;
 using TMPro;
 using UnityEngine;
 
-public class Alignment_Resetter : MonoBehaviour
+public class Alignment_Resetter : Resetter
 {
-    [SerializeField] private GameObject HUD;
-    [SerializeField] private TextMeshProUGUI HUD_text;
     [SerializeField] private GameObject ResetDir;
     
-    RDManager _rdManager;
-    PathTrail pathTrail;
-    GameManager gameManager;
-    float rotateDir; //rotation direction, positive if rotate clockwise
-    float speedRatio;
-    private Vector3 totalF;
-    private float requiredRotateSteerAngle;
-
-    private void Start()
-    {
-        _rdManager = GetComponent<RDManager>();
-        pathTrail = gameObject.GetComponent<PathTrail>();
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-    }
-
-    public void InitializeReset()
+    
+    public override void InitializeReset()
     {
         var currDir = _rdManager.currDir;
         var currPos = _rdManager.currPos;
@@ -92,17 +76,8 @@ public class Alignment_Resetter : MonoBehaviour
         return Utilities.FlattenedDir2D(finalResetDir);
     }
 
-    void setHUD(int rotateDir)
-    {
-        HUD.SetActive(true);
-        if(rotateDir > 0)
-            HUD_text.SetText("Spin slowly in Place till this massage disappears\n ->>");
-        else
-            HUD_text.SetText("Spin slowly in Place till this massage disappears\n <<-");
-        
-    }
     
-    public void InjectResetting()
+    public override void InjectResetting()
     {        
         var steerRotation = speedRatio * _rdManager.deltaDir;  
         
@@ -128,10 +103,4 @@ public class Alignment_Resetter : MonoBehaviour
         }
     }
     
-    void EndReset()
-    {
-        HUD.SetActive(false);
-        requiredRotateSteerAngle = 0;
-        _rdManager.OnResetEnd();
-    }
 }

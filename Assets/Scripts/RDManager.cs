@@ -87,8 +87,7 @@ public class RDManager : MonoBehaviour
     
     PathTrail pathTrail;
     GameManager gameManager;
-    APF_Resetter ApfResetter;
-    Alignment_Resetter alignmentResetter;
+    private Resetter _resetter;
     
     private SaveData logger;
     GameObject totalForcePointer;//visualization of totalForce
@@ -108,9 +107,12 @@ public class RDManager : MonoBehaviour
     {
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        ApfResetter = GetComponent<APF_Resetter>();
-        alignmentResetter = GetComponent<Alignment_Resetter>();
         logger = GetComponent<SaveData>();
+        
+        if(condition == Redirector_condition.Original_APF)
+            _resetter = GetComponent<APF_Resetter>();
+        else
+            _resetter = GetComponent<Alignment_Resetter>();
         
     }
 
@@ -130,19 +132,19 @@ public class RDManager : MonoBehaviour
         UpdateCurrentUserState();
         CalculateDelta();
         GetNegativeGradient(out float rf, out Vector2 ng, out bool collisionhappens);
-        /*if (collisionhappens && !inReset && !ifJustEndReset)
+        if (collisionhappens && !inReset && !ifJustEndReset)
         {
-            ApfResetter.InitializeReset();
+            _resetter.InitializeReset();
             inReset = true;
             resetsPerTrial += 1;
         }
         if(inReset)
-            ApfResetter.InjectResetting();
+            _resetter.InjectResetting();
         else
-        {*/
+        {
             ApplyRedirectionByNegativeGradient(ng);
-            /*ifJustEndReset = false;
-        }*/
+            ifJustEndReset = false;
+        }
             
         
         UpdatePreviousUserState();
