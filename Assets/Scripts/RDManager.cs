@@ -99,9 +99,9 @@ public class RDManager : MonoBehaviour
     bool inReset;
     bool ifJustEndReset = false;//if just finishes reset, if true, execute redirection once then judge if reset, Prevent infinite loops
 
-    public TextMeshProUGUI Text1;
+    /*public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
-    public TextMeshProUGUI Text3;
+    public TextMeshProUGUI Text3;*/
     
     private void Start()
     {
@@ -288,8 +288,8 @@ public class RDManager : MonoBehaviour
             }
         }
         
-        Text1.SetText($"PDE: {currPDE}");
-        Text3.SetText($"g_t: {g_t}");
+        /*Text1.SetText($"PDE: {currPDE}");
+        Text3.SetText($"g_t: {g_t}");*/
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
@@ -311,7 +311,7 @@ public class RDManager : MonoBehaviour
         if (Vector3.Dot(physical_vec, virtual_vec) > 0.97)
         { // work on Alpha here? maybe....
             
-            Text2.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
+            //Text2.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
             //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Vector3.Dot(physical_for, virtual_for) > 0.99)
                 proposedRotation = 0;
