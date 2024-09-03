@@ -66,10 +66,9 @@ public class RDManager : MonoBehaviour
     
     [HideInInspector]
     public Vector2 totalForce;
-
-    [HideInInspector] public float AlphaSignedAngle;
-
     
+    [HideInInspector]
+    public Vector3 physical_for, virtual_for;
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
@@ -83,7 +82,7 @@ public class RDManager : MonoBehaviour
     private float currPDE;
     private float prevPDE = 100000f;
     
-    private Vector3 physical_for, virtual_for;
+    
     
     PathTrail pathTrail;
     GameManager gameManager;
@@ -99,9 +98,9 @@ public class RDManager : MonoBehaviour
     bool inReset;
     bool ifJustEndReset = false;//if just finishes reset, if true, execute redirection once then judge if reset, Prevent infinite loops
 
-    /*public TextMeshProUGUI Text1;
+    public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
-    public TextMeshProUGUI Text3;*/
+    public TextMeshProUGUI Text3;
     
     private void Start()
     {
@@ -311,13 +310,12 @@ public class RDManager : MonoBehaviour
         if (Vector3.Dot(physical_vec, virtual_vec) > 0.97)
         { // work on Alpha here? maybe....
             
-            //Text2.SetText($"Alpha Error: {Vector3.Angle(virtual_for, physical_for)}");
             //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Vector3.Dot(physical_for, virtual_for) > 0.99)
                 proposedRotation = 0;
             else
             {
-                int sign_alpha = (int)Mathf.Sign(AlphaSignedAngle);
+                int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
                 //Text3.SetText($"signAlpha: {sign_alpha}");
                 if (deltaDir * sign_alpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
@@ -424,7 +422,6 @@ public class RDManager : MonoBehaviour
         currDir = Utilities.FlattenedDir2D(headTransform.forward);
         physical_for = gameManager.physicalChair.forward;
         virtual_for = VirtualTarget.forward;
-        AlphaSignedAngle = Utilities.GetSignedAngle(virtual_for, physical_for);
     }
 
     void UpdatePreviousUserState()

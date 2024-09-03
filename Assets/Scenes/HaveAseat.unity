@@ -6147,9 +6147,13 @@ MonoBehaviour:
   deltaDir: 0
   desiredSteeringDirection: 0
   totalForce: {x: 0, y: 0}
-  AlphaSignedAngle: 0
+  physical_for: {x: 0, y: 0, z: 0}
+  virtual_for: {x: 0, y: 0, z: 0}
   userDirVector: {fileID: 2053159677}
   ngArrow: {fileID: 717936904266117204, guid: f68566b61c5ebc74784982a22ecef585, type: 3}
+  Text1: {fileID: 847345410}
+  Text2: {fileID: 847345409}
+  Text3: {fileID: 1964602099}
 --- !u!4 &1320128407
 Transform:
   m_ObjectHideFlags: 0
@@ -7238,7 +7242,7 @@ PrefabInstance:
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.96
+      value: -1.03
       objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
@@ -7248,7 +7252,7 @@ PrefabInstance:
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.34
+      value: 2.53
       objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
