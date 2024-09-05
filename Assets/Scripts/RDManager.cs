@@ -37,20 +37,16 @@ public class RDManager : MonoBehaviour
     [Range(1, 23)]
     public float CURVATURE_RADIUS = 7.5F;
 
-    [Tooltip("Baseline rotation applied")]
-    [Range(0, 1)]
-    public float BASELINE_ROT = 0.1F;
-
     [Tooltip("The game object that is being physically tracked (probably user's head)")]
     public Transform headTransform;
-
-    public Transform XRTransform;
-    
-    public Transform VirtualTarget;
 
     public GameObject Env;
 
     public Redirector_condition condition;
+    
+    public Transform VirtualTarget;
+
+    [HideInInspector] public Transform PhysicalTarget;
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -66,9 +62,11 @@ public class RDManager : MonoBehaviour
     
     [HideInInspector]
     public Vector2 totalForce;
-    
-    [HideInInspector]
-    public Vector3 physical_for, virtual_for;
+
+    [HideInInspector] 
+    public float Angle_alpha, Angle_theta;
+
+    [HideInInspector] public int SignAlpha, SignTheta;
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
@@ -81,7 +79,6 @@ public class RDManager : MonoBehaviour
     private float prevRotGain;
     private float currPDE;
     private float prevPDE = 100000f;
-    
     
     
     PathTrail pathTrail;
@@ -112,7 +109,6 @@ public class RDManager : MonoBehaviour
             _resetter = GetComponent<APF_Resetter>();
         else
             _resetter = GetComponent<Alignment_Resetter>();
-        
     }
 
     void StartTrial()
@@ -221,7 +217,7 @@ public class RDManager : MonoBehaviour
 
     private Vector2 AttractiveNegativeGradient(Vector2 currPosReal)
     {
-        var physicalTargetPos = Utilities.FlattenedPos2D(gameManager.physicalChair.position);
+        var physicalTargetPos = Utilities.FlattenedPos2D(PhysicalTarget.position);
         var gDelta = 2 * (new Vector2(currPosReal.x - physicalTargetPos.x, currPosReal.y -physicalTargetPos.y));
         return -gDelta;//NegtiveGradient
     }
@@ -232,7 +228,7 @@ public class RDManager : MonoBehaviour
 
         //position and direction in physical tracking space
         var objVirtualPos = Utilities.FlattenedPos2D(VirtualTarget.transform.position);
-        var objPhysicalPos = Utilities.FlattenedPos2D(gameManager.physicalChair.position);
+        var objPhysicalPos = Utilities.FlattenedPos2D(PhysicalTarget.position);
 
         //the virtual distance from the user to the alignment target
         var Dv = (objVirtualPos - currPos).magnitude;
@@ -258,9 +254,8 @@ public class RDManager : MonoBehaviour
         float g_r = 0;//rotation
         float g_t = 0;//translation
 
-        var physical_target = gameManager.physicalChair.position;
-        var virtual_target = VirtualTarget.position;
-        currPDE = Vector3.Distance(physical_target, virtual_target);
+        
+        currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.position);
         
         //calculate translation Gain
         Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
@@ -272,7 +267,7 @@ public class RDManager : MonoBehaviour
             {
                 float virtual_dist = hit_v.distance;
                 if (hit_v.transform.CompareTag("Chair"))
-                    physical_dist = Vector3.Distance(Utilities.UnFlatten(currPos), physical_target);
+                    physical_dist = Vector3.Distance(Utilities.UnFlatten(currPos), PhysicalTarget.position);
                 
                 if (virtual_dist > physical_dist)
                     g_t = MAX_TRANS_GAIN;
@@ -301,42 +296,38 @@ public class RDManager : MonoBehaviour
 
         g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
 
-        Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.position - Utilities.UnFlatten(currPos));
-        Vector3 physical_vec = Utilities.FlattenedDir3D(physical_target - Utilities.UnFlatten(currPos));
         
-        var sign_theta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
 
         float proposedRotation = 0;
-        if (Vector3.Dot(physical_vec, virtual_vec) > 0.97)
+        if (Angle_theta < 10)
         { // work on Alpha here? maybe....
             
             //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
-            if (Vector3.Dot(physical_for, virtual_for) > 0.99)
+            if (Angle_alpha < 3)
                 proposedRotation = 0;
             else
             {
-                int sign_alpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
                 //Text3.SetText($"signAlpha: {sign_alpha}");
-                if (deltaDir * sign_alpha < 0)
+                if (deltaDir * SignAlpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
-                    proposedRotation = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+                    proposedRotation = SignAlpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
                 }
                 else
                 {//if we are moving with theta, rotate more in VE and less in PE
-                    proposedRotation = sign_alpha * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+                    proposedRotation = SignAlpha * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
                 }
             }
            
         }
         else
         {
-            if (deltaDir * sign_theta < 0)
+            if (deltaDir * SignTheta < 0)
             {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
-                proposedRotation = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+                proposedRotation = SignTheta * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
             }
             else
             {//if we are moving with theta, rotate more in VE and less in PE
-                proposedRotation = sign_theta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+                proposedRotation = SignTheta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
             }
             //Text3.SetText($"signTheta: {sign_theta}");
         }
@@ -420,8 +411,18 @@ public class RDManager : MonoBehaviour
     {
         currPos = Utilities.FlattenedPos2D(headTransform.position);
         currDir = Utilities.FlattenedDir2D(headTransform.forward);
-        physical_for = gameManager.physicalChair.forward;
-        virtual_for = VirtualTarget.forward;
+        Vector3 physical_for = PhysicalTarget.forward;
+        Vector3 virtual_for = VirtualTarget.forward;
+
+        Angle_alpha = Vector3.Angle(virtual_for, physical_for);
+        SignAlpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
+        
+        Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.position - Utilities.UnFlatten(currPos));
+        Vector3 physical_vec = Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos));
+        
+        SignTheta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
+        Angle_theta = Vector3.Angle(virtual_vec, physical_vec);
+
     }
 
     void UpdatePreviousUserState()

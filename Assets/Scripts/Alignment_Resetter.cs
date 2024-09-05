@@ -17,7 +17,6 @@ public class Alignment_Resetter : Resetter
     public override void InitializeReset()
     {
         var currDir = _rdManager.currDir;
-        var currPos = _rdManager.currPos;
         totalF = _rdManager.totalForce;
         
         var APFangle = Vector2.Angle(currDir, totalF); //smaller angle
@@ -35,11 +34,9 @@ public class Alignment_Resetter : Resetter
         
         
         //option 2
-        var Vfor = _rdManager.virtual_for;
-        var Pfor = _rdManager.physical_for;
         int signAPF = (int)Mathf.Sign(Vector2.SignedAngle(currDir, totalF));
         
-        int rotateDir = (int)Mathf.Sign(Utilities.GetSignedAngle(Vfor, Pfor)); // rotate in the direction of alpha
+        int rotateDir = _rdManager.SignAlpha; // rotate in the direction of alpha
         
         if (rotateDir * signAPF < 0)
             requiredRotateSteerAngle = 360 - APFangle;//required rotation angle in real world (the greater angle)
@@ -47,7 +44,7 @@ public class Alignment_Resetter : Resetter
             requiredRotateSteerAngle = APFangle;
         
         
-        speedRatio = Vector3.Angle(Vfor, Pfor) / requiredRotateSteerAngle;
+        speedRatio = _rdManager.Angle_alpha / requiredRotateSteerAngle;
         
         Text1.SetText($"{speedRatio}");
         
@@ -108,14 +105,7 @@ public class Alignment_Resetter : Resetter
         var smallerAngle = Vector2.Angle(totalF, _rdManager.currDir);
         
         if ( smallerAngle < 5)
-        {//meet the rotation requirement
-            /*_rdManager.Env.transform.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, requiredRotateSteerAngle);
-            
-            if (gameManager.debugMode)
-                pathTrail.virtualTrail.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, requiredRotateSteerAngle);
-                */
-
-            //reset end
+        {
             EndReset();
         }
         else

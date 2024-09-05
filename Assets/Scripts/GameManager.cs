@@ -28,11 +28,9 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public GameObject trackedArea; 
     [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
-    [HideInInspector] public Transform physicalChair;
     
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
-   
-
+    
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
@@ -67,7 +65,7 @@ public class GameManager : MonoBehaviour
                 {
                     if (child.tag == "Chair")
                     {
-                        physicalChair = child;
+                        red_manager.PhysicalTarget = child;
                         /*GameObject ar = Instantiate(axis_ref, physicalChair.position, Quaternion.identity);
                         ar.transform.forward = physicalChair.forward;*/
                     }
