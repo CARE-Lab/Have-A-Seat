@@ -193,7 +193,6 @@ public class RDManager : MonoBehaviour
         ng = Vector2.zero;
         
         ng = RepulsiveNegativeGradient(nearestPosList, currPos) + AttractiveNegativeGradient(currPos);
-        //ng = RepulsiveNegativeGradient(nearestPosList, currPosReal_2d);
         ng = ng.normalized;
         UpdateTotalForcePointer(ng);
 
