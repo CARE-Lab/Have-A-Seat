@@ -85,7 +85,7 @@ public class RDManager : MonoBehaviour
     GameManager gameManager;
     private Resetter _resetter;
     
-    private SaveData logger;
+  
     GameObject totalForcePointer;//visualization of totalForce
     
     float sumOfRealDistanceTravelled;
@@ -103,7 +103,6 @@ public class RDManager : MonoBehaviour
     {
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        logger = GetComponent<SaveData>();
         
         if(condition == Redirector_condition.OriginalAPF)
             _resetter = GetComponent<APF_Resetter>();
@@ -111,11 +110,11 @@ public class RDManager : MonoBehaviour
             _resetter = GetComponent<Alignment_Resetter>();
     }
 
-    void StartTrial()
+    public void StartTrial()
     {
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
-        logger.StartCondition(condition.ToString());
+        gameManager.Setup();
     }
     
 

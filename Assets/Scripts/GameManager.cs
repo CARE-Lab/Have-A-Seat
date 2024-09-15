@@ -40,10 +40,18 @@ public class GameManager : MonoBehaviour
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
-        Setup();
+        Recenter();
     }
 
-    void Setup()
+    public void Setup()
+    {
+        Recenter();
+        _couchSpawner.SpawnPrefabs();
+        FindChair();
+        ready = true;
+    }
+
+    private void Recenter()
     {
         float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
         red_manager.Env.transform.RotateAround(red_manager.currPos, -angleY);
@@ -54,7 +62,7 @@ public class GameManager : MonoBehaviour
         red_manager.Env.transform.position -= distDiff;
     }
 
-    public void FindChair()
+    private void FindChair()
     {
         foreach (var an in MRUK.Instance.GetCurrentRoom().Anchors)
         {
@@ -73,8 +81,6 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        
-        //ready = true;
     }
     
     private void Update()
