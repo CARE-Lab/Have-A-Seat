@@ -15,18 +15,26 @@ public class SaveData : MonoBehaviour
     private StreamWriter sw_Log;
     private bool isClosed;
     
-    private void Start()
-    {
-        
-    }
+    //public TextMeshProUGUI eyeData;
+    
 
     public void StartCondition(string conditionName)
     {
         string date = DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "-" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString();
-        fi_Log = new FileInfo($"{Application.persistentDataPath}SaveData/{subjectNumber}_{conditionName}_Log_{date}.csv");
-        sw_Log = fi_Log.AppendText();
-        sw_Log.WriteLine($"PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets, Rot_induced_Sacc");
-        isClosed = false;
+        try
+        {
+            //This PC\Quest Pro\Internal shared storage\Android\data\com.UnityTechnologies.com.unity.template.urpblank\files
+            fi_Log = new FileInfo($"{Application.persistentDataPath}/Subject_No_{subjectNumber}_{conditionName}_Log_{date}.csv");
+            sw_Log = fi_Log.AppendText();
+            sw_Log.WriteLine($"PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets");
+            isClosed = false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+       
     }
 
     public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled, float rotInducedSacc)

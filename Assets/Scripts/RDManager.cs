@@ -9,11 +9,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine.Serialization;
 
-public enum Redirector_condition
-{
-    Original_APF = 0,
-    AlignmentAPF =1
-}
+
 public class RDManager : MonoBehaviour
 {
 
@@ -42,10 +38,14 @@ public class RDManager : MonoBehaviour
 
     public GameObject Env;
 
-    public Redirector_condition condition;
     
     public Transform VirtualTarget;
 
+    [HideInInspector]
+    public Redirector_condition condition;
+
+    [HideInInspector] public String[] trial_Order;
+    
     [HideInInspector] public Transform PhysicalTarget;
  
     [HideInInspector]
@@ -105,7 +105,7 @@ public class RDManager : MonoBehaviour
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         logger = GetComponent<SaveData>();
         
-        if(condition == Redirector_condition.Original_APF)
+        if(condition == Redirector_condition.OriginalAPF)
             _resetter = GetComponent<APF_Resetter>();
         else
             _resetter = GetComponent<Alignment_Resetter>();

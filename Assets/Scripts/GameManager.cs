@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
             }
         }
         
-        ready = true;
+        //ready = true;
     }
     
     private void Update()
