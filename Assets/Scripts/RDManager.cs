@@ -98,6 +98,8 @@ public class RDManager : MonoBehaviour
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
     public TextMeshProUGUI Text3;
+
+    public TextMeshProUGUI eyeData;
     
     private void Start()
     {
@@ -115,6 +117,11 @@ public class RDManager : MonoBehaviour
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
         gameManager.Setup();
+    }
+
+    public void EndTrial()
+    {
+        eyeData.SetText("end trial!");
     }
     
 
