@@ -137,7 +137,11 @@ public class RDManager : MonoBehaviour
             _resetter.InjectResetting();
         else
         {
-            ApplyRedirectionByNegativeGradient(ng);
+            if(condition == Redirector_condition.AlignmentAPF)
+                ApplyRedirectionByNegativeGradient_Modified(ng);
+            else
+                ApplyRedirectionByNegativeGradient_Original(ng);
+            
             ifJustEndReset = false;
         }
             
@@ -246,8 +250,72 @@ public class RDManager : MonoBehaviour
             }
         }
     }
+    
+    public void ApplyRedirectionByNegativeGradient_Original(Vector2 ng) {
+    
+        float g_c = 0;
+        float g_r = 0;
+        float g_t = 0;
 
-    public void ApplyRedirectionByNegativeGradient(Vector2 ng)
+        //calculate translation
+        if (Vector2.Dot(ng, currDir) < 0)
+        {
+            g_t = MAX_TRANS_GAIN;
+        }
+        
+        var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
+        var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
+
+        var desiredFacingDirection = Utilities.UnFlatten(ng);//negative gradient direction in physical space
+        int desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
+
+        //calculate curvature rotation
+        var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
+
+        g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
+        
+        float proposedRotation = 0;
+        if (deltaDir * desiredSteeringDirection < 0)
+        {
+            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+        }
+        else
+        {
+            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+        }
+        
+        g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;
+        prevRotGain = g_r;
+
+        // Translation Gain
+        var translation = g_t * Utilities.UnFlatten(deltaPos);
+        if (deltaPos.magnitude > 0.002)
+        {
+            Env.transform.Translate(-1*translation, Space.World);
+        }
+
+        float finalRotation;
+        if (deltaPos.magnitude > 0.002)
+        {
+            // Curvature Gain
+            finalRotation = g_c;
+            g_r = 0;
+        }
+        else
+        {
+            // Rotation Gain
+            finalRotation = g_r;
+            g_c = 0;
+        }
+    
+        Env.transform.RotateAround(Utilities.UnFlatten(currPos), Vector3.up, finalRotation);
+    
+        if (gameManager.debugMode)
+            pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+    }
+
+    
+    public void ApplyRedirectionByNegativeGradient_Modified(Vector2 ng)
     {
         float g_c = 0;//curvature
         float g_r = 0;//rotation
