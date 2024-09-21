@@ -43,11 +43,12 @@ public class GameManager : MonoBehaviour
         Recenter();
     }
 
-    public void Setup()
+    public void Setup(String DifficultyLvl)
     {
         Recenter();
         _couchSpawner.SpawnPrefabs();
         FindChair();
+        //Place virtual chair according to difficulty Level
         ready = true;
     }
 

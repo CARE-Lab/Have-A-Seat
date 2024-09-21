@@ -37,9 +37,12 @@ public class RDManager : MonoBehaviour
     public Transform headTransform;
 
     public GameObject Env;
-
     
     public Transform VirtualTarget;
+
+    public int trialOrderIndex = 0;
+
+    public ParticleSystem success;
 
     [HideInInspector]
     public Redirector_condition condition;
@@ -70,6 +73,8 @@ public class RDManager : MonoBehaviour
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
+
+    [SerializeField] private SaveData _logger;
     
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
@@ -116,12 +121,23 @@ public class RDManager : MonoBehaviour
     {
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
-        gameManager.Setup();
+        gameManager.Setup(trial_Order[trialOrderIndex]);
+       
     }
 
     public void EndTrial()
     {
-        eyeData.SetText("end trial!");
+        float PDE = Vector3.Distance(PhysicalTarget.position, Utilities.UnFlatten(currPos));
+        sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
+        _logger.EndTrial(trial_Order[trialOrderIndex],PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
+        trialOrderIndex++;
+
+        if (PDE < 0.1 && Angle_alpha < 10)
+        {
+            success.Play();
+            gameManager.ready = false;
+        }
+           
     }
     
 
@@ -273,7 +289,7 @@ public class RDManager : MonoBehaviour
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//negative gradient direction in physical space
-        int desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
+        desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
 
         //calculate curvature rotation
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
@@ -508,8 +524,7 @@ public class RDManager : MonoBehaviour
     {
         deltaPos = currPos - prevPos;
         deltaDir = Utilities.GetSignedAngle(Utilities.UnFlatten(prevDir), Utilities.UnFlatten(currDir));
-        float dirMag = Mathf.Round(deltaDir * 100f) / 100f;
-        float distMag = Mathf.Round(deltaPos.magnitude * 100f) / 100f;
+        float distMag = deltaPos.magnitude;
         sumOfRealDistanceTravelled += distMag;
     }
 

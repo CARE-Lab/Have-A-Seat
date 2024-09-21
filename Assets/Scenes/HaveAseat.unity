@@ -5840,7 +5840,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1113938396
 Transform:
   m_ObjectHideFlags: 0
@@ -7643,6 +7643,7 @@ MonoBehaviour:
   headTransform: {fileID: 1364240237}
   Env: {fileID: 440811006}
   VirtualTarget: {fileID: 1484360240}
+  trialOrderIndex: 0
   condition: 1
   trial_Order: []
   PhysicalTarget: {fileID: 0}
@@ -7660,6 +7661,7 @@ MonoBehaviour:
   SignTheta: 0
   userDirVector: {fileID: 2053159677}
   ngArrow: {fileID: 717936904266117204, guid: f68566b61c5ebc74784982a22ecef585, type: 3}
+  _logger: {fileID: 1970955583}
   Text1: {fileID: 847345410}
   Text2: {fileID: 847345409}
   Text3: {fileID: 1964602099}
@@ -8884,7 +8886,7 @@ PrefabInstance:
     - target: {fileID: 7408246162529147006, guid: 48779c4e9105c1d4c986f52958bba9a3,
         type: 3}
       propertyPath: _whenSelected.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7408246162529147006, guid: 48779c4e9105c1d4c986f52958bba9a3,
         type: 3}
@@ -9019,6 +9021,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 440811007}
     m_Modifications:
+    - target: {fileID: 473556330104232800, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14102,7 +14109,7 @@ RectTransform:
   m_Father: {fileID: 564130334700075666}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}

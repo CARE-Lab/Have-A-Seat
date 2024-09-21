@@ -157,18 +157,29 @@ public class SaccadicRedirector : MonoBehaviour
 
     void InduceRot(float finalRotation)
     {
-        if (rdManager.Angle_alpha < 5)
-            return;
+        if (rdManager.condition == Redirector_condition.AlignmentAPF)
+        {
+            if (rdManager.Angle_alpha < 2)
+                return;
     
-        finalRotation *= rdManager.SignAlpha;
+            finalRotation *= rdManager.SignAlpha;
+           
+        }
+        else
+        {
+            if (rdManager.desiredSteeringDirection != 0)
+                finalRotation *= rdManager.desiredSteeringDirection;
+        }
+        
         rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-       // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
+        // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         
 
         if(gameManager.debugMode)
             pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
         inducedRotSaccadic += Mathf.Abs(finalRotation);
+       
     }
 
     void UpdateCurrentGazeDirection()
