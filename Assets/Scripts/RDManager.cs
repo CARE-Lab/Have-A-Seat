@@ -12,7 +12,7 @@ using UnityEngine.Serialization;
 
 public class RDManager : MonoBehaviour
 {
-
+    [Header("Redirection Gains")]
     [Tooltip("Translation gain (dilate)")]
     [Range(0, 5)]
     public float MAX_TRANS_GAIN = 0.26F;
@@ -38,18 +38,22 @@ public class RDManager : MonoBehaviour
 
     public GameObject Env;
     
-    public Transform VirtualTarget;
-
-    public int trialOrderIndex = 0;
-
     public ParticleSystem success;
+
+    public ExperimentProtocol expProtocol;
+    
+    public GameObject VirtualTarget;
 
     [HideInInspector]
     public Redirector_condition condition;
 
-    [HideInInspector] public String[] trial_Order;
+    [HideInInspector] public int difficultyLvl;
+    
+    [HideInInspector] public int trialNo = 0;
     
     [HideInInspector] public Transform PhysicalTarget;
+    
+    
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -73,8 +77,7 @@ public class RDManager : MonoBehaviour
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
-
-    [SerializeField] private SaveData _logger;
+    
     
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
@@ -100,10 +103,10 @@ public class RDManager : MonoBehaviour
     bool inReset;
     bool ifJustEndReset = false;//if just finishes reset, if true, execute redirection once then judge if reset, Prevent infinite loops
 
+    [Header("Debugging")]
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
     public TextMeshProUGUI Text3;
-
     public TextMeshProUGUI eyeData;
     
     private void Start()
@@ -121,21 +124,27 @@ public class RDManager : MonoBehaviour
     {
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
-        gameManager.Setup(trial_Order[trialOrderIndex]);
-       
+        gameManager.Setup(difficultyLvl);
+        // add some degree of randomness?
     }
 
     public void EndTrial()
     {
         float PDE = Vector3.Distance(PhysicalTarget.position, Utilities.UnFlatten(currPos));
         sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-        _logger.EndTrial(trial_Order[trialOrderIndex],PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
-        trialOrderIndex++;
-
+        expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
+        
         if (PDE < 0.1 && Angle_alpha < 10)
         {
             success.Play();
             gameManager.ready = false;
+        }
+        
+        trialNo++;
+        if (trialNo == 3)
+        {
+            expProtocol.EndCondition();
+            trialNo = 0;
         }
            
     }
@@ -344,7 +353,7 @@ public class RDManager : MonoBehaviour
         float g_t = 0;//translation
 
         
-        currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.position);
+        currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.transform.position);
         
         //calculate translation Gain
         Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
@@ -501,12 +510,12 @@ public class RDManager : MonoBehaviour
         currPos = Utilities.FlattenedPos2D(headTransform.position);
         currDir = Utilities.FlattenedDir2D(headTransform.forward);
         Vector3 physical_for = PhysicalTarget.forward;
-        Vector3 virtual_for = VirtualTarget.forward;
+        Vector3 virtual_for = VirtualTarget.transform.forward;
 
         Angle_alpha = Vector3.Angle(virtual_for, physical_for);
         SignAlpha = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_for, physical_for));
         
-        Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.position - Utilities.UnFlatten(currPos));
+        Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.transform.position - Utilities.UnFlatten(currPos));
         Vector3 physical_vec = Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos));
         
         SignTheta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));

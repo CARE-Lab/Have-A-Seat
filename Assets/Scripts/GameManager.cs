@@ -21,20 +21,26 @@ public class GameManager : MonoBehaviour
     bool paused = false;
     
     public Transform startPos;
-    public GameObject debug_UI;
-    public TextMeshProUGUI eyeData;
+    
     public bool debugMode = true;
     
-    [HideInInspector] public GameObject trackedArea; 
-    [HideInInspector] public List<GameObject> trackingSpacePoints = new List<GameObject>();
     [HideInInspector] public bool ready = false;
     
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
     
+    [SerializeField] private Transform easyLvl;
+    [SerializeField] private Transform mediumLvl;
+    [SerializeField] private Transform hardLvl;
+    
+    [Header("Debugging")]
     [SerializeField] TextMeshProUGUI text1;
     [SerializeField] TextMeshProUGUI text2;
     [SerializeField] TextMeshProUGUI text3;
     [SerializeField] GameObject axis_ref;
+    public GameObject debug_UI;
+    public TextMeshProUGUI eyeData;
+    
+    
     
     void Start()
     {
@@ -43,24 +49,42 @@ public class GameManager : MonoBehaviour
         Recenter();
     }
 
-    public void Setup(String DifficultyLvl)
+    public void Setup(int DifficultyLvl)
     {
         Recenter();
         _couchSpawner.SpawnPrefabs();
         FindChair();
         //Place virtual chair according to difficulty Level
+        switch (DifficultyLvl)
+        {
+            case 0 :
+                red_manager.VirtualTarget.transform.position = easyLvl.position;
+                red_manager.VirtualTarget.transform.forward = easyLvl.forward;
+                break;
+            case 1:
+                red_manager.VirtualTarget.transform.position = mediumLvl.position;
+                red_manager.VirtualTarget.transform.forward = mediumLvl.forward;
+                break;
+            default:
+                red_manager.VirtualTarget.transform.position = hardLvl.position;
+                red_manager.VirtualTarget.transform.forward = hardLvl.forward;
+                break;
+                    
+        }
         ready = true;
     }
 
     private void Recenter()
     {
-        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-        red_manager.Env.transform.RotateAround(red_manager.currPos, -angleY);
-        //red_manager.XRTransform.Rotate(0, angleY, 0);
-
         Vector3 distDiff = startPos.position - red_manager.headTransform.position;
         distDiff = Utilities.FlattenedPos3D(distDiff);
         red_manager.Env.transform.position -= distDiff;
+        
+        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
+        //red_manager.Env.transform.RotateAround(red_manager.currPos, -angleY);
+        red_manager.Env.transform.RotateAround(startPos.position, -angleY);
+        //red_manager.XRTransform.Rotate(0, angleY, 0);
+        
     }
 
     private void FindChair()
@@ -75,8 +99,6 @@ public class GameManager : MonoBehaviour
                     if (child.tag == "Chair")
                     {
                         red_manager.PhysicalTarget = child;
-                        /*GameObject ar = Instantiate(axis_ref, physicalChair.position, Quaternion.identity);
-                        ar.transform.forward = physicalChair.forward;*/
                     }
                         
                 }
@@ -86,16 +108,6 @@ public class GameManager : MonoBehaviour
     
     private void Update()
     {
-       /* bool button_one_pressed = OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch);
-        if (button_one_pressed != prev_state_button_one)
-        {
-            if (button_one_pressed)
-            {
-               
-            }
-            prev_state_button_one = button_one_pressed;
-        }*/
-
         bool button_two_pressed = OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch);
         if (button_two_pressed != prev_state_button_two)
         {

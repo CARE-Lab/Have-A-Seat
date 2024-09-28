@@ -15,36 +15,58 @@ public enum Redirector_condition
 public class ExperimentProtocol : MonoBehaviour
 {
     public TextAsset textAssetData;
-    public Redirector_condition condition;
-    public String[][]latin_square = new String[18][];
+    public String[][]latin_square = new String[6][];
     public RDManager rdManager;
     public GameObject TrialUI;
     
     private SaveData logFile;
     
+    private int conditionIndx = 0;
+    private String[] condition_order;
+    
     void Start()
     {
         ReadCSV();
-        rdManager.condition = condition;
+        condition_order = latin_square[Random.Range(0, 6)];
         logFile = GetComponent<SaveData>();
     }
 
     public void StartCondition()
     {
-        String[] trial_order = latin_square[Random.Range(0, 17)];
-        for (int i = 0; i < trial_order.Length; i++)
-        {
-            if (trial_order[i] == "A" || trial_order[i] == "B" || trial_order[i] == "C")
-                trial_order[i] = "L";
-            if (trial_order[i] == "D" || trial_order[i] == "E" || trial_order[i] == "F")
-                trial_order[i] = "M";
-            if (trial_order[i] == "G" || trial_order[i] == "H" || trial_order[i] == "I")
-                trial_order[i] = "H";
-        }
         
-        rdManager.trial_Order = trial_order;
-        logFile.StartCondition(condition.ToString());
+        if (condition_order[conditionIndx] == "A" || condition_order[conditionIndx] == "C" || condition_order[conditionIndx] == "E")
+        {
+            rdManager.condition = Redirector_condition.OriginalAPF;
+        }
+        else
+            rdManager.condition = Redirector_condition.AlignmentAPF;
+
+        if (condition_order[conditionIndx] == "A" || condition_order[conditionIndx] == "B")
+            rdManager.difficultyLvl = 0;
+        else if (condition_order[conditionIndx] == "C" || condition_order[conditionIndx] == "D")
+            rdManager.difficultyLvl = 1;
+        else
+            rdManager.difficultyLvl = 2;
+       
+        
+        logFile.StartCondition(rdManager.condition.ToString(), rdManager.difficultyLvl);
         TrialUI.SetActive(true);
+        
+    }
+
+    public void EndCondition()
+    {
+        logFile.EndCondition();
+        conditionIndx++;
+        if (conditionIndx == 6)
+        {
+            //End Experiment
+        }
+    }
+
+    public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled)
+    {
+        logFile.EndTrial(PDE, AE, ResetsPerPath, distanceTraveled);
     }
 
     void ReadCSV()
@@ -53,9 +75,9 @@ public class ExperimentProtocol : MonoBehaviour
        
         for (int i = 0; i < data.Length-1; i++)
         {
-            int r = i / 9;
-            latin_square[r] = new String[9];
-            latin_square[r][i % 9] = data[i];
+            int r = i / 6;
+            latin_square[r] = new String[6];
+            latin_square[r][i % 6] = data[i];
         }
         
     }
