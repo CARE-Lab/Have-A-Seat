@@ -43,6 +43,8 @@ public class RDManager : MonoBehaviour
     public ExperimentProtocol expProtocol;
     
     public GameObject VirtualTarget;
+    
+    public GameObject TrialUI;
 
     [HideInInspector]
     public Redirector_condition condition;
@@ -52,8 +54,8 @@ public class RDManager : MonoBehaviour
     [HideInInspector] public int trialNo = 0;
     
     [HideInInspector] public Transform PhysicalTarget;
-    
-    
+
+    [HideInInspector] public Transform physicalStartPos;
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -77,6 +79,7 @@ public class RDManager : MonoBehaviour
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
+    [SerializeField] private AnchorPrefabSpawner _startPosSpawner;
     
     
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
@@ -124,6 +127,11 @@ public class RDManager : MonoBehaviour
     {
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
+        
+        if(!Env.activeInHierarchy)
+            Env.SetActive(true);
+        
+        _startPosSpawner.ClearPrefabs();
         gameManager.Setup(difficultyLvl);
         // add some degree of randomness?
     }
@@ -134,11 +142,22 @@ public class RDManager : MonoBehaviour
         sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
         expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
         
+        gameManager.ready = false;
         if (PDE < 0.1 && Angle_alpha < 10)
         {
             success.Play();
-            gameManager.ready = false;
         }
+        else
+        {
+            TrialTransition();
+        }
+    }
+    
+
+    public void TrialTransition()
+    {
+        Env.SetActive(false);
+        _startPosSpawner.SpawnPrefabs();
         
         trialNo++;
         if (trialNo == 3)
@@ -146,7 +165,10 @@ public class RDManager : MonoBehaviour
             expProtocol.EndCondition();
             trialNo = 0;
         }
-           
+        else
+        {
+            TrialUI.SetActive(true);
+        }
     }
     
 

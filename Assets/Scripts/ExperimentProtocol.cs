@@ -18,6 +18,8 @@ public class ExperimentProtocol : MonoBehaviour
     public String[][]latin_square = new String[6][];
     public RDManager rdManager;
     public GameObject TrialUI;
+    public GameObject ConditionUI;
+    public GameObject FinishUI;
     
     private SaveData logFile;
     
@@ -60,8 +62,17 @@ public class ExperimentProtocol : MonoBehaviour
         conditionIndx++;
         if (conditionIndx == 6)
         {
-            //End Experiment
+            FinishUI.SetActive(true);
         }
+        else
+        {
+            ConditionUI.SetActive(true);
+        }
+    }
+
+    public void QuitApplication()
+    {
+        Application.Quit();
     }
 
     public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled)
