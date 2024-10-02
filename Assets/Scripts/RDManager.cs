@@ -136,6 +136,7 @@ public class RDManager : MonoBehaviour
         // add some degree of randomness?
     }
 
+    //triggered by left hand thumbs up
     public void EndTrial()
     {
         float PDE = Vector3.Distance(PhysicalTarget.position, Utilities.UnFlatten(currPos));
@@ -156,6 +157,8 @@ public class RDManager : MonoBehaviour
 
     public void TrialTransition()
     {
+        if(success.isPlaying)
+            success.Stop();
         Env.SetActive(false);
         _startPosSpawner.SpawnPrefabs();
         
