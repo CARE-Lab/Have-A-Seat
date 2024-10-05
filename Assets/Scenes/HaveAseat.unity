@@ -470,7 +470,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startPos: {fileID: 1941715038}
-  debugMode: 1
+  debugMode: 0
   ready: 0
   _couchSpawner: {fileID: 1101930591}
   easyLvl: {fileID: 1463082110}
@@ -1960,8 +1960,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3716,6 +3716,7 @@ Transform:
   - {fileID: 1484360240}
   - {fileID: 212123024}
   - {fileID: 153627842}
+  - {fileID: 1941715038}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &471055179
@@ -4652,7 +4653,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Click "Start" to start the Experiment
+  m_text: 'Click "Start" to start the Condition
 
 '
   m_isRightToLeft: 0
@@ -4682,8 +4683,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5083,7 +5084,7 @@ PrefabInstance:
     - target: {fileID: 162753189885665461, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 162753189885665461, guid: a085edb04df81414c891d6d9db286494,
         type: 3}
@@ -8840,8 +8841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27b43385c9b10dc44825a5fe3ef4ea14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawRealTrail: 1
-  drawVirtualTrail: 1
+  drawRealTrail: 0
+  drawVirtualTrail: 0
   MIN_DIST: 0.1
   PATH_WIDTH: 0.05
   realTrailColor: {r: 1, g: 1, b: 0, a: 0.5}
@@ -11324,7 +11325,8 @@ PrefabInstance:
         type: 3}
       propertyPath: PrefabsToSpawn.Array.data[0].Prefabs.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2781230927328197638, guid: f60a32f7e99974d4fb3f9075388c17bf,
+        type: 3}
     - target: {fileID: 91450107390678965, guid: 0c23e50f33ad151479c690a0e4a5320e,
         type: 3}
       propertyPath: PrefabsToSpawn.Array.data[1].Prefabs.Array.data[0]
@@ -12824,12 +12826,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1941715037}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 440811007}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1942721729
 GameObject:
@@ -15614,8 +15616,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 38
+  m_fontSizeBase: 38
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -17424,7 +17426,6 @@ SceneRoots:
   - {fileID: 18433538}
   - {fileID: 471055182}
   - {fileID: 1320128407}
-  - {fileID: 1941715038}
   - {fileID: 847345407}
   - {fileID: 160796961}
   - {fileID: 440811007}

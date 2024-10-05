@@ -52,8 +52,11 @@ public class ExperimentProtocol : MonoBehaviour
        
         
         logFile.StartCondition(rdManager.condition.ToString(), rdManager.difficultyLvl);
-        TrialUI.SetActive(true);
         
+        if(TrialUI.activeInHierarchy)
+            TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
+        else
+            TrialUI.SetActive(true);
     }
 
     public void EndCondition()
@@ -66,7 +69,7 @@ public class ExperimentProtocol : MonoBehaviour
         }
         else
         {
-            ConditionUI.SetActive(true);
+            ConditionUI.GetComponent<CloseMenu>().ActivateOpenMenu();
         }
     }
 

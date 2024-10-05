@@ -22,6 +22,11 @@ public class CloseMenu : MonoBehaviour
        {
            StartCoroutine(ToCloseMenu());
        }
+
+       public void ActivateOpenMenu()
+       {
+           StartCoroutine(ToOpenMenu());
+       }
        
        IEnumerator ToCloseMenu()
        {

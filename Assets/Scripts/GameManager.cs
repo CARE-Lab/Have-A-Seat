@@ -46,12 +46,10 @@ public class GameManager : MonoBehaviour
     {
         red_manager = GameObject.Find("Redirection Manager").GetComponent<RDManager>();
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
-        Recenter();
     }
 
     public void Setup(int DifficultyLvl)
     {
-        Recenter();
         //spawn and find physical chair
         _couchSpawner.SpawnPrefabs();
         FindChair();
@@ -61,33 +59,18 @@ public class GameManager : MonoBehaviour
         {
             case 0 :
                 red_manager.VirtualTarget.transform.position = easyLvl.position;
-                red_manager.VirtualTarget.transform.forward = easyLvl.forward;
                 break;
             case 1:
                 red_manager.VirtualTarget.transform.position = mediumLvl.position;
-                red_manager.VirtualTarget.transform.forward = mediumLvl.forward;
                 break;
             default:
                 red_manager.VirtualTarget.transform.position = hardLvl.position;
-                red_manager.VirtualTarget.transform.forward = hardLvl.forward;
                 break;
                     
         }
         ready = true;
     }
-
-    private void Recenter()
-    {
-        Vector3 distDiff = startPos.position - red_manager.headTransform.position;
-        distDiff = Utilities.FlattenedPos3D(distDiff);
-        red_manager.Env.transform.position -= distDiff;
-        
-        float angleY = startPos.rotation.eulerAngles.y - red_manager.headTransform.rotation.eulerAngles.y;
-        //red_manager.Env.transform.RotateAround(red_manager.currPos, -angleY);
-        red_manager.Env.transform.RotateAround(startPos.position, -angleY);
-        //red_manager.XRTransform.Rotate(0, angleY, 0);
-        
-    }
+    
 
     private void FindChair()
     {

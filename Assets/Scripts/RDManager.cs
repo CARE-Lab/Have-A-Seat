@@ -5,8 +5,10 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
+using Oculus.Interaction;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEngine.InputSystem.HID;
 using UnityEngine.Serialization;
 
 
@@ -123,6 +125,7 @@ public class RDManager : MonoBehaviour
             _resetter = GetComponent<Alignment_Resetter>();
     }
 
+    
     public void StartTrial()
     {
         sumOfRealDistanceTravelled = 0;
@@ -132,7 +135,35 @@ public class RDManager : MonoBehaviour
             Env.SetActive(true);
         
         _startPosSpawner.ClearPrefabs();
+        Recenter();
         gameManager.Setup(difficultyLvl);
+        
+        SetVirtualChairOrientation();
+        
+    }
+    
+    private void Recenter()
+    {
+        Vector3 newRot = new Vector3(0, headTransform.rotation.eulerAngles.y, 0);
+        Quaternion currentQ = new Quaternion();
+        currentQ.eulerAngles = newRot;
+        Env.transform.rotation = currentQ;
+        
+        Env.transform.position = new Vector3(headTransform.position.x, 0, headTransform.position.z);
+    }
+
+    private void SetVirtualChairOrientation()
+    {
+        Vector3 physical_for = PhysicalTarget.forward;
+        
+        Vector3 virtual_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - VirtualTarget.transform.position);
+        Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
+
+        float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
+        Vector3 virtualDir = Quaternion.AngleAxis(physicalAlpha, Vector3.up) * virtual_vec;
+        VirtualTarget.transform.forward = virtualDir;
+        Text1.SetText($"phy_alpha: {physicalAlpha}");
+        
         // add some degree of randomness?
     }
 
@@ -144,6 +175,7 @@ public class RDManager : MonoBehaviour
         expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
         
         gameManager.ready = false;
+        Text2.SetText($"PDE: {PDE}, angle alpha: {Angle_alpha}");
         if (PDE < 0.1 && Angle_alpha < 10)
         {
             success.Play();
@@ -170,7 +202,7 @@ public class RDManager : MonoBehaviour
         }
         else
         {
-            TrialUI.SetActive(true);
+           TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
         }
     }
     
@@ -542,6 +574,8 @@ public class RDManager : MonoBehaviour
         
         Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.transform.position - Utilities.UnFlatten(currPos));
         Vector3 physical_vec = Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos));
+
+        float physicalAlpha = Vector3.SignedAngle(-1 * physical_vec, physical_for, Vector3.up);
         
         SignTheta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
         Angle_theta = Vector3.Angle(virtual_vec, physical_vec);
