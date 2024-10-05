@@ -1018,7 +1018,7 @@ GameObject:
   - component: {fileID: 3123872646404956704}
   m_Layer: 0
   m_Name: Physical chair
-  m_TagString: Chair
+  m_TagString: PhysicalChair
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

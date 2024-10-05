@@ -137,7 +137,8 @@ public class RDManager : MonoBehaviour
         _startPosSpawner.ClearPrefabs();
         Recenter();
         gameManager.Setup(difficultyLvl);
-        
+
+        UpdateCurrentUserState();
         SetVirtualChairOrientation();
         
     }
@@ -411,34 +412,47 @@ public class RDManager : MonoBehaviour
 
         
         currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.transform.position);
-        
         //calculate translation Gain
-        Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.3f), Utilities.UnFlatten(currDir));
-        var label_list = new List<String> { "WALL_FACE" , "COUCH"};
-        if (MRUK.Instance.GetCurrentRoom().Raycast(ray, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
+        Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.1f), Utilities.UnFlatten(currDir));
+        float physical_dist = 0;
+        if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8 | 1 << 7))
         {
-            float physical_dist = hit.distance;
-            if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8 | 1 << 7))
+            float virtual_dist = hit_v.distance;
+            if (hit_v.transform.CompareTag("Chair"))
             {
-                float virtual_dist = hit_v.distance;
-                if (hit_v.transform.CompareTag("Chair"))
-                    physical_dist = Vector3.Distance(Utilities.UnFlatten(currPos), PhysicalTarget.position);
-                
-                if (virtual_dist > physical_dist)
-                    g_t = MAX_TRANS_GAIN;
-                else
-                    g_t = MIN_TRANS_GAIN;
-
-                if (currPDE > prevPDE)
-                    g_t *= TRANSLATION_DAMPENING;
-                
-                prevPDE = currPDE;
-
+                Text1.SetText("hit chair");
+                var label_list = new List<String> {"COUCH"};
+                Ray phyRay = new Ray(Utilities.UnFlatten(currPos, 0.1f),
+                    Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos)));
+                if (MRUK.Instance.GetCurrentRoom()
+                    .Raycast(phyRay, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
+                {
+                    physical_dist = hit.distance;
+                }
             }
+            else
+            {
+                Text1.SetText("");
+                var label_list = new List<String> {"WALL_FACE"};
+                if (MRUK.Instance.GetCurrentRoom()
+                    .Raycast(ray, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
+                {
+                    physical_dist = hit.distance;
+                }
+            }
+            
+            if (virtual_dist > physical_dist)
+                g_t = MAX_TRANS_GAIN;
+            else
+                g_t = MIN_TRANS_GAIN;
+
+            if (currPDE > prevPDE)
+                g_t *= TRANSLATION_DAMPENING;
+                
+            Text2.SetText($"g_t: {g_t}, phy_d: {physical_dist}, vir_d: {virtual_dist}");
+            prevPDE = currPDE;
+            
         }
-        
-        /*Text1.SetText($"PDE: {currPDE}");
-        Text3.SetText($"g_t: {g_t}");*/
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;

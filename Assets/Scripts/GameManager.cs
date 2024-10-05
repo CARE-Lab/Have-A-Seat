@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
                 Transform parent = an.gameObject.transform;
                 foreach (Transform child in parent.transform)
                 {
-                    if (child.tag == "Chair")
+                    if (child.tag == "PhysicalChair")
                     {
                         red_manager.PhysicalTarget = child;
                     }
