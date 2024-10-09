@@ -9,23 +9,21 @@ using UnityEngine;
 
 public class SaveData : MonoBehaviour
 {
-    public int subjectNumber;
- 
     private FileInfo fi_Log;
     private StreamWriter sw_Log;
     private bool isClosed;
     
     //public TextMeshProUGUI eyeData;
     
-    public void StartCondition(string conditionName, int diffLvl)
+    public void StartCondition(string conditionName, int subjectNumber)
     {
         string date = DateTime.Now.Month.ToString() + "-" + DateTime.Now.Day.ToString() + "-" + DateTime.Now.Hour.ToString() + "-" + DateTime.Now.Minute.ToString();
         try
         {
             //This PC\Quest Pro\Internal shared storage\Android\data\com.UnityTechnologies.com.unity.template.urpblank\files
-            fi_Log = new FileInfo($"{Application.persistentDataPath}/Subject_No_{subjectNumber}_{conditionName}_{diffLvl}_Log_{date}.csv");
+            fi_Log = new FileInfo($"{Application.persistentDataPath}/Subject_No_{subjectNumber}_{conditionName}_Log_{date}.csv");
             sw_Log = fi_Log.AppendText();
-            sw_Log.WriteLine($"PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets");
+            sw_Log.WriteLine($"Difficulty Level, PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets");
             isClosed = false;
         }
         catch (Exception e)
@@ -36,10 +34,10 @@ public class SaveData : MonoBehaviour
        
     }
 
-    public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled)
+    public void EndTrial(int difficultyLvl, float PDE, float AE, int ResetsPerPath, float distanceTraveled)
     {
         float avgDistTravBetResets = distanceTraveled / (ResetsPerPath + 1);
-        sw_Log.WriteLine($"{PDE}, {AE}, {ResetsPerPath}, {distanceTraveled}, {avgDistTravBetResets}");
+        sw_Log.WriteLine($"{difficultyLvl},{PDE},{AE},{ResetsPerPath},{distanceTraveled},{avgDistTravBetResets}");
     }
 
     public void EndCondition()

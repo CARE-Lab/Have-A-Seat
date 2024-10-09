@@ -10515,7 +10515,7 @@ PrefabInstance:
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.23548229
+      value: -0.033242248
       objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
@@ -10525,7 +10525,7 @@ PrefabInstance:
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.97187865
+      value: 0.99944735
       objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
@@ -10540,7 +10540,7 @@ PrefabInstance:
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 207.24
+      value: 183.81
       objectReference: {fileID: 0}
     - target: {fileID: 3123872646404956704, guid: aa1ee0ed73b5a81418e5f69ac869aef5,
         type: 3}
@@ -13121,7 +13121,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 978a81fd4c719ef41880f20c6f108754, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subjectNumber: 1
 --- !u!4 &1970955584
 Transform:
   m_ObjectHideFlags: 0
@@ -13149,11 +13148,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e13625afa8e9ee4ab737ae3e90b2b52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textAssetData: {fileID: 4900000, guid: 48ce6ac509f33ad498ef664d872ece0a, type: 3}
+  textAssetData: {fileID: 4900000, guid: 88c523a0f8e0f4b4b9da453b458add06, type: 3}
   rdManager: {fileID: 1320128406}
   TrialUI: {fileID: 8291314933359249531}
   ConditionUI: {fileID: 1610459302}
-  FinishUI: {fileID: 0}
+  FinishUI: {fileID: 2104197104}
+  subjectNumber: 1
+  Condition: 1
+  Text1: {fileID: 847345410}
 --- !u!1 &1975176419
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,6 +10,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 
 public class RDManager : MonoBehaviour
@@ -139,7 +140,7 @@ public class RDManager : MonoBehaviour
         gameManager.Setup(difficultyLvl);
 
         UpdateCurrentUserState();
-        SetVirtualChairOrientation();
+        SetVirtualChairOrientation(difficultyLvl);
         
     }
     
@@ -153,7 +154,7 @@ public class RDManager : MonoBehaviour
         Env.transform.position = new Vector3(headTransform.position.x, 0, headTransform.position.z);
     }
 
-    private void SetVirtualChairOrientation()
+    private void SetVirtualChairOrientation(int diffLvl)
     {
         Vector3 physical_for = PhysicalTarget.forward;
         
@@ -161,23 +162,40 @@ public class RDManager : MonoBehaviour
         Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
 
         float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
-        Vector3 virtualDir = Quaternion.AngleAxis(physicalAlpha, Vector3.up) * virtual_vec;
-        VirtualTarget.transform.forward = virtualDir;
-        Text1.SetText($"phy_alpha: {physicalAlpha}");
+        Text2.SetText($"phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
+        int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
+       
+        //basic(easy level) delta alpha=0 [0-10]
+        Vector3 virtualAlpha = Quaternion.AngleAxis(physicalAlpha, Vector3.up) * virtual_vec;
+       
         
-        // add some degree of randomness?
+        //medium level
+        if (diffLvl == 1)//[10-30]
+        {
+            virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)+20), Vector3.up) * virtual_vec;
+        }else if (diffLvl == 2)
+        {
+            virtualAlpha = Quaternion.AngleAxis(-1*signPhysicalAlpha*(Math.Abs(physicalAlpha)+20), Vector3.up) * virtual_vec;
+        }
+        
+        
+        // add some degree of randomness
+        int randAngle = Random.Range(-11, 11);
+        virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
+        
+        VirtualTarget.transform.forward = virtualAlpha;
     }
 
     //triggered by left hand thumbs up
     public void EndTrial()
     {
-        float PDE = Vector3.Distance(PhysicalTarget.position, Utilities.UnFlatten(currPos));
+        float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
         sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-        expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
+        expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
         
         gameManager.ready = false;
-        Text2.SetText($"PDE: {PDE}, angle alpha: {Angle_alpha}");
-        if (PDE < 0.1 && Angle_alpha < 10)
+        //Text2.SetText($"PDE: {PDE}, angle alpha: {Angle_alpha}");
+        if (PDE < 0.1 && Angle_alpha < 8)
         {
             success.Play();
         }
@@ -420,7 +438,6 @@ public class RDManager : MonoBehaviour
             float virtual_dist = hit_v.distance;
             if (hit_v.transform.CompareTag("Chair"))
             {
-                Text1.SetText("hit chair");
                 var label_list = new List<String> {"COUCH"};
                 Ray phyRay = new Ray(Utilities.UnFlatten(currPos, 0.1f),
                     Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos)));
@@ -432,7 +449,6 @@ public class RDManager : MonoBehaviour
             }
             else
             {
-                Text1.SetText("");
                 var label_list = new List<String> {"WALL_FACE"};
                 if (MRUK.Instance.GetCurrentRoom()
                     .Raycast(ray, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
@@ -448,8 +464,7 @@ public class RDManager : MonoBehaviour
 
             if (currPDE > prevPDE)
                 g_t *= TRANSLATION_DAMPENING;
-                
-            Text2.SetText($"g_t: {g_t}, phy_d: {physical_dist}, vir_d: {virtual_dist}");
+            
             prevPDE = currPDE;
             
         }
@@ -609,9 +624,4 @@ public class RDManager : MonoBehaviour
         float distMag = deltaPos.magnitude;
         sumOfRealDistanceTravelled += distMag;
     }
-
-
-
-
-
 }

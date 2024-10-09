@@ -1,6 +1,6 @@
-A,B,F,C,E,D
-B,C,A,D,F,E
-C,D,B,E,A,F
-D,E,C,F,B,A
-E,F,D,A,C,B
-F,A,E,B,D,C
+A,B,C
+A,C,B
+C,A,B
+C,B,A
+B,C,A
+B,A,C
