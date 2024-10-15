@@ -162,7 +162,7 @@ public class RDManager : MonoBehaviour
         Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
 
         float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
-        Text2.SetText($"phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
+        Text1.SetText($"phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
         int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
        
         //basic(easy level) delta alpha=0 [0-10]
@@ -194,7 +194,7 @@ public class RDManager : MonoBehaviour
         expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
         
         gameManager.ready = false;
-        //Text2.SetText($"PDE: {PDE}, angle alpha: {Angle_alpha}");
+        
         if (PDE < 0.1 && Angle_alpha < 8)
         {
             success.Play();
@@ -468,6 +468,7 @@ public class RDManager : MonoBehaviour
             prevPDE = currPDE;
             
         }
+        Text2.SetText($"PDE: {currPDE}, angle alpha: {Angle_alpha}");
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;

@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Alignment_Resetter : Resetter
 {
-    [SerializeField] private GameObject ResetDir;
+    //[SerializeField] private GameObject ResetDir;
     
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
@@ -51,7 +51,7 @@ public class Alignment_Resetter : Resetter
         setHUD((int)rotateDir);
     }
 
-    private Vector2 FindVirtualResetDir(Vector2 userDir, Vector2 userPos)
+    /*private Vector2 FindVirtualResetDir(Vector2 userDir, Vector2 userPos)
     {
         var currDir = Utilities.UnFlatten(userDir);
         var currPos = Utilities.UnFlatten(userPos, 1f);
@@ -80,7 +80,7 @@ public class Alignment_Resetter : Resetter
                     minDistDiff = diff;
                     finalResetDir = dir;
                     /*Text1.SetText($"direction angle: {angle}");
-                    Text3.SetText($"Virtual_dist: {hit_v.distance}, {hit_v.transform.gameObject.name}");*/
+                    Text3.SetText($"Virtual_dist: {hit_v.distance}, {hit_v.transform.gameObject.name}");#1#
                 }
             }
         }
@@ -95,7 +95,7 @@ public class Alignment_Resetter : Resetter
         Destroy(VirtualDirPointer, 5f);
 
         return Utilities.FlattenedDir2D(finalResetDir);
-    }
+    }*/
 
     
     public override void InjectResetting()
