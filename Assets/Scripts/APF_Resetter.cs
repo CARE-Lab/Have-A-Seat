@@ -27,13 +27,8 @@ public class APF_Resetter : Resetter
         
         var smallerAngle = Vector2.Angle(totalF, _rdManager.currDir);
         
-        if (Mathf.Abs(requiredRotateSteerAngle) <= Mathf.Abs(steerRotation) || smallerAngle == 0)
-        {//meet the rotation requirement
-            _rdManager.Env.transform.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, requiredRotateSteerAngle);
-        
-            if (gameManager.debugMode)
-                pathTrail.virtualTrail.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, requiredRotateSteerAngle);
-
+        if (smallerAngle < 5)
+        {
             //reset end
             EndReset();
         }
@@ -43,7 +38,6 @@ public class APF_Resetter : Resetter
         
             if (gameManager.debugMode)
                 pathTrail.virtualTrail.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, steerRotation);
-            requiredRotateSteerAngle -= Mathf.Abs(steerRotation);            
         }
     }
     

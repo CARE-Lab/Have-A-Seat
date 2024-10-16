@@ -31,13 +31,17 @@ public class ExperimentProtocol : MonoBehaviour
     
     [Header("Debugging")]
     public TextMeshProUGUI Text1;
-    
+
+    private void Awake()
+    {
+        rdManager.condition = Condition;
+        logFile = GetComponent<SaveData>();
+    }
+
     void Start()
     {
         ReadCSV();
         diffOrder = latin_square[Random.Range(0, 6)];
-        logFile = GetComponent<SaveData>();
-        rdManager.condition = Condition;
         logFile.StartCondition(Condition.ToString(), subjectNumber);
     }
 

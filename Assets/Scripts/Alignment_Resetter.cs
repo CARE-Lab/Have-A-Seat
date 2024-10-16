@@ -114,7 +114,6 @@ public class Alignment_Resetter : Resetter
         
             if (gameManager.debugMode)
                 pathTrail.virtualTrail.RotateAround(Utilities.UnFlatten(_rdManager.currPos), Vector3.up, steerRotation);
-            requiredRotateSteerAngle -= Mathf.Abs(steerRotation);            
         }
     }
     

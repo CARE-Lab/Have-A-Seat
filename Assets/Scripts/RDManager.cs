@@ -114,12 +114,16 @@ public class RDManager : MonoBehaviour
     public TextMeshProUGUI Text2;
     public TextMeshProUGUI Text3;
     public TextMeshProUGUI eyeData;
-    
-    private void Start()
+
+
+    private void Awake()
     {
         pathTrail = gameObject.GetComponent<PathTrail>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-        
+    }
+
+    private void Start()
+    {
         if(condition == Redirector_condition.OriginalAPF)
             _resetter = GetComponent<APF_Resetter>();
         else
@@ -258,7 +262,6 @@ public class RDManager : MonoBehaviour
     
     public void UpdateTotalForcePointer(Vector2 forceT)
     {
-
         //record this new force
         totalForce = forceT;
         
@@ -272,8 +275,6 @@ public class RDManager : MonoBehaviour
             currentQ.eulerAngles = newRot;
             totalForcePointer.transform.localRotation = currentQ;
         }
-
-        //totalForcePointer.SetActive(gameManager.debugMode);
 
         if (totalForcePointer != null && totalForcePointer.activeInHierarchy)
         {     
@@ -393,7 +394,7 @@ public class RDManager : MonoBehaviour
         
         g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;
         prevRotGain = g_r;
-
+        
         // Translation Gain
         var translation = g_t * Utilities.UnFlatten(deltaPos);
         if (deltaPos.magnitude > 0.002)
@@ -427,9 +428,7 @@ public class RDManager : MonoBehaviour
         float g_c = 0;//curvature
         float g_r = 0;//rotation
         float g_t = 0;//translation
-
         
-        currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.transform.position);
         //calculate translation Gain
         Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.1f), Utilities.UnFlatten(currDir));
         float physical_dist = 0;
@@ -465,10 +464,8 @@ public class RDManager : MonoBehaviour
             if (currPDE > prevPDE)
                 g_t *= TRANSLATION_DAMPENING;
             
-            prevPDE = currPDE;
-            
         }
-        Text2.SetText($"PDE: {currPDE}, angle alpha: {Angle_alpha}");
+        
         
         var maxRotationFromCurvatureGain = CURVATURE_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
         var maxRotationFromRotationGain = ROTATION_GAIN_CAP_DEGREES_PER_SECOND * Time.deltaTime;
@@ -482,17 +479,13 @@ public class RDManager : MonoBehaviour
         g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
 
         
-
         float proposedRotation = 0;
         if (Angle_theta < 10)
         { // work on Alpha here? maybe....
-            
-            //Text3. SetText($" Alpha dot: {Vector3.Dot(physical_for, virtual_for)}");
             if (Angle_alpha < 3)
                 proposedRotation = 0;
             else
             {
-                //Text3.SetText($"signAlpha: {sign_alpha}");
                 if (deltaDir * SignAlpha < 0)
                 {//if we are moving against theta, rotate less in VE and more in PE. we rotate in the direction of Theta
                     proposedRotation = SignAlpha * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
@@ -514,15 +507,10 @@ public class RDManager : MonoBehaviour
             {//if we are moving with theta, rotate more in VE and less in PE
                 proposedRotation = SignTheta * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
             }
-            //Text3.SetText($"signTheta: {sign_theta}");
         }
 
         g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;
         prevRotGain = g_r;
-        //Text2.SetText($"g_r: {g_r}");
-        
-        //Text2.SetText($"Theta Dot: {Vector3.Dot(physical_vec, virtual_vec)}");
-       
 
         // Translation Gain
         var translation = g_t * Utilities.UnFlatten(deltaPos);
@@ -596,6 +584,7 @@ public class RDManager : MonoBehaviour
     {
         currPos = Utilities.FlattenedPos2D(headTransform.position);
         currDir = Utilities.FlattenedDir2D(headTransform.forward);
+        currPDE = Vector3.Distance(PhysicalTarget.position, VirtualTarget.transform.position);
         Vector3 physical_for = PhysicalTarget.forward;
         Vector3 virtual_for = VirtualTarget.transform.forward;
 
@@ -604,12 +593,11 @@ public class RDManager : MonoBehaviour
         
         Vector3 virtual_vec = Utilities.FlattenedDir3D(VirtualTarget.transform.position - Utilities.UnFlatten(currPos));
         Vector3 physical_vec = Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos));
-
-        float physicalAlpha = Vector3.SignedAngle(-1 * physical_vec, physical_for, Vector3.up);
         
         SignTheta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
         Angle_theta = Vector3.Angle(virtual_vec, physical_vec);
-
+        prevPDE = currPDE;
+        Text2.SetText($"PDE: {currPDE}, angle alpha: {Angle_alpha}");
     }
 
     void UpdatePreviousUserState()

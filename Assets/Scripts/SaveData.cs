@@ -23,7 +23,7 @@ public class SaveData : MonoBehaviour
             //This PC\Quest Pro\Internal shared storage\Android\data\com.UnityTechnologies.com.unity.template.urpblank\files
             fi_Log = new FileInfo($"{Application.persistentDataPath}/Subject_No_{subjectNumber}_{conditionName}_Log_{date}.csv");
             sw_Log = fi_Log.AppendText();
-            sw_Log.WriteLine($"Difficulty Level, PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets");
+            sw_Log.WriteLine($"Difficulty Level, PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets, success");
             isClosed = false;
         }
         catch (Exception e)
@@ -37,7 +37,8 @@ public class SaveData : MonoBehaviour
     public void EndTrial(int difficultyLvl, float PDE, float AE, int ResetsPerPath, float distanceTraveled)
     {
         float avgDistTravBetResets = distanceTraveled / (ResetsPerPath + 1);
-        sw_Log.WriteLine($"{difficultyLvl},{PDE},{AE},{ResetsPerPath},{distanceTraveled},{avgDistTravBetResets}");
+        int success = (PDE < 0.1 && AE < 8) ? 1 : 0;
+        sw_Log.WriteLine($"{difficultyLvl},{PDE},{AE},{ResetsPerPath},{distanceTraveled},{avgDistTravBetResets},{success}");
     }
 
     public void EndCondition()
