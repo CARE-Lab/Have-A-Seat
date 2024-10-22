@@ -47,12 +47,12 @@ public class ExperimentProtocol : MonoBehaviour
 
     public void StartCondition()
     {
-        if (diffOrder[diffIndx] == "A")
+        /*if (diffOrder[diffIndx] == "A")
             rdManager.difficultyLvl = 0;
         else if (diffOrder[diffIndx] == "B")
             rdManager.difficultyLvl = 1;
-        else
-            rdManager.difficultyLvl = 2;
+        else*/
+            rdManager.difficultyLvl = 0;
         
         if(TrialUI.activeInHierarchy)
             TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();

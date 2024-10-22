@@ -108,7 +108,11 @@ public class RDManager : MonoBehaviour
     bool alignmentState = false;//alignmentState == true: only use attractive force，alignmentState == false: only use repulsive force
     bool inReset;
     bool ifJustEndReset = false;//if just finishes reset, if true, execute redirection once then judge if reset, Prevent infinite loops
-
+    private float endTrialTimer = 0;
+    private bool canEndTrial = true;
+    private float TrialTransitionTimer = 0;
+    private bool canTraialTransition = true;
+    
     [Header("Debugging")]
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
@@ -166,7 +170,7 @@ public class RDManager : MonoBehaviour
         Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
 
         float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
-        Text1.SetText($"phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
+        Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
         int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
        
         //basic(easy level) delta alpha=0 [0-10]
@@ -184,49 +188,70 @@ public class RDManager : MonoBehaviour
         
         
         // add some degree of randomness
-        int randAngle = Random.Range(-11, 11);
+        int randAngle = Random.Range(-10, 11);
         virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         
+        Text2.SetText($"virtual alpha {Vector3.SignedAngle(virtual_vec, VirtualTarget.transform.forward, Vector3.up)}");
         VirtualTarget.transform.forward = virtualAlpha;
     }
 
     //triggered by left hand thumbs up
     public void EndTrial()
     {
-        float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
-        sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-        expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
-        
-        gameManager.ready = false;
-        
-        if (PDE < 0.1 && Angle_alpha < 8)
+        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 0.7 && canEndTrial)
         {
-            success.Play();
-        }
-        else
-        {
-            TrialTransition();
+            float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
+            sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
+            expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
+        
+            gameManager.ready = false;
+        
+            if (PDE < 0.15 && Angle_alpha < 8)
+            {
+                success.Play();
+            }
+            else
+            {
+                TrialTransition();
+            }
+
+            canEndTrial = false;
+            StartCoroutine(Countdown());
         }
     }
     
 
     public void TrialTransition()
     {
-        if(success.isPlaying)
-            success.Stop();
-        Env.SetActive(false);
-        _startPosSpawner.SpawnPrefabs();
+        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 0.7 && canTraialTransition)
+        {
+            if(success.isPlaying)
+                success.Stop();
+            Env.SetActive(false);
+            _startPosSpawner.SpawnPrefabs();
         
-        trialNo++;
-        if (trialNo == 3)
-        {
-            expProtocol.EndCondition();
-            trialNo = 0;
+            trialNo++;
+            if (trialNo == 3)
+            {
+                expProtocol.EndCondition();
+                trialNo = 0;
+            }
+            else
+            {
+                TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
+            }
+
+            canTraialTransition = false;
+            StartCoroutine(Countdown());
         }
-        else
-        {
-           TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
-        }
+        
+    }
+
+    IEnumerator Countdown()
+    {
+        yield return new WaitForSeconds(5f);
+        canEndTrial = true;
+        canTraialTransition = true;
     }
     
 
@@ -234,7 +259,7 @@ public class RDManager : MonoBehaviour
     {
         if (Time.timeScale == 0 || !gameManager.ready)
             return;
-
+        
         UpdateCurrentUserState();
         CalculateDelta();
         GetNegativeGradient(out float rf, out Vector2 ng, out bool collisionhappens);
@@ -258,6 +283,7 @@ public class RDManager : MonoBehaviour
             
         
         UpdatePreviousUserState();
+        
     }
     
     public void UpdateTotalForcePointer(Vector2 forceT)
@@ -430,21 +456,17 @@ public class RDManager : MonoBehaviour
         float g_t = 0;//translation
         
         //calculate translation Gain
-        Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.1f), Utilities.UnFlatten(currDir));
         float physical_dist = 0;
+        bool headingToChair = false;
+        
+        Ray ray = new Ray(Utilities.UnFlatten(currPos, 0.1f), Utilities.UnFlatten(currDir));
         if (Physics.Raycast(ray, out RaycastHit hit_v, 1000f, 1 << 8 | 1 << 7))
         {
             float virtual_dist = hit_v.distance;
             if (hit_v.transform.CompareTag("Chair"))
             {
-                var label_list = new List<String> {"COUCH"};
-                Ray phyRay = new Ray(Utilities.UnFlatten(currPos, 0.1f),
-                    Utilities.FlattenedDir3D(PhysicalTarget.position - Utilities.UnFlatten(currPos)));
-                if (MRUK.Instance.GetCurrentRoom()
-                    .Raycast(phyRay, 1000f, LabelFilter.Included(label_list), out RaycastHit hit))
-                {
-                    physical_dist = hit.distance;
-                }
+                physical_dist = Vector2.Distance(currPos, Utilities.FlattenedPos2D(PhysicalTarget.position))-0.26f;
+                headingToChair = true;
             }
             else
             {
@@ -461,9 +483,8 @@ public class RDManager : MonoBehaviour
             else
                 g_t = MIN_TRANS_GAIN;
 
-            if (currPDE > prevPDE)
+            if (currPDE > prevPDE && !headingToChair)
                 g_t *= TRANSLATION_DAMPENING;
-            
         }
         
         
@@ -597,7 +618,12 @@ public class RDManager : MonoBehaviour
         SignTheta = (int)Mathf.Sign(Utilities.GetSignedAngle(virtual_vec, physical_vec));
         Angle_theta = Vector3.Angle(virtual_vec, physical_vec);
         prevPDE = currPDE;
-        Text2.SetText($"PDE: {currPDE}, angle alpha: {Angle_alpha}");
+
+        float physicalAlpha = Vector3.Angle(-1*physical_vec, physical_for);
+        float virtualAlpha = Vector3.Angle(-1 * virtual_vec, virtual_for);
+        float deltaAlpha = Math.Abs(physicalAlpha - virtualAlpha);
+        
+        Text3.SetText($"PDE: {currPDE}, DeltaAlpha: {deltaAlpha}");
     }
 
     void UpdatePreviousUserState()
