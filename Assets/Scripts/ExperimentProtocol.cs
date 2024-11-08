@@ -26,7 +26,7 @@ public class ExperimentProtocol : MonoBehaviour
     
     private SaveData logFile;
     private int diffIndx = 0;
-    private String[][]latin_square = new String[6][];
+    private String[][]latin_square = new String[2][];
     private String[] diffOrder;
     
     [Header("Debugging")]
@@ -41,18 +41,16 @@ public class ExperimentProtocol : MonoBehaviour
     void Start()
     {
         ReadCSV();
-        diffOrder = latin_square[Random.Range(0, 6)];
+        diffOrder = latin_square[Random.Range(0, 2)];
         logFile.StartCondition(Condition.ToString(), subjectNumber);
     }
 
     public void StartCondition()
     {
-        /*if (diffOrder[diffIndx] == "A")
+        if (diffOrder[diffIndx] == "A")
             rdManager.difficultyLvl = 0;
         else if (diffOrder[diffIndx] == "B")
             rdManager.difficultyLvl = 1;
-        else*/
-            rdManager.difficultyLvl = 0;
         
         if(TrialUI.activeInHierarchy)
             TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
@@ -63,7 +61,7 @@ public class ExperimentProtocol : MonoBehaviour
     public void EndCondition()
     {
         diffIndx++;
-        if (diffIndx == 3)
+        if (diffIndx == 2)
         {
             logFile.EndCondition();
             FinishUI.SetActive(true);
@@ -79,22 +77,22 @@ public class ExperimentProtocol : MonoBehaviour
         Application.Quit();
     }
 
-    public void EndTrial(int difficultyLvl, float PDE, float AE, int ResetsPerPath, float distanceTraveled)
+    public void EndTrial(int difficultyLvl, float PDE, float AE, int ResetsPerPath, float distanceTraveled, float rotSacc)
     {
-        logFile.EndTrial(difficultyLvl,PDE, AE, ResetsPerPath, distanceTraveled);
+        logFile.EndTrial(difficultyLvl,PDE, AE, ResetsPerPath, distanceTraveled, rotSacc);
     }
 
     void ReadCSV()
     {
         string[] data = textAssetData.text.Split(new string[] { ",", "\n" }, StringSplitOptions.None);
        
-        for (int i=0; i< 6; i++)
-            latin_square[i] = new String[3];
+        for (int i=0; i< 2; i++)
+            latin_square[i] = new String[2];
         
         for (int i = 0; i < data.Length-1; i++)
         {
-            int r = i / 3;
-            latin_square[r][i % 3] = data[i];
+            int r = i / 2;
+            latin_square[r][i % 2] = data[i];
         }
         
     }

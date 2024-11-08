@@ -36,7 +36,7 @@ public class Alignment_Resetter : Resetter
         //option 2
         int signAPF = (int)Mathf.Sign(Vector2.SignedAngle(currDir, totalF));
         
-        int rotateDir = _rdManager.SignAlpha; // rotate in the direction of alpha
+        int rotateDir = _rdManager.SignTheta; // rotate in the direction of alpha
         
         if (rotateDir * signAPF < 0)
             requiredRotateSteerAngle = 360 - APFangle;//required rotation angle in real world (the greater angle)
@@ -44,7 +44,7 @@ public class Alignment_Resetter : Resetter
             requiredRotateSteerAngle = APFangle;
         
         
-        speedRatio = _rdManager.Angle_alpha / requiredRotateSteerAngle;
+        speedRatio = _rdManager.Angle_theta / requiredRotateSteerAngle;
         
         Text1.SetText($"{speedRatio}");
         

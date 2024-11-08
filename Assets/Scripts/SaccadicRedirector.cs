@@ -159,26 +159,24 @@ public class SaccadicRedirector : MonoBehaviour
     {
         if (rdManager.condition == Redirector_condition.AlignmentAPF)
         {
-            if (rdManager.Angle_alpha < 2)
-                return;
-    
-            finalRotation *= rdManager.SignAlpha;
            
+            finalRotation *= rdManager.SignTheta;
+            rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+            // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
+        
+
+            if(gameManager.debugMode)
+                pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
+
+            inducedRotSaccadic += Mathf.Abs(finalRotation);
         }
-        else
+        /*else
         {
             if (rdManager.desiredSteeringDirection != 0)
                 finalRotation *= rdManager.desiredSteeringDirection;
-        }
+        }*/
         
-        rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-        // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
-        
-
-        if(gameManager.debugMode)
-            pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-
-        inducedRotSaccadic += Mathf.Abs(finalRotation);
+       
        
     }
 

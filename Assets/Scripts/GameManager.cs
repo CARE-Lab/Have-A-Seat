@@ -48,26 +48,11 @@ public class GameManager : MonoBehaviour
         pathTrail = GameObject.Find("Redirection Manager").GetComponent<PathTrail>();
     }
 
-    public void Setup(int DifficultyLvl)
+    public void Setup()
     {
         //spawn and find physical chair
         _couchSpawner.SpawnPrefabs();
         FindChair();
-        
-        //Place virtual chair according to difficulty Level
-        switch (DifficultyLvl)
-        {
-            case 0 :
-                red_manager.VirtualTarget.transform.position = easyLvl.position;
-                break;
-            case 1:
-                red_manager.VirtualTarget.transform.position = mediumLvl.position;
-                break;
-            default:
-                red_manager.VirtualTarget.transform.position = hardLvl.position;
-                break;
-                    
-        }
         ready = true;
     }
     

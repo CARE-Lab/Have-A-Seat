@@ -43,14 +43,19 @@ public class RDManager : MonoBehaviour
     
     public ParticleSystem success;
 
+    public ParticleSystem seatingHint;
+
     public ExperimentProtocol expProtocol;
     
     public GameObject VirtualTarget;
     
     public GameObject TrialUI;
 
+    public SaccadicRedirector saccRedirector;
     [HideInInspector]
     public Redirector_condition condition;
+
+    public AudioSource hintAudio;
 
     [HideInInspector] public int difficultyLvl;
     
@@ -83,14 +88,16 @@ public class RDManager : MonoBehaviour
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
     [SerializeField] private AnchorPrefabSpawner _startPosSpawner;
+    [SerializeField] private float SMOOTHING_FACTOR = 0.125f;  //smoothing factor for rotation and curvature gain 
     
     
-    private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 15;  // degrees per second
+    private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 10;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
-    private const float SMOOTHING_FACTOR = 0.125f;  //smoothing factor for rotation gain 
+    
     private const float TRANSLATION_DAMPENING = 0.6f; // dampen translation gain if PDE increases
 
     private float prevRotGain;
+    private float prevCurGain;
     private float currPDE;
     private float prevPDE = 100000f;
     
@@ -117,7 +124,7 @@ public class RDManager : MonoBehaviour
     public TextMeshProUGUI Text1;
     public TextMeshProUGUI Text2;
     public TextMeshProUGUI Text3;
-    public TextMeshProUGUI eyeData;
+    public GameObject refAxis;
 
 
     private void Awake()
@@ -139,17 +146,19 @@ public class RDManager : MonoBehaviour
     {
         sumOfRealDistanceTravelled = 0;
         resetsPerTrial = 0;
+        saccRedirector.inducedRotSaccadic = 0;
         
         if(!Env.activeInHierarchy)
             Env.SetActive(true);
         
         _startPosSpawner.ClearPrefabs();
         Recenter();
-        gameManager.Setup(difficultyLvl);
+        gameManager.Setup();
 
         UpdateCurrentUserState();
         SetVirtualChairOrientation(difficultyLvl);
-        
+        StartCoroutine(Exploringtime());
+
     }
     
     private void Recenter()
@@ -160,6 +169,7 @@ public class RDManager : MonoBehaviour
         Env.transform.rotation = currentQ;
         
         Env.transform.position = new Vector3(headTransform.position.x, 0, headTransform.position.z);
+        
     }
 
     private void SetVirtualChairOrientation(int diffLvl)
@@ -173,23 +183,18 @@ public class RDManager : MonoBehaviour
         Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
         int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
        
-        //basic(easy level) delta alpha=0 [0-10]
+        //basic(easy level) delta alpha=0 
         Vector3 virtualAlpha = Quaternion.AngleAxis(physicalAlpha, Vector3.up) * virtual_vec;
        
         
-        //medium level
-        if (diffLvl == 1)//[10-30]
+        //hard level
+        if (diffLvl == 1)//[10-20]
         {
-            virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)+20), Vector3.up) * virtual_vec;
-        }else if (diffLvl == 2)
-        {
-            virtualAlpha = Quaternion.AngleAxis(-1*signPhysicalAlpha*(Math.Abs(physicalAlpha)+20), Vector3.up) * virtual_vec;
+            virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)), Vector3.up) * virtual_vec;
+            // add some degree of randomness
+            int randAngle = Random.Range(-20, 21);
+            virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         }
-        
-        
-        // add some degree of randomness
-        int randAngle = Random.Range(-10, 11);
-        virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         
         Text2.SetText($"virtual alpha {Vector3.SignedAngle(virtual_vec, VirtualTarget.transform.forward, Vector3.up)}");
         VirtualTarget.transform.forward = virtualAlpha;
@@ -198,14 +203,15 @@ public class RDManager : MonoBehaviour
     //triggered by left hand thumbs up
     public void EndTrial()
     {
-        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 0.7 && canEndTrial)
+        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canEndTrial)
         {
             float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
             sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-            expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled);
+            expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, saccRedirector.inducedRotSaccadic);
         
             gameManager.ready = false;
         
+            seatingHint.Stop();
             if (PDE < 0.15 && Angle_alpha < 8)
             {
                 success.Play();
@@ -223,7 +229,7 @@ public class RDManager : MonoBehaviour
 
     public void TrialTransition()
     {
-        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 0.7 && canTraialTransition)
+        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canTraialTransition)
         {
             if(success.isPlaying)
                 success.Stop();
@@ -252,6 +258,14 @@ public class RDManager : MonoBehaviour
         yield return new WaitForSeconds(5f);
         canEndTrial = true;
         canTraialTransition = true;
+    }
+    
+    IEnumerator Exploringtime()
+    {
+        yield return new WaitForSeconds(10f);
+        //start particle
+        seatingHint.Play();
+        hintAudio.Play();
     }
     
 
@@ -465,7 +479,7 @@ public class RDManager : MonoBehaviour
             float virtual_dist = hit_v.distance;
             if (hit_v.transform.CompareTag("Chair"))
             {
-                physical_dist = Vector2.Distance(currPos, Utilities.FlattenedPos2D(PhysicalTarget.position))-0.26f;
+                physical_dist = Vector2.Distance(currPos, Utilities.FlattenedPos2D(PhysicalTarget.position))-0.3f;
                 headingToChair = true;
             }
             else
@@ -497,8 +511,9 @@ public class RDManager : MonoBehaviour
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
 
-        g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
-
+        float g_c_proposed = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
+        g_c = (1 - SMOOTHING_FACTOR) * prevCurGain + SMOOTHING_FACTOR * g_c_proposed;
+        prevCurGain = g_c;
         
         float proposedRotation = 0;
         if (Angle_theta < 10)
