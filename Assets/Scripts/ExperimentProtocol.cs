@@ -42,7 +42,6 @@ public class ExperimentProtocol : MonoBehaviour
     {
         ReadCSV();
         diffOrder = latin_square[Random.Range(0, 2)];
-        logFile.StartCondition(Condition.ToString(), subjectNumber);
     }
 
     public void StartCondition()
@@ -51,6 +50,8 @@ public class ExperimentProtocol : MonoBehaviour
             rdManager.difficultyLvl = 0;
         else if (diffOrder[diffIndx] == "B")
             rdManager.difficultyLvl = 1;
+        
+        logFile.StartCondition(Condition.ToString(), rdManager.difficultyLvl, subjectNumber);
         
         if(TrialUI.activeInHierarchy)
             TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
@@ -77,9 +78,9 @@ public class ExperimentProtocol : MonoBehaviour
         Application.Quit();
     }
 
-    public void EndTrial(int difficultyLvl, float PDE, float AE, int ResetsPerPath, float distanceTraveled, float rotSacc)
+    public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled, float rotSacc)
     {
-        logFile.EndTrial(difficultyLvl,PDE, AE, ResetsPerPath, distanceTraveled, rotSacc);
+        logFile.EndTrial(subjectNumber,PDE, AE, ResetsPerPath, distanceTraveled, rotSacc);
     }
 
     void ReadCSV()

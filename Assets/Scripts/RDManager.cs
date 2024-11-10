@@ -207,7 +207,7 @@ public class RDManager : MonoBehaviour
         {
             float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
             sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-            expProtocol.EndTrial(difficultyLvl, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, saccRedirector.inducedRotSaccadic);
+            expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, saccRedirector.inducedRotSaccadic);
         
             gameManager.ready = false;
         

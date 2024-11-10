@@ -13314,7 +13314,7 @@ MonoBehaviour:
   ConditionUI: {fileID: 1610459302}
   FinishUI: {fileID: 2104197104}
   subjectNumber: 2
-  Condition: 0
+  Condition: 1
   Text1: {fileID: 847345410}
 --- !u!1 &1975176419
 GameObject:
