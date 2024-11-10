@@ -160,7 +160,7 @@ public class SaccadicRedirector : MonoBehaviour
         if (rdManager.condition == Redirector_condition.AlignmentAPF)
         {
            
-            finalRotation *= rdManager.SignTheta;
+            finalRotation *= rdManager.SignAlpha;
             rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
             // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
         

@@ -192,7 +192,7 @@ public class RDManager : MonoBehaviour
         {
             virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)), Vector3.up) * virtual_vec;
             // add some degree of randomness
-            int randAngle = Random.Range(-20, 21);
+            int randAngle = Random.Range(10, 21) * Math.Sign(Random.Range(-1,1));
             virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         }
         
@@ -416,11 +416,15 @@ public class RDManager : MonoBehaviour
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//negative gradient direction in physical space
         desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
-
+        float APFAngle = Vector2.Angle(currDir, ng);
+        
         //calculate curvature rotation
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
 
-        g_c = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
+        var g_c_proposed = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
+        g_c = (1 - SMOOTHING_FACTOR) * prevCurGain + SMOOTHING_FACTOR * g_c_proposed;
+        g_c *= Mathf.Sin(APFAngle * (90f / 45f)); //as implemented by Hodgson etal.
+        prevCurGain = g_c;
         
         float proposedRotation = 0;
         if (deltaDir * desiredSteeringDirection < 0)
@@ -507,18 +511,20 @@ public class RDManager : MonoBehaviour
 
         var desiredFacingDirection = Utilities.UnFlatten(ng);//vector of negtive gradient in physical space
         desiredSteeringDirection = (int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(currDir), desiredFacingDirection));
-
+        float APFAngle = Vector2.Angle(currDir, ng);
+        
         //calculate rotation by curvature gain
         var rotationFromCurvatureGain = Mathf.Rad2Deg * (deltaPos.magnitude / CURVATURE_RADIUS);
 
         float g_c_proposed = desiredSteeringDirection * Mathf.Min(rotationFromCurvatureGain, maxRotationFromCurvatureGain);
         g_c = (1 - SMOOTHING_FACTOR) * prevCurGain + SMOOTHING_FACTOR * g_c_proposed;
+        g_c *= Mathf.Sin(APFAngle * (90f / 45f));
         prevCurGain = g_c;
         
         float proposedRotation = 0;
-        if (Angle_theta < 10)
+        if (Angle_theta < 1)
         { // work on Alpha here? maybe....
-            if (Angle_alpha < 3)
+            if (Angle_alpha < 1)
                 proposedRotation = 0;
             else
             {
