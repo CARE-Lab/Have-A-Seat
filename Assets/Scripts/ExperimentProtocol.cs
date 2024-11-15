@@ -61,10 +61,10 @@ public class ExperimentProtocol : MonoBehaviour
 
     public void EndCondition()
     {
+        logFile.EndCondition();
         diffIndx++;
         if (diffIndx == 2)
         {
-            logFile.EndCondition();
             FinishUI.SetActive(true);
         }
         else
@@ -72,15 +72,10 @@ public class ExperimentProtocol : MonoBehaviour
             ConditionUI.GetComponent<CloseMenu>().ActivateOpenMenu();
         }
     }
-
-    public void QuitApplication()
+    
+    public void EndTrial(int trialNo, float PDE, float AE, int ResetsPerPath, float distanceTraveled, int success, float rotSacc)
     {
-        Application.Quit();
-    }
-
-    public void EndTrial(float PDE, float AE, int ResetsPerPath, float distanceTraveled, float rotSacc)
-    {
-        logFile.EndTrial(subjectNumber,PDE, AE, ResetsPerPath, distanceTraveled, rotSacc);
+        logFile.EndTrial(subjectNumber, trialNo, PDE, AE, ResetsPerPath, distanceTraveled, success, rotSacc);
     }
 
     void ReadCSV()
@@ -96,6 +91,11 @@ public class ExperimentProtocol : MonoBehaviour
             latin_square[r][i % 2] = data[i];
         }
         
+    }
+    
+    public void QuitApplication()
+    {
+        Application.Quit();
     }
     
 }

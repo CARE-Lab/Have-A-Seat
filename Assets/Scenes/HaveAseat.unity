@@ -13313,8 +13313,8 @@ MonoBehaviour:
   TrialUI: {fileID: 8291314933359249531}
   ConditionUI: {fileID: 1610459302}
   FinishUI: {fileID: 2104197104}
-  subjectNumber: 2
-  Condition: 1
+  subjectNumber: 1
+  Condition: 0
   Text1: {fileID: 847345410}
 --- !u!1 &1975176419
 GameObject:

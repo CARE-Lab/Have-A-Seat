@@ -207,20 +207,20 @@ public class RDManager : MonoBehaviour
         {
             float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
             sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
-            expProtocol.EndTrial(PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, saccRedirector.inducedRotSaccadic);
-        
             gameManager.ready = false;
-        
             seatingHint.Stop();
-            if (PDE < 0.15 && Angle_alpha < 8)
+            
+            if (PDE < 0.13 && Angle_alpha < 8)
             {
                 success.Play();
+                expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 1, saccRedirector.inducedRotSaccadic);
             }
             else
             {
+                expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 0, saccRedirector.inducedRotSaccadic);
                 TrialTransition();
             }
-
+            
             canEndTrial = false;
             StartCoroutine(Countdown());
         }
