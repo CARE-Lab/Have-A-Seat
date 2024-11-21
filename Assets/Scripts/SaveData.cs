@@ -43,6 +43,8 @@ public class SaveData : MonoBehaviour
             RDWCondition = conditionName;
             partNo = subjectNo;
             
+            //eyeData.SetText($"partNo. {partNo}, subjNo {subjectNo}");
+            
             fi_Log = new FileInfo($"{Application.persistentDataPath}/{conditionName}_{lvlCond}_Log.csv");
             raw_log = new FileInfo($"{Application.persistentDataPath}/{conditionName}_{lvlCond}_raw_data.csv");
 
@@ -51,8 +53,8 @@ public class SaveData : MonoBehaviour
             
             if (subjectNo == 1)
             {
-                sw_Log.WriteLine($"Participant No., PDE, AE, Resets Per Path, Average distance traveled between resets");
-                sw_raw_Log.WriteLine($"Participant No., PDE, AE, Resets Per Path, Distance Traveled, Average distance traveled between resets, success, Rot induced by Sacc");
+                sw_Log.WriteLine($"ParticipantNo., PDE, AE, ResetsPerPath, Average_distance_traveled_between_resets");
+                sw_raw_Log.WriteLine($"ParticipantNo., PDE, AE, ResetsPerPath, Distance_Traveled, Average_distance_traveled_between_resets, success, Rot_inducedSacc");
                 
             }
             
@@ -70,10 +72,10 @@ public class SaveData : MonoBehaviour
 
                 if (subjectNo == 1)
                 {
-                    sw_PDE_Log.WriteLine("Participant No., Redirector, Difficulty Level, Measurement");
-                    sw_AE_Log.WriteLine("Participant No., Redirector, Difficulty Level, Measurement");
-                    sw_RPP_Log.WriteLine("Participant No., Redirector, Difficulty Level, Measurement");
-                    sw_AVG_dist_Log.WriteLine("Participant No., Redirector, Difficulty Level, Measurement");
+                    sw_PDE_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
+                    sw_AE_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
+                    sw_RPP_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
+                    sw_AVG_dist_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
                 }
             }
             
@@ -89,7 +91,7 @@ public class SaveData : MonoBehaviour
        
     }
 
-    public void EndTrial(int partNo, int trialNo, float PDE, float AE, int ResetsPerPath, float distanceTraveled, int success, float rotSacc)
+    public void EndTrial(int trialNo, float PDE, float AE, int ResetsPerPath, float distanceTraveled, int success, float rotSacc)
     {
         float avgDistTravBetResets = distanceTraveled / (ResetsPerPath + 1);
         sw_raw_Log.WriteLine($"{partNo},{PDE},{AE},{ResetsPerPath},{distanceTraveled},{avgDistTravBetResets},{success}, {rotSacc}");

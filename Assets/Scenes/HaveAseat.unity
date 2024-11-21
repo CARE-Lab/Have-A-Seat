@@ -8789,10 +8789,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb0004833d7db5e4aa4f41069d2c7c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MAX_TRANS_GAIN: 0.28
+  MAX_TRANS_GAIN: 0.26
   MIN_TRANS_GAIN: -0.14
-  MAX_ROT_GAIN: 0.26
-  MIN_ROT_GAIN: -0.3
+  MAX_ROT_GAIN: 0.11
+  MIN_ROT_GAIN: -0.15
   CURVATURE_RADIUS: 7.5
   headTransform: {fileID: 1364240237}
   Env: {fileID: 1344325485}
@@ -13313,7 +13313,7 @@ MonoBehaviour:
   TrialUI: {fileID: 8291314933359249531}
   ConditionUI: {fileID: 1610459302}
   FinishUI: {fileID: 2104197104}
-  subjectNumber: 1
+  subjectNumber: 4
   Condition: 0
   Text1: {fileID: 847345410}
 --- !u!1 &1975176419

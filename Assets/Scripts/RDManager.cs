@@ -429,11 +429,11 @@ public class RDManager : MonoBehaviour
         float proposedRotation = 0;
         if (deltaDir * desiredSteeringDirection < 0)
         {
-            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
+            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
         }
         else
         {
-            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MIN_ROT_GAIN), maxRotationFromRotationGain);
+            proposedRotation = desiredSteeringDirection * Mathf.Min(Mathf.Abs(deltaDir * MAX_ROT_GAIN), maxRotationFromRotationGain);
         }
         
         g_r = (1 - SMOOTHING_FACTOR) * prevRotGain + SMOOTHING_FACTOR * proposedRotation;

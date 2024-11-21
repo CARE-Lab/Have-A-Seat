@@ -75,7 +75,7 @@ public class ExperimentProtocol : MonoBehaviour
     
     public void EndTrial(int trialNo, float PDE, float AE, int ResetsPerPath, float distanceTraveled, int success, float rotSacc)
     {
-        logFile.EndTrial(subjectNumber, trialNo, PDE, AE, ResetsPerPath, distanceTraveled, success, rotSacc);
+        logFile.EndTrial(trialNo, PDE, AE, ResetsPerPath, distanceTraveled, success, rotSacc);
     }
 
     void ReadCSV()
