@@ -91,7 +91,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 
-        if (Time.timeScale == 0 || !gameManager.ready)
+        if (Time.timeScale == 0 || !rdManager.ready)
             return;
 
 
@@ -159,25 +159,27 @@ public class SaccadicRedirector : MonoBehaviour
     {
         if (rdManager.condition == Redirector_condition.AlignmentAPF)
         {
+            if (rdManager.Angle_theta < 1)
+            { // work on Alpha here? maybe....
+                if (rdManager.Angle_alpha < 1)
+                    return;
+                
+                finalRotation *= rdManager.SignAlpha;
            
-            finalRotation *= rdManager.SignAlpha;
+            }
+            else
+            {
+                finalRotation *= rdManager.SignTheta;
+            }
             rdManager.Env.transform.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
-            // XRTransform.Translate(Vector3.forward * (transFront / 100) * Time.deltaTime);
-        
-
+            
+            
             if(gameManager.debugMode)
                 pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
             inducedRotSaccadic += Mathf.Abs(finalRotation);
         }
-        /*else
-        {
-            if (rdManager.desiredSteeringDirection != 0)
-                finalRotation *= rdManager.desiredSteeringDirection;
-        }*/
-        
-       
-       
+   
     }
 
     void UpdateCurrentGazeDirection()

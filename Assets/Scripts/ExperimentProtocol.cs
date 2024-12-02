@@ -46,10 +46,10 @@ public class ExperimentProtocol : MonoBehaviour
 
     public void StartCondition()
     {
-        if (diffOrder[diffIndx] == "A")
+        /*if (diffOrder[diffIndx] == "A")
             rdManager.difficultyLvl = 0;
-        else if (diffOrder[diffIndx] == "B")
-            rdManager.difficultyLvl = 1;
+        else if (diffOrder[diffIndx] == "B")*/
+            rdManager.difficultyLvl = 0;
         
         logFile.StartCondition(Condition.ToString(), rdManager.difficultyLvl, subjectNumber);
         

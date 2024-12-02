@@ -51,10 +51,10 @@ public class SaveData : MonoBehaviour
             sw_Log = fi_Log.AppendText();
             sw_raw_Log = raw_log.AppendText();
             
-            if (subjectNo == 1)
+            if (subjectNo == 4)
             {
-                sw_Log.WriteLine($"ParticipantNo., PDE, AE, ResetsPerPath, Average_distance_traveled_between_resets");
-                sw_raw_Log.WriteLine($"ParticipantNo., PDE, AE, ResetsPerPath, Distance_Traveled, Average_distance_traveled_between_resets, success, Rot_inducedSacc");
+                sw_Log.WriteLine($"ParticipantNo, PDE, AE, ResetsPerPath, Average_distance_traveled_between_resets");
+                sw_raw_Log.WriteLine($"ParticipantNo, PDE, AE, ResetsPerPath, Distance_Traveled, Average_distance_traveled_between_resets, success, Rot_inducedSacc");
                 
             }
             
@@ -70,12 +70,12 @@ public class SaveData : MonoBehaviour
                 sw_RPP_Log = RPP_log.AppendText();
                 sw_AVG_dist_Log = AVG_dist_log.AppendText();
 
-                if (subjectNo == 1)
+                if (subjectNo == 4)
                 {
-                    sw_PDE_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
-                    sw_AE_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
-                    sw_RPP_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
-                    sw_AVG_dist_Log.WriteLine("ParticipantNo., Redirector, DifficultyLevel, Measurement");
+                    sw_PDE_Log.WriteLine("ParticipantNo, Redirector, DifficultyLevel, Measurement");
+                    sw_AE_Log.WriteLine("ParticipantNo, Redirector, DifficultyLevel, Measurement");
+                    sw_RPP_Log.WriteLine("ParticipantNo, Redirector, DifficultyLevel, Measurement");
+                    sw_AVG_dist_Log.WriteLine("ParticipantNo, Redirector, DifficultyLevel, Measurement");
                 }
             }
             

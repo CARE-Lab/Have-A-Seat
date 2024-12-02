@@ -20,17 +20,9 @@ public class GameManager : MonoBehaviour
     bool prev_state_button_two = false;
     bool paused = false;
     
-    public Transform startPos;
-    
     public bool debugMode = true;
     
-    [HideInInspector] public bool ready = false;
-    
     [SerializeField] private AnchorPrefabSpawner _couchSpawner;
-    
-    [SerializeField] private Transform easyLvl;
-    [SerializeField] private Transform mediumLvl;
-    [SerializeField] private Transform hardLvl;
     
     [Header("Debugging")]
     [SerializeField] TextMeshProUGUI text1;
@@ -53,7 +45,6 @@ public class GameManager : MonoBehaviour
         //spawn and find physical chair
         _couchSpawner.SpawnPrefabs();
         FindChair();
-        ready = true;
     }
     
 
@@ -84,8 +75,9 @@ public class GameManager : MonoBehaviour
             if (button_two_pressed)
             {
                 //debug_UI.SetActive(!debug_UI.activeInHierarchy);
-                Time.timeScale = paused ? 1 : 0;
-                paused = !paused;
+                /*Time.timeScale = paused ? 1 : 0;
+                paused = !paused;*/
+                
             }
             prev_state_button_two = button_two_pressed;
         }

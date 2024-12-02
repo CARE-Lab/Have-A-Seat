@@ -13,8 +13,9 @@ public class APF_Resetter : Resetter
         var currDir = _rdManager.currDir;
         totalF = _rdManager.totalForce;
         
-        //rotate in the direction of the larger angle which is the opposite of the sign of the smaller angle
-        rotateDir = -(int)Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(_rdManager.currDir), Utilities.UnFlatten(totalF)));
+        //rotate in the direction of the larger angle which is the opposite of the sign of the smaller angle, but we're rotating the env so 
+        // reverse again
+        rotateDir = Mathf.Sign(Utilities.GetSignedAngle(Utilities.UnFlatten(_rdManager.currDir), Utilities.UnFlatten(totalF)));
         var smallerAngle = Vector2.Angle(totalF, currDir);
         requiredRotateSteerAngle = 360 - smallerAngle;//required rotation angle in real world (the greater angle)
         speedRatio = smallerAngle / requiredRotateSteerAngle;
