@@ -23,6 +23,7 @@ public class ExperimentProtocol : MonoBehaviour
     [Header("Experiment Conditions")]
     public int subjectNumber;
     public Redirector_condition Condition;
+    public bool isTrial;
     
     private SaveData logFile;
     private int diffIndx = 0;
@@ -35,6 +36,7 @@ public class ExperimentProtocol : MonoBehaviour
     private void Awake()
     {
         rdManager.condition = Condition;
+        rdManager.istrial = isTrial;
         logFile = GetComponent<SaveData>();
     }
 
@@ -46,12 +48,17 @@ public class ExperimentProtocol : MonoBehaviour
 
     public void StartCondition()
     {
-        /*if (diffOrder[diffIndx] == "A")
+        if(isTrial)
             rdManager.difficultyLvl = 0;
-        else if (diffOrder[diffIndx] == "B")*/
-            rdManager.difficultyLvl = 0;
-        
-        logFile.StartCondition(Condition.ToString(), rdManager.difficultyLvl, subjectNumber);
+        else
+        {
+            if (diffOrder[diffIndx] == "A")
+                rdManager.difficultyLvl = 0;
+            else if (diffOrder[diffIndx] == "B")
+                rdManager.difficultyLvl = 1;
+            
+            logFile.StartCondition(Condition.ToString(), rdManager.difficultyLvl, subjectNumber);
+        }
         
         if(TrialUI.activeInHierarchy)
             TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
@@ -61,6 +68,12 @@ public class ExperimentProtocol : MonoBehaviour
 
     public void EndCondition()
     {
+        if (isTrial)
+        {
+            FinishUI.SetActive(true);
+            return;
+        }
+        
         logFile.EndCondition();
         diffIndx++;
         if (diffIndx == 2)

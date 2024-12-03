@@ -64,8 +64,6 @@ public class RDManager : MonoBehaviour
     [HideInInspector] public int trialNo = 0;
     
     [HideInInspector] public Transform PhysicalTarget;
-
-    [HideInInspector] public Transform physicalStartPos;
  
     [HideInInspector]
     public Vector2 currPos, prevPos, currDir, prevDir; //cur pos of user w.r.t the OVR rig which is aligned with the (0,0,0)
@@ -88,6 +86,8 @@ public class RDManager : MonoBehaviour
     [HideInInspector] public int SignAlpha, SignTheta;
 
     [HideInInspector] public bool ready;
+
+    [HideInInspector] public bool istrial;
     
     [SerializeField] GameObject userDirVector;
     [SerializeField] GameObject ngArrow; // Arrow prefab
@@ -173,8 +173,6 @@ public class RDManager : MonoBehaviour
         Env.transform.rotation = currentQ;
         
         Env.transform.position = new Vector3(headTransform.position.x, 0, headTransform.position.z);
-        Text1.SetText(Env.transform.position.ToString());
-        Text2.SetText(headTransform.position.ToString());
     }
 
     private void SetVirtualChairOrientation(int diffLvl)
@@ -185,7 +183,7 @@ public class RDManager : MonoBehaviour
         Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
 
         float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
-        //Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
+        Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
         int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
        
         //basic(easy level) delta alpha=0 
@@ -193,11 +191,13 @@ public class RDManager : MonoBehaviour
        
         
         //hard level
-        if (diffLvl == 1)//[10-20]
+        if (diffLvl == 1)//[15-30]
         {
-            virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)), Vector3.up) * virtual_vec;
+            //virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)), Vector3.up) * virtual_vec;
             // add some degree of randomness
-            int randAngle = Random.Range(10, 21) * Math.Sign(Random.Range(-1,1));
+            int randSign = Random.value < 0.5f ? -1 : 1;
+            int randAngle = Random.Range(15, 31) * randSign;
+            Text2.SetText($"Rand angle: {randAngle}");
             virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         }
         
@@ -210,29 +210,30 @@ public class RDManager : MonoBehaviour
     {
         if (ready && Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canEndTrial)
         {
+            canEndTrial = false;
             if(inReset)
                 _resetter.EndReset();
             
             float PDE = Vector2.Distance(Utilities.FlattenedPos2D(PhysicalTarget.position), Utilities.FlattenedPos2D(VirtualTarget.transform.position));
             sumOfRealDistanceTravelled = Mathf.Round(sumOfRealDistanceTravelled * 100f) / 100f;
             ready = false;
+            canTraialTransition = true;
             seatingHint.Stop();
             
             if (PDE < 0.13 && Angle_alpha < 8)
             {
                 success.Play();
                 correctAudio.Play();
-                expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 1, saccRedirector.inducedRotSaccadic);
+                if(!istrial)
+                    expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 1, saccRedirector.inducedRotSaccadic);
             }
             else
             {
-                expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 0, saccRedirector.inducedRotSaccadic);
-                canTraialTransition = true;
+                if(!istrial)
+                    expProtocol.EndTrial(trialNo, PDE, Angle_alpha, resetsPerTrial, sumOfRealDistanceTravelled, 0, saccRedirector.inducedRotSaccadic);
                 TrialTransition();
             }
-            
-            canEndTrial = false;
-            StartCoroutine(Countdown());
+            StartCoroutine(EndTrialCountdown());
         }
     }
     
@@ -241,6 +242,7 @@ public class RDManager : MonoBehaviour
     {
         if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canTraialTransition )
         {
+            canTraialTransition = false;
             if(success.isPlaying)
                 success.Stop();
             Env.SetActive(false);
@@ -249,22 +251,29 @@ public class RDManager : MonoBehaviour
             {
                 expProtocol.EndCondition();
                 trialNo = 0;
+            }else if (trialNo == 1 && istrial)
+            {
+                expProtocol.EndCondition();
             }
             else
             {
                 TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
             }
             _startPosSpawner.SpawnPrefabs();
-            canTraialTransition = false;
-            StartCoroutine(Countdown());
+            StartCoroutine(TransitionCountdown());
         }
         
     }
 
-    IEnumerator Countdown()
+    IEnumerator EndTrialCountdown()
     {
         yield return new WaitForSeconds(6f);
         canEndTrial = true;
+    }
+    
+    IEnumerator TransitionCountdown()
+    {
+        yield return new WaitForSeconds(6f);
         canTraialTransition = true;
     }
     
@@ -279,8 +288,6 @@ public class RDManager : MonoBehaviour
 
     void Update()
     {
-        Text3.SetText(headTransform.position.ToString());
-        
         if (Time.timeScale == 0 || !ready)
             return;
         
@@ -491,7 +498,7 @@ public class RDManager : MonoBehaviour
             float virtual_dist = hit_v.distance;
             if (hit_v.transform.CompareTag("Chair"))
             {
-                physical_dist = Vector2.Distance(currPos, Utilities.FlattenedPos2D(PhysicalTarget.position));
+                physical_dist = Vector2.Distance(currPos, Utilities.FlattenedPos2D(PhysicalTarget.position))-0.28f;
                 headingToChair = true;
             }
             else
@@ -652,7 +659,7 @@ public class RDManager : MonoBehaviour
         float virtualAlpha = Vector3.Angle(-1 * virtual_vec, virtual_for);
         float deltaAlpha = Math.Abs(physicalAlpha - virtualAlpha);
         
-        //Text3.SetText($"PDE: {currPDE}, DeltaAlpha: {deltaAlpha}");
+        Text3.SetText($"PDE: {currPDE}, DeltaAlpha: {deltaAlpha}");
     }
 
     void UpdatePreviousUserState()

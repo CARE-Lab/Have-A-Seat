@@ -91,7 +91,7 @@ public class SaccadicRedirector : MonoBehaviour
     private void Update()
     {
 
-        if (Time.timeScale == 0 || !rdManager.ready)
+        if (Time.timeScale == 0 || !rdManager.ready || !(rdManager.condition == Redirector_condition.AlignmentAPF))
             return;
 
 
@@ -157,8 +157,6 @@ public class SaccadicRedirector : MonoBehaviour
 
     void InduceRot(float finalRotation)
     {
-        if (rdManager.condition == Redirector_condition.AlignmentAPF)
-        {
             if (rdManager.Angle_theta < 1)
             { // work on Alpha here? maybe....
                 if (rdManager.Angle_alpha < 1)
@@ -178,7 +176,6 @@ public class SaccadicRedirector : MonoBehaviour
                 pathTrail.virtualTrail.RotateAround(Utilities.FlattenedPos3D(headTransform.position), Vector3.up, finalRotation);
 
             inducedRotSaccadic += Mathf.Abs(finalRotation);
-        }
    
     }
 
