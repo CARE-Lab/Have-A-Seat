@@ -4501,7 +4501,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Click "Start" to start the Condition
+  m_text: 'Go back to the Arrow then Click "Start" to start the Condition
 
 '
   m_isRightToLeft: 0
@@ -12952,7 +12952,7 @@ MonoBehaviour:
   TrialUI: {fileID: 8291314933359249531}
   ConditionUI: {fileID: 1610459302}
   FinishUI: {fileID: 2104197104}
-  subjectNumber: 1
+  subjectNumber: 3
   Condition: 1
   isTrial: 0
   Text1: {fileID: 847345410}
@@ -15529,7 +15529,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Click "Start" to start the trial
+  m_text: Go back to the Arrow then Click "Start" to start the trial
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 18eb93125c4dc48309f35bea3f9afe65, type: 2}
   m_sharedMaterial: {fileID: -8672605235374421519, guid: 18eb93125c4dc48309f35bea3f9afe65,

@@ -2,14 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using Meta.XR.MRUtilityKit;
-using Oculus.Interaction;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 
@@ -156,10 +150,11 @@ public class RDManager : MonoBehaviour
             Env.SetActive(true);
         
         gameManager.Setup();
-        SetVirtualChairOrientation(difficultyLvl);
         UpdateCurrentUserState();
         UpdatePreviousUserState();
         Recenter();
+        
+        SetVirtualChairOrientation(difficultyLvl);
         ready = true;
         StartCoroutine(Exploringtime());
 
@@ -196,7 +191,7 @@ public class RDManager : MonoBehaviour
             //virtualAlpha = Quaternion.AngleAxis(signPhysicalAlpha*(Math.Abs(physicalAlpha)), Vector3.up) * virtual_vec;
             // add some degree of randomness
             int randSign = Random.value < 0.5f ? -1 : 1;
-            int randAngle = Random.Range(15, 31) * randSign;
+            int randAngle = Random.Range(15, 21) * randSign;
             Text2.SetText($"Rand angle: {randAngle}");
             virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         }
@@ -259,8 +254,8 @@ public class RDManager : MonoBehaviour
             {
                 TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
             }
+
             _startPosSpawner.SpawnPrefabs();
-            StartCoroutine(TransitionCountdown());
         }
         
     }
@@ -269,12 +264,6 @@ public class RDManager : MonoBehaviour
     {
         yield return new WaitForSeconds(6f);
         canEndTrial = true;
-    }
-    
-    IEnumerator TransitionCountdown()
-    {
-        yield return new WaitForSeconds(6f);
-        canTraialTransition = true;
     }
     
     IEnumerator Exploringtime()
