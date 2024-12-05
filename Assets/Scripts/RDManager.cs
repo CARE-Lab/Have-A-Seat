@@ -53,6 +53,8 @@ public class RDManager : MonoBehaviour
 
     public AudioSource correctAudio;
 
+    public GameObject ResetPlane;
+
     [HideInInspector] public int difficultyLvl;
     
     [HideInInspector] public int trialNo = 0;
@@ -146,6 +148,9 @@ public class RDManager : MonoBehaviour
         saccRedirector.inducedRotSaccadic = 0;
         
         _startPosSpawner.ClearPrefabs();
+        if(ResetPlane.activeInHierarchy)
+            ResetPlane.SetActive(false);
+        
         if(!Env.activeInHierarchy)
             Env.SetActive(true);
         
@@ -178,7 +183,7 @@ public class RDManager : MonoBehaviour
         Vector3 physical_vec = Utilities.FlattenedDir3D(Utilities.UnFlatten(currPos) - PhysicalTarget.position);
 
         float physicalAlpha = Vector3.SignedAngle(physical_vec, physical_for, Vector3.up);
-        Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
+        //Text1.SetText($"initial phy_alpha: {physicalAlpha}, diff_lvl: {diffLvl}");
         int signPhysicalAlpha = (int)Math.Sign(physicalAlpha);
        
         //basic(easy level) delta alpha=0 
@@ -192,7 +197,7 @@ public class RDManager : MonoBehaviour
             // add some degree of randomness
             int randSign = Random.value < 0.5f ? -1 : 1;
             int randAngle = Random.Range(15, 21) * randSign;
-            Text2.SetText($"Rand angle: {randAngle}");
+            //Text2.SetText($"Rand angle: {randAngle}");
             virtualAlpha = Quaternion.AngleAxis(randAngle, Vector3.up) * virtualAlpha;
         }
         
@@ -203,7 +208,7 @@ public class RDManager : MonoBehaviour
     //triggered by left hand thumbs up
     public void EndTrial()
     {
-        if (ready && Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canEndTrial)
+        if (ready && Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1.5f && canEndTrial)
         {
             canEndTrial = false;
             if(inReset)
@@ -235,7 +240,7 @@ public class RDManager : MonoBehaviour
 
     public void TrialTransition()
     {
-        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1 && canTraialTransition )
+        if (Vector2.Distance(currPos, Utilities.FlattenedPos2D(VirtualTarget.transform.position)) < 1.5f && canTraialTransition )
         {
             canTraialTransition = false;
             if(success.isPlaying)
@@ -254,7 +259,8 @@ public class RDManager : MonoBehaviour
             {
                 TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
             }
-
+            
+            ResetPlane.SetActive(true);
             _startPosSpawner.SpawnPrefabs();
         }
         
@@ -599,8 +605,8 @@ public class RDManager : MonoBehaviour
         
         var dotProduct = Vector2.Dot(totalForce, currDir);
         
-        /*Text1.SetText($"Min Dist: {minDist}");
-        Text2.SetText($"dot Product: {dotProduct}");*/
+        Text1.SetText($"Min Dist: {minDist}");
+        Text2.SetText($"dot Product: {dotProduct}");
         
         return dotProduct < -0.2 && minDist < 0.3;
     }
