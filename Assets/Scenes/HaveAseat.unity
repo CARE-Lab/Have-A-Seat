@@ -11062,7 +11062,7 @@ Transform:
   m_GameObject: {fileID: 1661119506}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1, y: -0.015, z: 5.37}
+  m_LocalPosition: {x: -1, y: -0.1, z: 5.37}
   m_LocalScale: {x: 2, y: 1, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13059,7 +13059,7 @@ MonoBehaviour:
   TrialUI: {fileID: 8291314933359249531}
   ConditionUI: {fileID: 1610459302}
   FinishUI: {fileID: 2104197104}
-  subjectNumber: 7
+  subjectNumber: 9
   Condition: 1
   isTrial: 0
   Text1: {fileID: 847345410}

@@ -259,9 +259,9 @@ public class RDManager : MonoBehaviour
             {
                 TrialUI.GetComponent<CloseMenu>().ActivateOpenMenu();
             }
-            
-            ResetPlane.SetActive(true);
             _startPosSpawner.SpawnPrefabs();
+            ResetPlane.SetActive(true);
+            
         }
         
     }
