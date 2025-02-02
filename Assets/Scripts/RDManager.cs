@@ -54,6 +54,8 @@ public class RDManager : MonoBehaviour
     public AudioSource correctAudio;
 
     public GameObject ResetPlane;
+    
+    public OVRPassthroughLayer passthroughLayer;
 
     [HideInInspector] public int difficultyLvl;
     
@@ -90,6 +92,11 @@ public class RDManager : MonoBehaviour
     [SerializeField] private AnchorPrefabSpawner _startPosSpawner;
     [SerializeField] private float SMOOTHING_FACTOR = 0.125f;  //smoothing factor for rotation and curvature gain 
     
+    // The value we want to change.
+    private float value = 0f;
+    
+    // Duration in seconds.
+    public float duration = 60f;
     
     private const float CURVATURE_GAIN_CAP_DEGREES_PER_SECOND = 10;  // degrees per second
     private const float ROTATION_GAIN_CAP_DEGREES_PER_SECOND = 30;  // degrees per second
@@ -278,6 +285,32 @@ public class RDManager : MonoBehaviour
         //start particle
         seatingHint.Play();
         hintAudio.Play();
+        StartCoroutine(ChangeValueCoroutine());
+    }
+    
+    private IEnumerator ChangeValueCoroutine()
+    {
+        float elapsed = 0f;
+        
+        // Loop until elapsed time is equal to duration.
+        while (elapsed < duration)
+        {
+            // Calculate the current value using Lerp.
+            value = Mathf.Lerp(0f, 1f, elapsed / duration);
+            
+            // Optionally, do something with the value here (e.g., update UI or modify an object's property).
+            passthroughLayer.textureOpacity = value;
+            
+            // Increase elapsed time by the time since last frame.
+            elapsed += Time.deltaTime;
+            
+            // Wait until the next frame.
+            yield return null;
+        }
+        
+        // Ensure the value is exactly 1 at the end.
+        value = 1f;
+        // Debug.Log("Final Value: " + value);
     }
     
 
