@@ -16,7 +16,7 @@
 
 ## Instructions:
 
-1. Clone project from GitHub: https://github.com/habibahshm/Have-A-Seat
+1. Clone project
 
 2. Checkout branch Demo
 
