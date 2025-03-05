@@ -1,26 +1,26 @@
-## Have-A-Seat
+# Have-A-Seat
 
-#Dependencies:
+## Dependencies:
 
-Unity version: 2022.3.20f 
+- Unity version: 2022.3.20f 
 
-All-in-one meta SDK V64
+- All-in-one meta SDK V64
 
-Install Meta Movement SDk V4.2.1 
-Install from here: https://developers.meta.com/horizon/documentation/unity/move-unity-getting-started/
+- Meta Movement SDk V4.2.1 
+ Install from here: https://developers.meta.com/horizon/documentation/unity/move-unity-getting-started/
 
-XR interaction Toolkit 2.5.4
+- XR interaction Toolkit 2.5.4
 
-XR Plugin Management V4.4
+- XR Plugin Management V4.4
 
 
-#Instructions:
+## Instructions:
 
-Clone project from GitHub: https://github.com/habibahshm/Have-A-Seat
+1. Clone project from GitHub: https://github.com/habibahshm/Have-A-Seat
 
-Checkout branch Demo
+2. Checkout branch Demo
 
-Open the Have A Seat scene in Assets/Scenes
+3. Open the Have A Seat scene in Assets/Scenes
 
-Set the condition to Alignment APF in the experiment controller GameObject
+4. Set the condition to Alignment APF in the experiment controller GameObject
  
